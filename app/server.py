@@ -110,6 +110,20 @@ def answer(preset_id, ip):
     }, 503
 
 
+def _norm(lines):
+    return tuple(sorted(t.strip().lower() for t in (lines or []) if t.strip()))
+
+
+def _pitch_fingerprint(payload):
+    return (_norm(payload.get("slate")), _norm(payload.get("buyer")),
+            _norm(payload.get("home")))
+
+
+EXAMPLE_FINGERPRINT = _pitch_fingerprint(json.loads(
+    (Path(__file__).resolve().parent / "pitch_example_input.json").read_text())) \
+    if (Path(__file__).resolve().parent / "pitch_example_input.json").exists() else None
+
+
 def page_html():
     """The page lives in app/index.html so it can be edited as HTML rather than
     as a Python string."""
@@ -184,6 +198,18 @@ class Handler(BaseHTTPRequestHandler):
         if not has_key():
             return self._send(503, json.dumps({"error":
                 "No Qloo key configured on this server."}))
+        # The prefilled example is served from a recorded run: the page runs it
+        # on arrival, and a judge reloading should not spend quota each time.
+        fingerprint = _pitch_fingerprint(payload)
+        cached = CACHE_DIR / "pitch_example.json"
+        if fingerprint == EXAMPLE_FINGERPRINT and cached.exists():
+            body = json.loads(cached.read_text())
+            body["source"] = "CACHED"
+            body["disclosure"] = ("Served from a recorded run of this same "
+                                  "pipeline against the live API. Edit any box "
+                                  "and it runs live.")
+            BUDGET.record_cached()
+            return self._send(200, json.dumps(body))
         try:
             from qloo_client import QlooClient
             from taste.evidence import Trace
@@ -197,6 +223,7 @@ class Handler(BaseHTTPRequestHandler):
                                trace=trace)
             BUDGET.record_live(self.client_ip(), client.quota_remaining)
             result["calls"] = trace.summary()["calls"]
+            result["source"] = "LIVE"
             return self._send(200, json.dumps(result, default=str))
         except PitchError as exc:
             return self._send(200, json.dumps({"error": str(exc)}))

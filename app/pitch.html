@@ -65,6 +65,24 @@ h2.go{color:var(--pos)} h2.no{color:var(--neg)}
 .rowdef{font:400 12.5px/1.6 var(--sans);color:var(--ink-2);margin:10px 0 0;max-width:78ch}
 .rowdef b{color:var(--ink);font-weight:500}
 .flagnote{font:400 11px/1.4 var(--mono);color:var(--bulb);margin-top:5px}
+/* ---------- agent trace ---------- */
+.trace{margin:26px 0 0;border-top:1px solid var(--rule);padding-top:18px}
+.trace h3{font:400 22px/1 var(--display);letter-spacing:.03em;text-transform:uppercase;
+  margin:0 0 4px}
+.trace .hint{font:400 12.5px/1.6 var(--sans);color:var(--ink-3);margin:0 0 14px;max-width:76ch}
+ol.steps{list-style:none;margin:0;padding:0;counter-reset:s}
+ol.steps li{display:grid;grid-template-columns:30px 76px 1fr;gap:12px;
+  padding:0 0 15px;counter-increment:s}
+ol.steps li::before{content:counter(s,decimal-leading-zero);
+  font:400 11px/1.6 var(--mono);color:var(--ink-3)}
+.who{font:400 10px/1.7 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3)}
+.who.buyer{color:var(--pos)} .who.home{color:var(--bulb)}
+.act{font:400 15px/1.25 var(--display);letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink)}
+.why{font-size:13px;color:var(--ink-2);margin-top:2px;max-width:72ch}
+.obs{font:400 11.5px/1.5 var(--mono);color:var(--ink-3);margin-top:4px}
+.did{font:400 11.5px/1.5 var(--mono);color:var(--bulb);margin-top:3px}
 .cap{margin-top:7px;font-size:12px;color:var(--ink-2)}
 .dim .poster{filter:grayscale(1) brightness(.5)}
 .note{border-left:2px solid var(--bulb);padding:10px 14px;margin:18px 0 0;
@@ -105,8 +123,10 @@ footer a{color:var(--ink-2)}
   <p class="tagline">Your slate &middot; their catalogue &middot; what to lead with</p>
   <p class="lede">You have twenty minutes and five slots. Describe a buyer by
   <b>what they have already licensed</b>, and this ranks your own titles for
-  them &mdash; measured against the audience your slate already plays to, because
-  the titles that travel are rarely the ones you love at home.</p>
+  them. Your strongest domestic titles are <b>not necessarily</b> your
+  strongest pitch to a particular buyer &mdash; the shortlist is ordered by how
+  well each title fits <em>them</em>, with its movement against your home
+  audience shown beside it.</p>
   <div class="strip"></div>
 </header>
 
@@ -164,6 +184,9 @@ function loadExample(){
 // Prefilled on arrival: nobody judging this is going to type 26 film titles
 // before seeing whether it works.
 loadExample();
+// Run on arrival so a judge lands on the answer, not an empty form. The
+// example is served from a recorded run, so this costs nothing.
+window.addEventListener('load',()=>$('run').click());
 $('demo').onclick=()=>{
   $('slate').value=EXAMPLE.slate.join('\n');
   $('buyer').value=EXAMPLE.buyer.join('\n');
@@ -204,6 +227,28 @@ function rail(items,dim){
   return r;
 }
 
+function trace(steps,calls){
+  const w=el('div','trace');
+  w.appendChild(el('h3',null,'What the agent did'));
+  w.appendChild(el('p','hint','Each line is a decision, not a stage. Where a '
+    +'reading was too flat to separate anything, or two halves of a catalogue '
+    +'disagreed, the agent changed what it did next and recorded both the '
+    +'observation and the change. '+(calls?calls+' Qloo calls.':'')));
+  const ol=el('ol','steps');
+  steps.forEach(s=>{
+    const li=el('li');
+    const who=el('div','who '+(s.profile||''),s.profile||'');
+    const body=el('div');
+    body.appendChild(el('div','act',s.action));
+    if(s.reason) body.appendChild(el('div','why',s.reason));
+    if(s.observed) body.appendChild(el('div','obs','observed: '+s.observed));
+    if(s.changed) body.appendChild(el('div','did','\u21aa '+s.changed));
+    li.appendChild(who); li.appendChild(body); ol.appendChild(li);
+  });
+  w.appendChild(ol);
+  return w;
+}
+
 function render(d){
   const out=$('out'); out.innerHTML='';
   if(d.error){ out.appendChild(el('p','note err',d.error)); return; }
@@ -216,10 +261,14 @@ function render(d){
   if(d.mode==='fit') bar.appendChild(el('span',null,'no home audience — showing fit, not movement'));
   out.appendChild(bar);
 
-  const good=d.rows.slice(0,6), bad=d.rows.slice(-6).reverse();
+  // Split without overlap. slice(0,6) and slice(-6) shared four titles when
+  // only eight survived the cross-check, which read as a bug.
+  const half=Math.ceil(d.rows.length/2);
+  const good=d.rows.slice(0,Math.min(6,half));
+  const bad=d.rows.slice(half).slice(-6).reverse();
   out.appendChild(el('h2','go','Best fit for this buyer'));
   out.appendChild(rail(good,false));
-  if(d.rows.length>6){
+  if(bad.length){
     out.appendChild(el('h2','no','Weakest fit'));
     out.appendChild(rail(bad,true));
   }
@@ -235,6 +284,7 @@ function render(d){
     d.excluded_overlap.join(', ')+'.'));
   if(d.slate.missing&&d.slate.missing.length) out.appendChild(el('p','note',
     'Not found in the graph: '+d.slate.missing.join(', ')+'.'));
+  if(d.steps&&d.steps.length) out.appendChild(trace(d.steps,d.calls));
   if(d.buyer.halves_agree!=null&&d.buyer.halves_agree<0.5) out.appendChild(el('p','note',
     'The buyer’s two halves agree at only '+d.buyer.halves_agree.toFixed(2)+
     '. That catalogue describes more than one taste; the ranking below is weak evidence.'));

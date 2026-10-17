@@ -31,3 +31,19 @@ for preset in presets:
     note = "aborted" if result.get("aborted") else "%d markets" % answered
     print("  %-20s recorded (%s, %d calls)"
           % (preset["id"], note, result["evidence"]["summary"]["calls"]))
+
+# The pitch desk example, recorded so arriving on the page spends no quota.
+try:
+    from qloo_client import QlooClient
+    from taste.evidence import Trace
+    from taste.pitch import run as run_pitch
+    ex = json.loads((HERE / "app" / "pitch_example_input.json").read_text())
+    tr = Trace()
+    res = run_pitch(QlooClient(log_name="warm_pitch.jsonl"),
+                    ex["slate"], ex["buyer"], ex["home"], trace=tr)
+    res["calls"] = tr.summary()["calls"]
+    (out_dir / "pitch_example.json").write_text(json.dumps(res, indent=2))
+    print("  %-20s recorded (%d ranked, %d calls)"
+          % ("pitch-example", len(res["rows"]), res["calls"]))
+except Exception as exc:
+    print("  %-20s FAILED %s: %s" % ("pitch-example", type(exc).__name__, str(exc)[:100]))
