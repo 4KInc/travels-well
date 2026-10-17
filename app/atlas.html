@@ -130,11 +130,13 @@ footer a{color:var(--ink-2)}
 <div class="wrap">
 <header>
   <h1>The Taste <span>Atlas</span></h1>
-  <p class="tagline">Audiences, discovered &mdash; not assumed</p>
-  <p class="lede">We did not pick these groups. Each one is a set of artists,
-  shows and games whose <b>film-affinity signatures</b> correlate, found by
-  clustering the taste graph. Distance on this map is <b>taste distance</b>,
-  not geography.</p>
+  <p class="tagline">City is the wrong unit &mdash; the API says so</p>
+  <p class="lede">We measured something first: in Qloo's model, <b>location does
+  not move film taste at all</b> &mdash; affinities come back identical across five
+  cities. What does move it is <b>what an audience listens to and watches</b>. So
+  these groups are not places. Each is a set of artists, shows and games whose
+  film-affinity signatures correlate, found by clustering the graph, and distance
+  on this map is taste distance.</p>
   <div class="strip"></div>
 </header>
 
@@ -158,6 +160,12 @@ footer a{color:var(--ink-2)}
     <span><i style="background:#b98ae0"></i>mixed</span>
   </div>
 </div>
+<p class="hint" style="text-transform:none;letter-spacing:0;font-size:12.5px;
+  line-height:1.6;max-width:72ch;margin:14px auto 0;font-family:var(--sans)">
+  These are discovered taste communities <em>within Qloo's graph</em> &mdash;
+  clusters of cultural anchors grouped by modelled film affinity, not observed
+  groups of people. Three of the eighteen have enough members to cross-check
+  against themselves; the rest are single readings.</p>
 <p class="hint">Drag to move &middot; scroll to zoom &middot; drag a node to rearrange &middot; click to see what it watches</p>
 
 <div class="panel" id="panel"></div>
@@ -448,7 +456,7 @@ function show(n){
     if(single.length) p.appendChild(el('p','caveat',
       'Single reading, not cross-checked: '+single.join(' and ')+
       '. Audiences of two or three anchors cannot be split into halves that '+
-      'independently agree, so nothing here was withheld on their account.'));
+      'agree with each other, so nothing here was withheld on their account.'));
   } else {
     if(HOME && HOME.id===n.id)
       p.appendChild(el('p','routed','This is the audience your slate already plays to. Pick another to route it.'));

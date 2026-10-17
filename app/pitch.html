@@ -61,6 +61,10 @@ h2.go{color:var(--pos)} h2.no{color:var(--neg)}
 .chip{position:absolute;top:6px;right:6px;padding:3px 6px;border-radius:2px;
   font:500 11px/1 var(--mono);background:rgba(6,6,9,.84);border:1px solid currentColor}
 .chip.up{color:var(--pos)} .chip.down{color:var(--neg)}
+.chip.fit{top:6px;left:6px;right:auto;color:var(--ink);border-color:var(--ink-3)}
+.rowdef{font:400 12.5px/1.6 var(--sans);color:var(--ink-2);margin:10px 0 0;max-width:78ch}
+.rowdef b{color:var(--ink);font-weight:500}
+.flagnote{font:400 11px/1.4 var(--mono);color:var(--bulb);margin-top:5px}
 .cap{margin-top:7px;font-size:12px;color:var(--ink-2)}
 .dim .poster{filter:grayscale(1) brightness(.5)}
 .note{border-left:2px solid var(--bulb);padding:10px 14px;margin:18px 0 0;
@@ -129,7 +133,7 @@ footer a{color:var(--ink-2)}
 
 <footer>
   A buyer's catalogue of six titles or more is split into halves, each half read
-  independently, and any of your titles the two halves rank very differently is
+  separately, and any of your titles the two halves rank very differently is
   withheld rather than reported. Titles appearing in both your slate and a
   describing catalogue are removed and named: Qloo excludes an entity from its
   own results, so they cannot be scored against themselves.
@@ -180,19 +184,22 @@ $('run').onclick=()=>{
     .finally(()=>{$('run').disabled=false});
 };
 
-function rail(items,dim,field){
+function rail(items,dim){
   const r=el('div','rail'+(dim?' dim':''));
   items.forEach(f=>{
     const c=el('div'), box=el('div','poster');
-    const v=f[field];
-    if(typeof v==='number'){
-      box.appendChild(el('div','chip '+(v>=0?'up':'down'),fmt(v)));
-    }
+    // Two numbers, never merged: fit is where the buyer puts it, movement is
+    // how far that is from where your home audience puts it.
+    if(typeof f.fit==='number') box.appendChild(el('div','chip fit',f.fit.toFixed(2)));
+    if(typeof f.shift==='number')
+      box.appendChild(el('div','chip '+(f.shift>=0?'up':'down'),fmt(f.shift)));
     if(f.image){const im=new Image();im.src=f.image;im.alt=f.title;im.loading='lazy';
       im.onerror=()=>{im.remove();box.appendChild(el('div','fb',f.title))};
       box.appendChild(im);}
     else box.appendChild(el('div','fb',f.title));
-    c.appendChild(box); c.appendChild(el('div','cap',f.title)); r.appendChild(c);
+    c.appendChild(box); c.appendChild(el('div','cap',f.title));
+    if(f.note) c.appendChild(el('div','flagnote',f.note));
+    r.appendChild(c);
   });
   return r;
 }
@@ -200,8 +207,6 @@ function rail(items,dim,field){
 function render(d){
   const out=$('out'); out.innerHTML='';
   if(d.error){ out.appendChild(el('p','note err',d.error)); return; }
-  const field=d.mode==='shift'?'shift':'fit';
-
   const bar=el('div','bar');
   const add=(label,val)=>{const s=el('span');s.appendChild(document.createTextNode(label+' '));
     s.appendChild(el('b',null,val));bar.appendChild(s)};
@@ -212,11 +217,11 @@ function render(d){
   out.appendChild(bar);
 
   const good=d.rows.slice(0,6), bad=d.rows.slice(-6).reverse();
-  out.appendChild(el('h2','go',d.mode==='shift'?'Lead with these':'Best fit'));
-  out.appendChild(rail(good,false,field));
+  out.appendChild(el('h2','go','Best fit for this buyer'));
+  out.appendChild(rail(good,false));
   if(d.rows.length>6){
-    out.appendChild(el('h2','no',d.mode==='shift'?'Leave these at home':'Weakest fit'));
-    out.appendChild(rail(bad,true,field));
+    out.appendChild(el('h2','no','Weakest fit'));
+    out.appendChild(rail(bad,true));
   }
 
   if(d.withheld&&d.withheld.length) out.appendChild(el('p','note',

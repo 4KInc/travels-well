@@ -30,7 +30,10 @@ RESOLVED = (json.loads(_RESOLVED_PATH.read_text())
             if _RESOLVED_PATH.exists() else {"movies": {}, "artists": {}})
 
 
-# A title is reported only when two independent anchor sets place it within
+# Disjoint, not independent: the two readings share no anchors, but both come
+# from the same graph, so agreement between them is a consistency check rather
+# than independent corroboration.
+# A title is reported only when two DISJOINT anchor sets place it within
 # this much of each other, measured in rank percentile. At 25 titles one
 # position is about 0.04, so 0.25 is roughly six positions: wide enough that
 # ordinary jitter does not suppress a result, narrow enough that a title the

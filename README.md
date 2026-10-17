@@ -10,15 +10,17 @@ Built for the Qloo Agentic Hackathon. MIT licensed.
 
 ## The finding
 
-Two audiences in the same city agree less than audiences six thousand
-kilometres apart:
+**Location does not move film affinity in Qloo's model.** Pin a catalogue and
+vary `filter.location.query` across New York, Sao Paulo, Tokyo, Mumbai and
+Berlin and the scores come back identical to four decimals. What *does* move
+film taste is what an audience listens to and watches.
 
-```
-New York downtown  <->  Berlin techno       0.78
-New York downtown  <->  New York hip-hop    0.26
-```
+So city is the wrong unit, and the API itself shows it. Two sets of musicians
+both from New York, anchored on different scenes, rank the same catalogue at
+0.26 -- while one of them agrees with a Berlin set at 0.78. Geography never
+entered the computation; scene did.
 
-So the agent stops assuming who an audience is and discovers it instead. The
+The agent therefore stops assuming who an audience is and discovers it instead. The
 groups that come out are smaller and stranger than marketing segments --
 Racionais MC's with Snowfall and The Sopranos; Ben Klock with Fela Kuti,
 Journey and Breath of the Wild.
@@ -101,7 +103,7 @@ run_all.py              the verification harness (see docs/HARNESS.md)
 
 Qloo knows brands, not products: films, artists, places, brands, books, shows,
 podcasts and games, not arbitrary retail SKUs. Fifteen of the eighteen
-clusters have too few members to split into halves that independently agree
+clusters have too few members to split into halves that agree with each other
 and are labelled single-reading rather than implying a check that did not
 happen. The external backtest agrees in Mumbai (tau 0.39) and Berlin (0.20)
 and not elsewhere; reported either way, with the reasons.

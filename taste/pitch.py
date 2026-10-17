@@ -134,6 +134,12 @@ def run(client, slate_titles, buyer_titles, home_titles=None,
                 trace, "home")
             withheld = list(set(withheld) | set(home_withheld))
 
+    # FIT and SHIFT answer different questions and can disagree sharply. In
+    # the worked example Parasite sits 9th of 12 for the buyer yet 5th by
+    # movement, because it also ranks low at home and so has no drop to
+    # register. Sorting by movement would put a title the buyer barely wants
+    # above one they want more. So fit is what orders the shortlist; movement
+    # is reported beside it as the surprise, never as the ranking.
     rows, uncomparable = [], []
     for eid, rank in buyer_ranks.items():
         if eid in withheld or eid not in by_id:
@@ -143,17 +149,37 @@ def run(client, slate_titles, buyer_titles, home_titles=None,
         if home_ranks:
             if eid in home_ranks:
                 row["shift"] = round(rank - home_ranks[eid], 3)
+                row["home_fit"] = round(home_ranks[eid], 3)
             else:
                 # Scored for the buyer but not for home: no movement can be
                 # computed, and reporting it as zero would be a lie.
                 uncomparable.append(row)
                 continue
         rows.append(row)
-    key = "shift" if home_ranks else "fit"
-    rows.sort(key=lambda r: -r[key])
+    rows.sort(key=lambda r: -r["fit"])          # fit orders the shortlist
+
+    # Flag the two ways fit and movement part company, so neither is read as
+    # the other.
+    if home_ranks and len(rows) >= 4:
+        by_fit = {r["title"]: i for i, r in enumerate(rows)}
+        by_shift = {r["title"]: i for i, r in
+                    enumerate(sorted(rows, key=lambda r: -r.get("shift", 0)))}
+        for r in rows:
+            gap = by_shift[r["title"]] - by_fit[r["title"]]
+            if gap <= -4:
+                r["note"] = "moves up a lot, but the buyer still ranks it low"
+            elif gap >= 4:
+                r["note"] = "strong fit even though it does well at home too"
 
     return {
         "mode": "shift" if home_ranks else "fit",
+        "ordered_by": "fit",
+        "metric_note": (
+            "FIT is where the buyer ranks a title among the ones you offered, "
+            "0 lowest to 1 highest. MOVEMENT is that position minus its "
+            "position with your home audience. The shortlist is ordered by "
+            "fit, because a title that merely improves is not the same as one "
+            "the buyer wants."),
         "rows": rows,
         "withheld": [by_id[e]["name"] for e in withheld if e in by_id],
         "uncomparable": uncomparable,

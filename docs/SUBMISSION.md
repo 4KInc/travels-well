@@ -20,9 +20,15 @@ decision a film sales agent makes forty times at a market: which five titles
 to put in front of this buyer.**
 
 Everyone building on a taste graph starts by assuming they know who the
-audience is — a city, a country, a genre. We tested that assumption and it
-failed. So the agent discovers audiences instead, and the answer is stranger
-than a map of the world.
+audience is — a city, a country, a genre. We tested that assumption against
+the API before building on it, and it failed outright: **location does not
+move film affinity at all.** Pin a catalogue and vary
+`filter.location.query` across five cities and the scores are identical to
+four decimals.
+
+What does move film taste is what an audience listens to and watches. So the
+agent stops assuming who an audience is and discovers it by clustering the
+graph — and the groups that come out are not places.
 
 ### Three surfaces, one engine
 
@@ -93,24 +99,33 @@ would have killed the project for an artificial reason.
 
 ### The finding
 
-Two audiences in the same city agree less than audiences six thousand
-kilometres apart. New York downtown and Berlin techno rank the same films at
-0.78; New York downtown and New York hip-hop at 0.26.
+City is the wrong unit, and we can show it two ways. Directly: location is
+inert in the model, measured above. And by construction: two anchor sets of
+musicians who are all from New York, drawn from different scenes, rank the
+same catalogue at 0.26 — while one of them agrees with a set of Berlin
+artists at 0.78. Geography never entered the computation. Scene did.
 
 Clustering confirms it. The groups the graph produces are smaller and stranger
 than marketing segments: Racionais MC's with Snowfall and The Sopranos; Ben
 Klock with Fela Kuti, Journey and Breath of the Wild. No city, no genre, no
 postcode.
 
-Validation: 11 of 11 regionally-skewed films rank highest with their own home
-audience (one-sided binomial p = 0.0005), and 10 of 11 survive replacing every
-anchor artist with a different one. Cluster membership was bootstrapped over
-resamples of the film set: 67% of within-cluster pairings survive at the
-threshold we ship, and we report the thresholds where it does not hold.
+Validity check: 11 of 11 regionally-skewed films rank highest with their own
+home audience (one-sided binomial, null p = 0.5 per film, p = 0.0005). This
+confirms the pipeline carries real signal rather than noise — it is not itself
+a discovery, since Indian musicians favouring Indian films is what a working
+system should do. Three assumptions belong beside that number: **we chose**
+which films count as regionally skewed and which anchors represent each home,
+so selection is ours; the eleven cases are **not fully independent**, because
+films sharing an audience move together; and both readings come from the same
+graph, so a second anchor set is a **disjoint** check, not independent
+corroboration. The result with weight is that **10 of 11 survive replacing
+every anchor artist with a different one** (p = 0.0059): the effect belongs to
+the audience, not to the three names we picked.
 
 ### Where it refuses, and why that is the point
 
-A market whose two independent readings disagree about a title withholds that
+A market whose two disjoint readings disagree about a title withholds that
 title. A market too thinly covered abstains. A home audience whose own two
 readings agree at only 0.13 — Springsteen, Beyoncé and Taylor Swift are three
 audiences wearing one city's name — cannot anchor a comparison, so the agent
@@ -122,7 +137,7 @@ answers is not trustworthy.
 Qloo knows brands, not products: this works for films, artists, places,
 brands, books, shows, podcasts and games, not arbitrary retail SKUs. Fifteen
 of the eighteen clusters have too few members to split into halves that
-independently agree, and are labelled single-reading rather than implying a
+agree with each other, and are labelled single-reading rather than implying a
 check that did not happen. An external backtest against Wikipedia pageview
 ranks, collected before any Qloo call, agrees in Mumbai (tau 0.39) and Berlin
 (0.20) and not elsewhere; we report it either way, with the reasons the two
