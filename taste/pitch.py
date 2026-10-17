@@ -171,7 +171,7 @@ def profile(client, slate_ids, catalogue_ids, entity_type, trace=None,
 
 
 def run(client, slate_titles, buyer_titles, home_titles=None,
-        entity_type="urn:entity:movie", trace=None):
+        entity_type="urn:entity:movie", trace=None, with_llm=False):
     steps = []
     slate, slate_missing = resolve_titles(client, slate_titles, entity_type, trace)
     steps.append({"action": "resolve", "profile": "setup",
@@ -250,6 +250,23 @@ def run(client, slate_titles, buyer_titles, home_titles=None,
                 uncomparable.append(row)
                 continue
         rows.append(row)
+    # The same question put to a model with no taste graph. Divergence is the
+    # finding; which one is right is not something we can show.
+    llm_block = None
+    if with_llm:
+        from taste import llm_baseline
+        llm_block = llm_baseline.rank(
+            [by_id[e]["name"] for e in buyer_ranks if e in by_id],
+            [b["name"] for b in buyer],
+            {by_id[e]["name"]: v for e, v in buyer_ranks.items() if e in by_id})
+        if llm_block and llm_block.get("available"):
+            steps.append({"action": "ablate", "profile": "result",
+                          "reason": "ask the same question of a model with no "
+                                    "access to the taste graph, so the difference "
+                                    "Qloo makes is shown rather than claimed",
+                          "observed": "agreement with the grounded ranking: %s"
+                                      % llm_block.get("agreement")})
+
     rows.sort(key=lambda r: -r["fit"])          # fit orders the shortlist
     steps.append({"action": "rank", "profile": "result",
                   "reason": "order by fit, not by movement: a title that merely "
@@ -292,4 +309,5 @@ def run(client, slate_titles, buyer_titles, home_titles=None,
                                   if home_agreement is not None else None)},
         "slate": {"resolved": len(slate), "missing": slate_missing},
         "steps": steps,
+        "llm": llm_block,
     }
