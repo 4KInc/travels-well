@@ -13,12 +13,35 @@ REGION="${REGION:-asia-south1}"
 SERVICE="${SERVICE:-travels-well}"
 : "${QLOO_API_KEY:?QLOO_API_KEY must be set in the deploying shell}"
 
+# A user session expires every few hours and did so three times during
+# development, each time printing success-shaped output while shipping
+# nothing. With the key present, deploys stop depending on anyone being
+# logged in -- which matters because judging runs 2-16 November.
+KEY="$(dirname "$0")/.deploy-key.json"
+PREV_ACCOUNT="$(gcloud config get-value account 2>/dev/null || true)"
+restore_account() {
+  # Leave the shell as we found it: activating a service account switches the
+  # active gcloud account for everything that follows, which is a trap.
+  if [ -n "${PREV_ACCOUNT:-}" ] && [ "$PREV_ACCOUNT" != "(unset)" ]; then
+    gcloud config set account "$PREV_ACCOUNT" --quiet >/dev/null 2>&1 || true
+  fi
+}
+if [ -f "$KEY" ]; then
+  echo "using the deploy service account"
+  gcloud auth activate-service-account --key-file="$KEY" --quiet >/dev/null
+  trap restore_account EXIT
+fi
+
 DEFAULT_PROJECT="$(gcloud config get-value project 2>/dev/null || true)"
 if [ "$DEFAULT_PROJECT" != "$GOOGLE_CLOUD_PROJECT" ]; then
   echo "note: gcloud default is '$DEFAULT_PROJECT', deploying to '$GOOGLE_CLOUD_PROJECT'"
 fi
 
 echo "deploying $SERVICE to $GOOGLE_CLOUD_PROJECT / $REGION"
+# Verify afterwards that the revision actually changed: a failed deploy can
+# still print reassuring output.
+BEFORE="$(gcloud run services describe "$SERVICE" --project "$GOOGLE_CLOUD_PROJECT" \
+          --region "$REGION" --format='value(status.latestReadyRevisionName)' 2>/dev/null || echo none)"
 gcloud run deploy "$SERVICE" \
   --project "$GOOGLE_CLOUD_PROJECT" \
   --region "$REGION" \
@@ -28,14 +51,23 @@ gcloud run deploy "$SERVICE" \
   --cpu 1 \
   --concurrency 40 \
   --max-instances 3 \
+  --min-instances "${MIN_INSTANCES:-0}" \
   --timeout 120 \
   --set-env-vars "QLOO_API_KEY=${QLOO_API_KEY},QLOO_BASE=${QLOO_BASE:-https://hackathon.api.qloo.com}"
 
-# Cloud Run reports two hostnames for a service; the project-number form is
-# the one that resolves, so prefer it and fall back to the described URL.
-URL="https://${SERVICE}-$(gcloud projects describe "$GOOGLE_CLOUD_PROJECT" \
-      --format='value(projectNumber)').${REGION}.run.app"
+# Take the URL from the service itself. Deriving it from the project number
+# needed `gcloud projects describe`, which calls an API the deploy service
+# account cannot reach -- so every deploy succeeded and then reported failure.
+URL="$(gcloud run services describe "$SERVICE" --project "$GOOGLE_CLOUD_PROJECT" \
+       --region "$REGION" --format='value(status.url)')"
 echo
+AFTER="$(gcloud run services describe "$SERVICE" --project "$GOOGLE_CLOUD_PROJECT" \
+         --region "$REGION" --format='value(status.latestReadyRevisionName)' 2>/dev/null || echo none)"
+if [ "$BEFORE" = "$AFTER" ]; then
+  echo "WARNING: revision did not change ($AFTER). Nothing was deployed."
+  exit 1
+fi
+echo "revision $BEFORE -> $AFTER"
 echo "live at: $URL"
 echo "checking it answers cold..."
 curl -fsS "$URL/status" && echo

@@ -1,3 +1,4 @@
+.deploy-key.json
 .env
 # Everything the API produced stays out of git: the data-publishing rule is
 # unresolved (one entrant reports organisers disallow Qloo responses in a
