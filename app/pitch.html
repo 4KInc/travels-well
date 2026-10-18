@@ -65,6 +65,13 @@ h2.go{color:var(--pos)} h2.no{color:var(--neg)}
 .rowdef{font:400 12.5px/1.6 var(--sans);color:var(--ink-2);margin:10px 0 0;max-width:78ch}
 .rowdef b{color:var(--ink);font-weight:500}
 .flagnote{font:400 11px/1.4 var(--mono);color:var(--bulb);margin-top:5px}
+.aff{font:400 10.5px/1.4 var(--mono);color:var(--ink-3);margin-top:2px}
+.chip.fit{font-size:10px;letter-spacing:.04em}
+.warn{border-left:2px solid var(--neg);padding:11px 14px;margin:14px 0 0;
+  color:var(--ink);font-size:13.5px;max-width:78ch;background:rgba(230,103,103,.06)}
+.absbar{display:flex;gap:16px;flex-wrap:wrap;align-items:baseline;margin:10px 0 0;
+  font:400 11.5px/1.6 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.absbar b{color:var(--ink)}
 /* ---------- ablation ---------- */
 .ablate{margin:26px 0 0;border:1px solid var(--rule);border-radius:3px;padding:16px 18px;
   background:linear-gradient(180deg,rgba(57,135,229,.05),transparent)}
@@ -141,9 +148,10 @@ footer a{color:var(--ink-2)}
 
 <nav class="topnav">
     <span class="mark">Taste <b>Atlas</b></span>
-    <a href="/">The map</a>
-    <a href="/pitch" aria-current="page">Pitch desk</a>
+    <a href="/atlas">The map</a>
+    <a href="/" aria-current="page">Pitch desk</a>
     <a href="/slate">Slate view</a>
+    <a href="/evidence">Evidence</a>
     <span class="spacer"></span>
     <a href="https://github.com/4KInc/travels-well">Source</a>
 </nav>
@@ -244,7 +252,7 @@ function rail(items,dim){
     const c=el('div'), box=el('div','poster');
     // Two numbers, never merged: fit is where the buyer puts it, movement is
     // how far that is from where your home audience puts it.
-    if(typeof f.fit==='number') box.appendChild(el('div','chip fit',f.fit.toFixed(2)));
+    if(f.place) box.appendChild(el('div','chip fit',f.place));
     if(typeof f.shift==='number')
       box.appendChild(el('div','chip '+(f.shift>=0?'up':'down'),fmt(f.shift)));
     if(f.image){const im=new Image();im.src=f.image;im.alt=f.title;im.loading='lazy';
@@ -252,6 +260,8 @@ function rail(items,dim){
       box.appendChild(im);}
     else box.appendChild(el('div','fb',f.title));
     c.appendChild(box); c.appendChild(el('div','cap',f.title));
+    if(typeof f.affinity==='number')
+      c.appendChild(el('div','aff','affinity '+f.affinity.toFixed(3)));
     if(f.note) c.appendChild(el('div','flagnote',f.note));
     r.appendChild(c);
   });

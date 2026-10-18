@@ -170,12 +170,15 @@ class Handler(BaseHTTPRequestHandler):
         if route.path in ("/slate", "/index.html", "/travels"):
             page = page_html().replace("__PRESETS__", json.dumps(PRESETS))
             return self._send(200, page, "text/html; charset=utf-8")
-        if route.path in ("/pitch", "/pitch.html"):
+        # The front door is the decision, with its answer already on screen.
+        # The map explains why the answer differs and is one click away.
+        if route.path in ("/", "/pitch", "/pitch.html"):
             return self._send(200, (HERE / "pitch.html").read_text(),
                               "text/html; charset=utf-8")
-        # The atlas is the front door: it is the surface that explains the
-        # whole project in one screen. Travels Well moved to /slate.
-        if route.path in ("/", "/atlas", "/atlas.html"):
+        if route.path in ("/evidence", "/evidence.html"):
+            return self._send(200, (HERE / "evidence.html").read_text(),
+                              "text/html; charset=utf-8")
+        if route.path in ("/atlas", "/atlas.html", "/map"):
             return self._send(200, (HERE / "atlas.html").read_text(),
                               "text/html; charset=utf-8")
         return self._send(404, json.dumps({"error": "not found"}))
@@ -184,11 +187,12 @@ class Handler(BaseHTTPRequestHandler):
         route = urlparse(self.path)
         if route.path != "/api/pitch":
             return self._send(404, json.dumps({"error": "not found"}))
-        allowed, reason = BUDGET.allow_live(self.client_ip())
+        allowed, reason = BUDGET.allow_pitch(self.client_ip())
         if not allowed:
             return self._send(429, json.dumps({"error":
-                "Rate limit reached (%s). This is a shared demo key; try again "
-                "shortly, or explore the precomputed Atlas, which costs nothing."
+                "Rate limit reached (%s). This is a shared hackathon key and "
+                "judging runs to 16 November, so custom runs are capped. The "
+                "worked example and the Atlas still work and cost nothing."
                 % reason}))
         try:
             length = int(self.headers.get("Content-Length") or 0)
@@ -222,7 +226,7 @@ class Handler(BaseHTTPRequestHandler):
                                payload.get("home") or None,
                                trace=trace, with_llm=bool(payload.get("llm")),
                                with_invariance=bool(payload.get("invariance")))
-            BUDGET.record_live(self.client_ip(), client.quota_remaining)
+            BUDGET.record_pitch(self.client_ip(), client.quota_remaining)
             result["calls"] = trace.summary()["calls"]
             result["source"] = "LIVE"
             return self._send(200, json.dumps(result, default=str))

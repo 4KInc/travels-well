@@ -4,6 +4,8 @@
 geography, and used to rank a film slate for any buyer you can describe.**
 
 Live: https://travels-well-722527905604.us-central1.run.app
+(the repository and URL keep the name `travels-well`, an earlier name for the
+project; the product is the Taste Atlas)
 Built for the Qloo Agentic Hackathon. MIT licensed.
 
 ---

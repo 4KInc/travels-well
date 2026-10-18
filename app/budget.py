@@ -18,13 +18,15 @@ import time
 # recorded run, so the demo degrades rather than dying.
 LIVE_CALLS_PER_IP_PER_HOUR = 20
 LIVE_CALLS_GLOBAL_PER_HOUR = 200
-QUOTA_FLOOR = 500          # stop live calls entirely below this many remaining
+QUOTA_FLOOR = 1500         # stop live calls entirely below this many remaining
+PITCH_PER_IP_PER_HOUR = 6  # a custom pitch costs ~40 calls; the URL is public
 
 
 class Budget:
     def __init__(self):
         self._lock = threading.Lock()
         self._per_ip = {}
+        self._pitch_per_ip = {}
         self._global = []
         self.quota_remaining = None
         self.live_calls = 0
@@ -32,6 +34,25 @@ class Budget:
 
     def _prune(self, stamps, now):
         return [t for t in stamps if now - t < 3600]
+
+    def allow_pitch(self, ip):
+        """A pitch is six times the cost of a preset, and the demo URL sits in
+        a public repository. Judging runs to 16 November, so one visitor must
+        not be able to drain the month."""
+        now = time.time()
+        with self._lock:
+            if self.quota_remaining is not None and self.quota_remaining < QUOTA_FLOOR:
+                return False, "quota_floor"
+            mine = self._prune(self._pitch_per_ip.get(ip, []), now)
+            self._pitch_per_ip[ip] = mine
+            if len(mine) >= PITCH_PER_IP_PER_HOUR:
+                return False, "pitch_per_ip_cap"
+        return self.allow_live(ip)
+
+    def record_pitch(self, ip, quota_remaining=None):
+        with self._lock:
+            self._pitch_per_ip.setdefault(ip, []).append(time.time())
+        self.record_live(ip, quota_remaining)
 
     def allow_live(self, ip):
         """Returns (allowed, reason). A refusal is a routing decision, not an
@@ -65,5 +86,6 @@ class Budget:
     def snapshot(self):
         with self._lock:
             return {"quota_remaining": self.quota_remaining,
+                    "quota_floor": QUOTA_FLOOR,
                     "live_calls": self.live_calls,
                     "served_cached": self.served_cached}

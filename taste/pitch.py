@@ -87,6 +87,8 @@ def profile(client, slate_ids, catalogue_ids, entity_type, trace=None,
     half, and a split whose halves disagree is re-split a different way and
     the better-agreeing one kept. Both are recorded with what was observed.
     """
+    flat_warning = [False]
+
     def step(action, reason, observed=None, changed=None):
         if log is not None:
             # Tagged, because the same sequence runs for the buyer and again
@@ -99,7 +101,8 @@ def profile(client, slate_ids, catalogue_ids, entity_type, trace=None,
         raise PitchError("Qloo returned no affinities for that combination")
     spread = _spread(whole)
     step("probe", "score your slate against everything the buyer holds",
-         "%d titles scored, affinity spread %.3f" % (len(whole), spread))
+         "%d titles scored, affinity spread %.3f (floor %.2f)"
+         % (len(whole), spread, FLAT_SPREAD))
 
     if spread < FLAT_SPREAD and len(catalogue_ids) >= SPLIT_MIN:
         # The catalogue as a whole separates nothing. Re-probe against the
@@ -118,14 +121,17 @@ def profile(client, slate_ids, catalogue_ids, entity_type, trace=None,
         else:
             step("re-probe", "tried the halves separately; neither sharpened "
                  "the reading, so the original stands",
-                 "spread stayed near %.3f" % spread)
+                 "spread stayed near %.3f" % spread,
+                 "ranking continues, but marked low-separation: this buyer's "
+                 "catalogue barely distinguishes your titles from one another")
+            flat_warning[0] = True
 
     if len(catalogue_ids) < SPLIT_MIN:
         step("no cross-check",
              "a catalogue under %d titles cannot be halved into two readings "
              "that can disagree" % SPLIT_MIN,
              "%d titles supplied" % len(catalogue_ids))
-        return rank_percentiles(whole), [], None
+        return rank_percentiles(whole), [], None, flat_warning[0]
 
     def split_eval(a, b, label):
         ra = _score(client, slate_ids, a, entity_type, trace, tag + ":" + label + " A")
@@ -137,7 +143,7 @@ def profile(client, slate_ids, catalogue_ids, entity_type, trace=None,
 
     first = split_eval(catalogue_ids[0::2], catalogue_ids[1::2], "alternating")
     if first is None:
-        return rank_percentiles(whole), [], None
+        return rank_percentiles(whole), [], None, flat_warning[0]
     pa, pb, agreement = first
     step("cross-check", "split the catalogue in two and read each half, so a "
          "title the halves disagree about can be withheld",
@@ -167,7 +173,7 @@ def profile(client, slate_ids, catalogue_ids, entity_type, trace=None,
         step("withhold", "the two halves placed these titles far apart, so no "
              "verdict is offered on them", "%d of %d titles withheld"
              % (len(withheld), len(shared)))
-    return rank_percentiles(whole), withheld, agreement
+    return rank_percentiles(whole), withheld, agreement, flat_warning[0]
 
 
 def run(client, slate_titles, buyer_titles, home_titles=None,
@@ -216,7 +222,9 @@ def run(client, slate_titles, buyer_titles, home_titles=None,
                                 "title that also describes the buyer cannot be scored "
                                 "against itself and would vanish silently",
                       "observed": "removed " + ", ".join(overlap)})
-    buyer_ranks, withheld, buyer_agreement = profile(
+    buyer_affinity = _score(client, slate_ids, [b["id"] for b in buyer],
+                            entity_type, trace, "buyer:absolute")
+    buyer_ranks, withheld, buyer_agreement, buyer_flat = profile(
         client, slate_ids, [b["id"] for b in buyer], entity_type, trace, "buyer",
         log=steps)
 
@@ -224,7 +232,7 @@ def run(client, slate_titles, buyer_titles, home_titles=None,
     if home_titles:
         home = home_pre
         if len(home) >= MIN_BUYER:
-            home_ranks, home_withheld, home_agreement = profile(
+            home_ranks, home_withheld, home_agreement, _ = profile(
                 client, slate_ids, [h["id"] for h in home], entity_type,
                 trace, "home", log=steps)
             withheld = list(set(withheld) | set(home_withheld))
@@ -240,7 +248,10 @@ def run(client, slate_titles, buyer_titles, home_titles=None,
         if eid in withheld or eid not in by_id:
             continue
         row = {"title": by_id[eid]["name"], "image": by_id[eid]["image"],
-               "fit": round(rank, 3)}
+               "fit": round(rank, 3),
+               "place": None,              # filled in after sorting
+               "affinity": round(buyer_affinity.get(eid), 4)
+                           if buyer_affinity.get(eid) is not None else None}
         if home_ranks:
             if eid in home_ranks:
                 row["shift"] = round(rank - home_ranks[eid], 3)
@@ -288,7 +299,25 @@ def run(client, slate_titles, buyer_titles, home_titles=None,
                           "observed": "%d of %d titles rank the same wherever "
                                       "you ask" % (len(flat), len(invariance["rows"]))})
 
-    rows.sort(key=lambda r: -r["fit"])          # fit orders the shortlist
+    rows.sort(key=lambda r: -r["fit"])          # rank position orders the list
+    for i, r in enumerate(rows, 1):
+        r["place"] = "%d of %d" % (i, len(rows))
+
+    # An absolute reading, because rank alone cannot say "this whole slate is
+    # weak for this buyer": the top title is 1.00 even when nothing fits.
+    affs = [r["affinity"] for r in rows if r.get("affinity") is not None]
+    absolute = None
+    if affs:
+        best, worst = max(affs), min(affs)
+        mean = sum(affs) / len(affs)
+        absolute = {"best": round(best, 3), "worst": round(worst, 3),
+                    "mean": round(mean, 3), "span": round(best - worst, 3)}
+        steps.append({"action": "absolute check", "profile": "result",
+                      "reason": "rank position cannot say whether the slate as "
+                                "a whole suits this buyer, so the raw affinities "
+                                "are reported alongside it",
+                      "observed": "affinity %.3f to %.3f, mean %.3f"
+                                  % (worst, best, mean)})
     steps.append({"action": "rank", "profile": "result",
                   "reason": "order by fit, not by movement: a title that merely "
                             "improves against home is not the same as one the buyer wants",
@@ -311,16 +340,19 @@ def run(client, slate_titles, buyer_titles, home_titles=None,
     return {
         "mode": "shift" if home_ranks else "fit",
         "ordered_by": "fit",
+        "absolute": absolute,
         "metric_note": (
-            "FIT is where the buyer ranks a title among the ones you offered, "
-            "0 lowest to 1 highest. MOVEMENT is that position minus its "
-            "position with your home audience. The shortlist is ordered by "
-            "fit, because a title that merely improves is not the same as one "
-            "the buyer wants."),
+            "RANK is a title's place among the ones you offered, not a score: "
+            "the top title reads 1.00 even if this buyer is lukewarm about "
+            "your whole slate, and the bottom reads 0.00 only because "
+            "something has to be last. MOVEMENT is that place minus its place "
+            "with your home audience. The raw affinities are shown separately "
+            "so the slate can be judged as a whole."),
         "rows": rows,
         "withheld": [by_id[e]["name"] for e in withheld if e in by_id],
         "uncomparable": uncomparable,
         "excluded_overlap": overlap,
+        "low_separation": buyer_flat,
         "buyer": {"resolved": [b["name"] for b in buyer],
                   "missing": buyer_missing,
                   "halves_agree": (round(buyer_agreement, 3)
