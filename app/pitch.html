@@ -82,6 +82,20 @@ h2.go{color:var(--pos)} h2.no{color:var(--neg)}
 .cmp .l{color:var(--neg);font-family:var(--mono);font-size:12.5px}
 .ablate .caveat{font-size:12.5px;color:var(--ink-3);margin:12px 0 0;max-width:78ch;line-height:1.6}
 
+/* ---------- invariance ---------- */
+.inv{margin:22px 0 0;border:1px solid var(--rule);border-radius:3px;padding:16px 18px}
+.inv h3{font:400 22px/1 var(--display);letter-spacing:.03em;text-transform:uppercase;margin:0 0 4px}
+.inv .hint{font:400 12.5px/1.6 var(--sans);color:var(--ink-3);margin:0 0 12px;max-width:78ch}
+.inv .verdict{font:400 13.5px/1.6 var(--sans);color:var(--ink);margin:0 0 12px;max-width:78ch}
+.spread{display:grid;grid-template-columns:minmax(92px,1fr) 1fr 48px;gap:12px;
+  align-items:center;padding:3px 0;font-size:13px}
+.spread+.spread{border-top:1px solid color-mix(in oklab,var(--rule) 60%,transparent)}
+.spread .track{position:relative;height:9px;background:var(--seat-2);border-radius:2px}
+.spread .fill{position:absolute;top:0;bottom:0;border-radius:2px;background:var(--pos)}
+.spread .fill.flat{background:var(--ink-3)}
+.spread .num{text-align:right;font:400 12px/1 var(--mono);color:var(--ink-3)}
+.spread .nm{color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
 /* ---------- agent trace ---------- */
 .trace{margin:26px 0 0;border-top:1px solid var(--rule);padding-top:18px}
 .trace h3{font:400 22px/1 var(--display);letter-spacing:.03em;text-transform:uppercase;
@@ -129,7 +143,7 @@ footer a{color:var(--ink-2)}
     <span class="mark">Taste <b>Atlas</b></span>
     <a href="/">The map</a>
     <a href="/pitch" aria-current="page">Pitch desk</a>
-    <a href="/slate">Travels well</a>
+    <a href="/slate">Slate view</a>
     <span class="spacer"></span>
     <a href="https://github.com/4KInc/travels-well">Source</a>
 </nav>
@@ -174,7 +188,7 @@ footer a{color:var(--ink-2)}
   withheld rather than reported. Titles appearing in both your slate and a
   describing catalogue are removed and named: Qloo excludes an entity from its
   own results, so they cannot be scored against themselves.
-  <br><a href="/">The Taste Atlas</a> &middot; <a href="/slate">Travels Well</a>
+  <br><a href="/">The Taste Atlas</a> &middot; <a href="/slate">Slate view</a>
   &middot; <a href="https://github.com/4KInc/travels-well">Source and method</a>
 </footer>
 </div>
@@ -242,6 +256,39 @@ function rail(items,dim){
     r.appendChild(c);
   });
   return r;
+}
+
+function invariance(iv){
+  const w=el('div','inv');
+  w.appendChild(el('h3',null,'Does the buyer actually decide this?'));
+  if(!iv.available){ w.appendChild(el('p','hint',iv.note||'')); return w; }
+  w.appendChild(el('p','hint','Each title was also scored against '
+    +iv.audiences.length+' deliberately unalike reference audiences \u2014 '
+    +iv.audiences.join(', ')+'. A title that sits in the same place for all of '
+    +'them is not evidence of fit with your buyer; it is this slate\u2019s '
+    +'version of popularity.'));
+  const flagged=iv.rows.filter(r=>r.invariant);
+  const v=el('p','verdict');
+  v.textContent = flagged.length
+    ? flagged.length+' title(s) rank the same wherever you ask and are marked: '
+      +flagged.map(r=>r.title).join(', ')+'. Treat their place in the shortlist with caution.'
+    : 'None of these titles is buyer-invariant \u2014 every one of them moves '
+      +'with who is asking, the smallest range being '
+      +iv.rows[0].spread.toFixed(2)+' against a '+iv.threshold.toFixed(2)
+      +' threshold. That is a property of this slate, not a guarantee: the '
+      +'check does fire on others.';
+  w.appendChild(v);
+  iv.rows.forEach(r=>{
+    const row=el('div','spread');
+    row.appendChild(el('div','nm',r.title));
+    const t=el('div','track'), f=el('div','fill'+(r.invariant?' flat':''));
+    f.style.left=Math.round(100*Math.max(0,r.mean_rank-r.spread/2))+'%';
+    f.style.width=Math.max(2,Math.round(100*r.spread))+'%';
+    t.appendChild(f); row.appendChild(t);
+    row.appendChild(el('div','num',r.spread.toFixed(2)));
+    w.appendChild(row);
+  });
+  return w;
 }
 
 function ablation(l){
@@ -341,6 +388,7 @@ function render(d){
     d.excluded_overlap.join(', ')+'.'));
   if(d.slate.missing&&d.slate.missing.length) out.appendChild(el('p','note',
     'Not found in the graph: '+d.slate.missing.join(', ')+'.'));
+  if(d.invariance) out.appendChild(invariance(d.invariance));
   if(d.llm) out.appendChild(ablation(d.llm));
   if(d.steps&&d.steps.length) out.appendChild(trace(d.steps,d.calls));
   if(d.buyer.halves_agree!=null&&d.buyer.halves_agree<0.5) out.appendChild(el('p','note',

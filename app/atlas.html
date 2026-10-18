@@ -73,7 +73,7 @@ svg.panning{cursor:grabbing}
 .maplegend{position:absolute;left:12px;bottom:10px;display:flex;gap:14px;flex-wrap:wrap;
   font:400 10px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
 .maplegend i{width:9px;height:9px;border-radius:50%;display:inline-block;
-  margin-right:5px;vertical-align:-1px}
+  margin-right:5px;vertical-align:-1px;box-sizing:border-box}
 .hint{font:400 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
   color:var(--ink-3);text-align:center;margin:12px 0 0}
 .panel{margin-top:26px;border-top:1px solid var(--rule);padding-top:22px}
@@ -122,7 +122,7 @@ footer a{color:var(--ink-2)}
     <span class="mark">Taste <b>Atlas</b></span>
     <a href="/" aria-current="page">The map</a>
     <a href="/pitch">Pitch desk</a>
-    <a href="/slate">Travels well</a>
+    <a href="/slate">Slate view</a>
     <span class="spacer"></span>
     <a href="https://github.com/4KInc/travels-well">Source</a>
 </nav>
@@ -158,6 +158,7 @@ footer a{color:var(--ink-2)}
     <span><i style="background:#e8b84b"></i>television</span>
     <span><i style="background:#39c08a"></i>games</span>
     <span><i style="background:#b98ae0"></i>mixed</span>
+    <span><i style="background:transparent;border:1.5px dashed #6f6b64"></i>single reading</span>
   </div>
 </div>
 <p class="hint" style="text-transform:none;letter-spacing:0;font-size:12.5px;
@@ -178,7 +179,7 @@ footer a{color:var(--ink-2)}
   people, and anchors that joined no cluster are left off the map rather than
   forced into one. The map is precomputed, so opening it spends no Qloo calls.
   <br><a href="/pitch">Pitch Desk &mdash; bring your own slate and buyer</a>
-  &middot; <a href="/slate">Travels Well</a> &middot;
+  &middot; <a href="/slate">Slate view</a> &middot;
   <a href="https://github.com/4KInc/travels-well">Source and method</a>
 </footer>
 </div>
@@ -270,6 +271,9 @@ function draw(d){
       fill:(n.loves||[]).some(f=>f.image)?'url(#pat-'+n.id+')':'#1c1c23'});
     const veil=svgEl('circle',{cx:n.px,cy:n.py,r:n.r,class:'veil'});
     const ring=svgEl('circle',{cx:n.px,cy:n.py,r:n.r,class:'ring',stroke:colour});
+    // A cluster too small to split into halves that can disagree has never
+    // been cross-checked. Say so on the map, not only in the limitations.
+    if(n.halves_agree==null) ring.setAttribute('stroke-dasharray','4 3');
     g.appendChild(disc); g.appendChild(veil); g.appendChild(ring);
 
     // Two tags on the map, three in the panel: the third rarely adds meaning

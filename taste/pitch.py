@@ -171,7 +171,8 @@ def profile(client, slate_ids, catalogue_ids, entity_type, trace=None,
 
 
 def run(client, slate_titles, buyer_titles, home_titles=None,
-        entity_type="urn:entity:movie", trace=None, with_llm=False):
+        entity_type="urn:entity:movie", trace=None, with_llm=False,
+        with_invariance=False):
     steps = []
     slate, slate_missing = resolve_titles(client, slate_titles, entity_type, trace)
     steps.append({"action": "resolve", "profile": "setup",
@@ -267,6 +268,26 @@ def run(client, slate_titles, buyer_titles, home_titles=None,
                           "observed": "agreement with the grounded ranking: %s"
                                       % llm_block.get("agreement")})
 
+    # Does this title's rank depend on who is asking, or not at all?
+    invariance = None
+    if with_invariance:
+        from taste import invariance as inv
+        invariance = inv.check(
+            client, slate_ids, by_id, entity_type,
+            lambda ids, sig, label: _score(client, ids, sig, entity_type, trace, label),
+            trace)
+        if invariance.get("available"):
+            flat = set(invariance["invariant"])
+            for r in rows:
+                if r["title"] in flat:
+                    r["invariant"] = True
+            steps.append({"action": "invariance", "profile": "result",
+                          "reason": "check each title against four unalike "
+                                    "reference audiences, so a title that ranks "
+                                    "the same for everyone is not mistaken for fit",
+                          "observed": "%d of %d titles rank the same wherever "
+                                      "you ask" % (len(flat), len(invariance["rows"]))})
+
     rows.sort(key=lambda r: -r["fit"])          # fit orders the shortlist
     steps.append({"action": "rank", "profile": "result",
                   "reason": "order by fit, not by movement: a title that merely "
@@ -310,4 +331,5 @@ def run(client, slate_titles, buyer_titles, home_titles=None,
         "slate": {"resolved": len(slate), "missing": slate_missing},
         "steps": steps,
         "llm": llm_block,
+        "invariance": invariance,
     }

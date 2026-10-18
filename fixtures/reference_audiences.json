@@ -1,0 +1,9 @@
+{
+  "note": "Four deliberately unalike audiences used only to test whether a title's rank depends on who is asking. A title that sits in the same place for all four is not evidence of fit with any particular buyer -- it is this slate's equivalent of popularity, and is flagged rather than recommended.",
+  "audiences": {
+    "Bollywood playback": [["A. R. Rahman","artist"],["Lata Mangeshkar","artist"],["Arijit Singh","artist"]],
+    "US crime drama": [["The Wire","tv_show"],["The Sopranos","tv_show"],["Goodfellas","movie"]],
+    "downtown art rock": [["Lou Reed","artist"],["Talking Heads","artist"],["Patti Smith","artist"]],
+    "mainstream pop": [["Taylor Swift","artist"],["BTS","artist"],["Friends","tv_show"]]
+  }
+}

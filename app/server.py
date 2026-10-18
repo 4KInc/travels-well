@@ -220,7 +220,8 @@ class Handler(BaseHTTPRequestHandler):
                                payload.get("slate") or [],
                                payload.get("buyer") or [],
                                payload.get("home") or None,
-                               trace=trace, with_llm=bool(payload.get("llm")))
+                               trace=trace, with_llm=bool(payload.get("llm")),
+                               with_invariance=bool(payload.get("invariance")))
             BUDGET.record_live(self.client_ip(), client.quota_remaining)
             result["calls"] = trace.summary()["calls"]
             result["source"] = "LIVE"

@@ -40,7 +40,7 @@ try:
     ex = json.loads((HERE / "app" / "pitch_example_input.json").read_text())
     tr = Trace()
     res = run_pitch(QlooClient(log_name="warm_pitch.jsonl"),
-                    ex["slate"], ex["buyer"], ex["home"], trace=tr, with_llm=True)
+                    ex["slate"], ex["buyer"], ex["home"], trace=tr, with_llm=True, with_invariance=True)
     res["calls"] = tr.summary()["calls"]
     (out_dir / "pitch_example.json").write_text(json.dumps(res, indent=2))
     print("  %-20s recorded (%d ranked, %d calls)"
