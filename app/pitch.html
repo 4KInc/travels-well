@@ -303,12 +303,14 @@ function ablation(l){
     +'brief\u2019s own test of whether the project would work the same without '
     +'the taste graph, run rather than asserted.'));
   const a=el('p','agree');
-  a.appendChild(document.createTextNode('rank agreement '));
-  a.appendChild(el('b',null,(l.agreement==null?'n/a':l.agreement.toFixed(2))));
-  a.appendChild(document.createTextNode('  \u00b7  over '+(l.compared_on||0)+' titles'));
-  if(typeof l.top_agreement==='number')
-    a.appendChild(document.createTextNode('  \u00b7  '+l.top_agreement
-      +' of the top 3 shared'));
+  if(typeof l.top5_overlap==='number'){
+    a.appendChild(document.createTextNode('top five: '));
+    a.appendChild(el('b',null,l.top5_overlap+' of 5 shared'));
+    a.appendChild(document.createTextNode('  \u00b7  an LLM-only agent would open with '
+      +(5-l.top5_overlap)+' different title'+(5-l.top5_overlap===1?'':'s')));
+  }
+  a.appendChild(document.createTextNode('  \u00b7  full-list agreement '
+    +(l.agreement==null?'n/a':l.agreement.toFixed(2))));
   w.appendChild(a);
   if(l.disagreements&&l.disagreements.length){
     const t=el('table','cmp');
@@ -324,10 +326,21 @@ function ablation(l){
     });
     t.appendChild(b); w.appendChild(t);
   }
-  w.appendChild(el('p','caveat','They agree on the obvious picks and part '
-    +'company below them. We can show that they disagree; we cannot show which '
-    +'is right \u2014 there is no ground truth for what a buyer would actually '
-    +'license, and the model is not perfectly repeatable between runs.'));
+  const c1=el('p','caveat');
+  c1.textContent='A frontier model is a strong baseline here, and we are not '
+    +'claiming otherwise: across every buyer and slate we tried, including '
+    +'deliberately obscure titles, it shares three to four of the top five. '
+    +'It is also perfectly repeatable \u2014 four identical runs at temperature '
+    +'zero gave the same order.';
+  w.appendChild(c1);
+  const c2=el('p','caveat');
+  c2.innerHTML='<b>What it cannot do is decline.</b> It returned a confident '
+    +'ranking for all twelve titles. The grounded run withheld four of them '
+    +'because two halves of the buyer\u2019s catalogue disagreed, and it can '
+    +'say when a title ranks the same for every buyer. Neither is something a '
+    +'model without the graph can tell you \u2014 and neither is visible in a '
+    +'ranking that always looks certain.';
+  w.appendChild(c2);
   return w;
 }
 

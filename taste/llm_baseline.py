@@ -36,12 +36,21 @@ def rank(slate_titles, buyer_titles, qloo_ranks=None):
     Qloo's. `qloo_ranks` maps title -> rank percentile."""
     if not available():
         return {"available": False, "note": "No model key configured on this server."}
+    # The lists must be impossible to confuse. An earlier version put the
+    # buyer's catalogue first and then said "rank these films", and the model
+    # ranked the buyer's own titles back at us.
     prompt = (
-        "A film buyer's catalogue is:\n%s\n\n"
-        "Rank the following films from MOST to LEAST likely to appeal to that "
-        "buyer's audience. Reply ONLY with a JSON array of the titles in order, "
-        "no prose.\n\n%s"
-        % ("\n".join("- " + t for t in buyer_titles), json.dumps(slate_titles)))
+        "You are advising a film sales agent.\n\n"
+        "LIST A -- titles the BUYER has already licensed (context only, do NOT "
+        "rank these):\n%s\n\n"
+        "LIST B -- the SLATE FOR SALE (%d titles, rank ALL of these):\n%s\n\n"
+        "Rank every title in LIST B from most to least likely to appeal to that "
+        "buyer's audience. Reply ONLY with a JSON array of exactly %d strings, "
+        "each spelled exactly as it appears in LIST B. No prose."
+        % ("\n".join("- " + t for t in buyer_titles),
+           len(slate_titles),
+           "\n".join("- " + t for t in slate_titles),
+           len(slate_titles)))
     try:
         raw = _ask(prompt)
     except Exception as exc:
@@ -55,8 +64,23 @@ def rank(slate_titles, buyer_titles, qloo_ranks=None):
     except ValueError:
         return {"available": False, "note": "The model's ranking could not be parsed."}
 
-    known = {t.lower(): t for t in slate_titles}
-    order = [known[t.lower()] for t in order if t.lower() in known]
+    # Accent- and punctuation-insensitive matching: the model does not always
+    # echo "Amelie" or "La haine" exactly as Qloo spells them.
+    import re as _re
+    import unicodedata as _ud
+
+    def key(t):
+        t = _ud.normalize("NFKD", t or "")
+        t = "".join(ch for ch in t if not _ud.combining(ch))
+        return _re.sub(r"[^a-z0-9]+", "", t.lower())
+
+    known = {key(t): t for t in slate_titles}
+    order = [known[key(t)] for t in order if key(t) in known]
+    # Guard against the model handing back a list that is not the slate.
+    if len(order) < 0.6 * len(slate_titles):
+        return {"available": False,
+                "note": "The model did not rank the slate it was given "
+                        "(%d of %d titles recognised)." % (len(order), len(slate_titles))}
     if len(order) < 4:
         return {"available": False,
                 "note": "The model named too few of the slate to compare."}
@@ -82,9 +106,12 @@ def rank(slate_titles, buyer_titles, qloo_ranks=None):
                 [t for t in order if t in shared])}
             gaps = sorted(((abs(q_pos[t] - l_pos[t]), t, q_pos[t] + 1, l_pos[t] + 1)
                            for t in shared), reverse=True)
-            out["top_agreement"] = sum(
-                1 for t in list(sorted(shared, key=lambda x: -shared[x]))[:3]
-                if l_pos.get(t, 99) < 3)
+            # Top-five overlap is the number that matters: she pitches five
+            # titles, so agreement at ranks 6-12 does not change her meeting.
+            q_top5 = set(sorted(shared, key=lambda x: -shared[x])[:5])
+            l_top5 = set([t for t in order if t in shared][:5])
+            out["top5_overlap"] = len(q_top5 & l_top5)
+            out["llm_would_open_with"] = [t for t in order if t in shared][:5]
             out["disagreements"] = [
                 {"title": t, "qloo_place": qp, "llm_place": lp}
                 for gap, t, qp, lp in gaps[:4] if gap >= max(2, n // 4)]
