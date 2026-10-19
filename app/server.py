@@ -175,11 +175,6 @@ class Handler(BaseHTTPRequestHandler):
         if route.path in ("/", "/pitch", "/pitch.html"):
             return self._send(200, (HERE / "pitch.html").read_text(),
                               "text/html; charset=utf-8")
-        if route.path == "/ui.js":
-            return self._send(200, (HERE / "ui.js").read_text(),
-                              "application/javascript; charset=utf-8")
-        if route.path == "/ui.css":
-            return self._send(200, (HERE / "ui.css").read_text(), "text/css; charset=utf-8")
         if route.path in ("/atlas", "/atlas.html", "/map"):
             return self._send(200, (HERE / "atlas.html").read_text(),
                               "text/html; charset=utf-8")

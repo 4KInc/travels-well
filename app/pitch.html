@@ -1,22 +1,167 @@
 <!doctype html><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Taste Atlas — Pitch desk</title>
+<title>Pitch Desk</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;450;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/ui.css">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* The pitch desk is a workspace, not a page you scroll -- two panes, dense
+   tables, tabs. But it wears the same house style as the map and the slate
+   view: the amber, the film strip, Bebas on the headings. */
+:root{color-scheme:dark;
+  --screen:#0a0a0c;--seat:#141419;--seat-2:#1c1c23;--ink:#f4f1ea;--ink-2:#a9a49a;
+  --ink-3:#6f6b64;--rule:#26262e;--bulb:#e8b84b;--pos:#3987e5;--neg:#e66767;
+  --display:"Bebas Neue",Impact,sans-serif;
+  --sans:Inter,ui-sans-serif,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--screen);color:var(--ink);
+  font:400 14px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:var(--bulb)}
 
-<div class="bar">
-  <span class="brand">Taste Atlas <span>/ Pitch desk</span></span>
-  <nav>
+/* ---------- shared nav, identical to the other two screens ---------- */
+.topnav{position:sticky;top:0;z-index:20;display:flex;align-items:center;
+  justify-content:center;gap:clamp(10px,2.5vw,26px);flex-wrap:wrap;
+  padding:11px clamp(14px,3.5vw,32px);background:rgba(10,10,12,.86);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.topnav .mark{font:400 19px/1 var(--display);letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ink);margin-right:4px}
+.topnav .mark b{color:var(--bulb);font-weight:400}
+.topnav a{font:400 11px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-3);text-decoration:none;padding:6px 2px;border-bottom:1px solid transparent}
+.topnav a:hover{color:var(--ink)}
+.topnav a[aria-current=page]{color:var(--ink);border-bottom-color:var(--bulb)}
+.topnav .spacer{flex:1 1 0;min-width:0}
+.topnav .quota{font:400 10.5px/1 var(--mono);letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3)}
+.topnav .quota b{color:var(--ink-2);font-weight:400}
+@media (max-width:620px){.topnav{gap:12px}.topnav .spacer{display:none}}
+.strip{height:11px;border-bottom:1px solid var(--rule);
+  background:repeating-linear-gradient(90deg,transparent 0 9px,var(--rule) 9px 15px)}
+
+/* ---------- two panes ---------- */
+.shell{display:grid;grid-template-columns:304px 1fr;height:calc(100vh - 58px)}
+@media (max-width:900px){.shell{grid-template-columns:1fr;height:auto}}
+.side{border-right:1px solid var(--rule);background:var(--seat);
+  overflow-y:auto;padding:16px 15px 30px}
+.main{overflow-y:auto;padding:0 0 48px;min-width:0}
+
+.grp{margin-bottom:20px}
+.grp h2{font:400 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-3);margin:0 0 3px;display:flex;align-items:baseline;gap:6px}
+.grp .cnt{margin-left:auto;font:400 11px var(--mono);color:var(--ink-3)}
+p.help{font-size:12px;color:var(--ink-3);margin:0 0 8px;line-height:1.5}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px}
+.chip{display:inline-flex;align-items:center;gap:6px;font:400 12px/1 var(--sans);
+  padding:5px 6px 5px 9px;background:var(--seat-2);border:1px solid var(--rule);
+  border-radius:2px;color:var(--ink-2)}
+.chip button{all:unset;cursor:pointer;color:var(--ink-3);font-size:13px;line-height:1}
+.chip button:hover{color:var(--neg)}
+.chip.miss{border-color:color-mix(in oklab,var(--neg) 45%,transparent);color:var(--neg)}
+input[type=text]{width:100%;background:var(--screen);border:1px solid var(--rule);
+  color:var(--ink);border-radius:2px;padding:7px 9px;font:400 13px/1.4 var(--sans)}
+input[type=text]:focus-visible{outline:2px solid var(--bulb);outline-offset:1px}
+.run{width:100%;margin-top:6px;background:var(--bulb);color:#140f02;border:1px solid var(--bulb);
+  border-radius:2px;padding:11px 10px 9px;font:400 21px/1 var(--display);
+  letter-spacing:.05em;text-transform:uppercase;cursor:pointer}
+.run:hover{filter:brightness(1.06)}
+.run[disabled]{opacity:.5;cursor:default}
+.reset{all:unset;cursor:pointer;font:400 11px/1 var(--mono);letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink-3);margin-top:12px;display:block}
+.reset:hover{color:var(--ink-2)}
+
+/* ---------- the readout ---------- */
+.rhead{padding:18px 22px 0;border-bottom:1px solid var(--rule)}
+.rtitle{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.rtitle h1{font:400 clamp(27px,3.2vw,36px)/1 var(--display);letter-spacing:.02em;
+  text-transform:uppercase;margin:0}
+.pill{font:500 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 7px;border-radius:2px;border:1px solid currentColor}
+.pill.LIVE{color:var(--pos)} .pill.CACHED{color:var(--bulb)}
+.pill.UNAVAILABLE{color:var(--ink-3)}
+.stats{display:flex;gap:20px;flex-wrap:wrap;margin:10px 0 0;
+  font:400 11px/1.7 var(--mono);letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink-3)}
+.stats b{color:var(--ink);font-weight:500}
+.tabs{display:flex;gap:4px;margin:14px 0 -1px;overflow-x:auto}
+.tabs button{all:unset;cursor:pointer;font:400 11px/1 var(--mono);letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-3);padding:9px 10px;
+  border-bottom:1px solid transparent;white-space:nowrap}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--bulb)}
+.tabs .n{font:400 10px var(--mono);color:var(--ink-3);margin-left:6px;letter-spacing:0}
+
+.pane{padding:18px 22px}
+.warn{border-left:2px solid var(--bulb);padding:10px 14px;margin:0 0 16px;
+  color:var(--ink-2);font-size:13px;max-width:80ch}
+.warn b{color:var(--ink);font-weight:500}
+.refuse{border-left:2px solid var(--neg);padding:11px 14px;margin:0 0 16px;
+  color:var(--ink-2);font-size:13px;max-width:80ch}
+.refuse b{color:var(--ink);font-weight:500}
+p.note{font-size:12.5px;color:var(--ink-2);max-width:82ch;margin:0 0 12px;line-height:1.65}
+.empty{color:var(--ink-3);font-size:12.5px}
+h3.sec{font:400 19px/1 var(--display);letter-spacing:.04em;text-transform:uppercase;
+  margin:24px 0 10px;color:var(--ink)}
+h3.sec:first-child{margin-top:0}
+
+/* ---------- tables ---------- */
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font:400 10.5px/1 var(--mono);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-3);padding:0 10px 9px 0;
+  border-bottom:1px solid var(--rule);white-space:nowrap}
+th.n,td.n{text-align:right;padding-right:0}
+td{padding:8px 10px 8px 0;border-bottom:1px solid var(--rule);vertical-align:middle}
+tr:hover td{background:var(--seat)}
+.poster{width:31px;height:46px;object-fit:cover;border-radius:2px;display:block;
+  background:var(--seat-2);border:1px solid var(--rule)}
+.ttl{font-size:13.5px}
+.num{font:400 12.5px var(--mono)}
+.up{color:var(--pos)} .down{color:var(--neg)}
+.mini{position:relative;height:6px;background:var(--seat-2);border-radius:1px}
+.mini i{position:absolute;top:0;bottom:0;border-radius:1px;background:var(--pos)}
+.flag{font:400 11px/1.5 var(--mono);color:var(--bulb);margin-top:2px}
+
+/* ---------- posters ---------- */
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));
+  gap:13px;margin-top:4px}
+.gal figure{margin:0}
+.gal img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:3px;display:block;
+  border:1px solid var(--rule);background:var(--seat-2)}
+.gal figcaption{font-size:12px;color:var(--ink-2);margin-top:6px;line-height:1.4}
+.gal.dim img{filter:grayscale(1) brightness(.5)}
+
+/* ---------- the trace ---------- */
+ol.steps{list-style:none;margin:0;padding:0;counter-reset:s}
+ol.steps li{display:grid;grid-template-columns:28px 76px 1fr;gap:11px;
+  padding:0 0 13px;counter-increment:s}
+ol.steps li::before{content:counter(s,decimal-leading-zero);
+  font:400 11px/1.6 var(--mono);color:var(--ink-3)}
+.who{font:400 10px/1.7 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3)}
+.who.buyer{color:var(--pos)} .who.home{color:var(--bulb)}
+.act{font-size:13px;color:var(--ink)}
+.why{font-size:12.5px;color:var(--ink-2);margin-top:2px;max-width:82ch;line-height:1.6}
+.obs{font:400 11.5px/1.6 var(--mono);color:var(--ink-3);margin-top:3px}
+.did{font:400 11.5px/1.6 var(--mono);color:var(--bulb);margin-top:3px}
+
+.skel{height:46px;background:linear-gradient(90deg,var(--seat) 25%,var(--seat-2) 37%,
+  var(--seat) 63%);background-size:400% 100%;animation:sh 1.3s ease infinite;
+  border-radius:2px;margin:9px 0}
+@keyframes sh{0%{background-position:100% 0}100%{background-position:0 0}}
+@media (prefers-reduced-motion:reduce){.skel{animation:none}}
+</style>
+
+<nav class="topnav">
+    <span class="mark">Taste <b>Atlas</b></span>
+    <a href="/atlas">The map</a>
     <a href="/" aria-current="page">Pitch desk</a>
-    <a href="/atlas">Map</a>
-    <a href="/slate">Slate</a>
-  </nav>
-  <span class="sp"></span>
-  <span class="meta" id="quota"></span>
-  <nav><a href="https://github.com/4KInc/travels-well">Source</a></nav>
-</div>
+    <a href="/slate">Slate view</a>
+    <span class="spacer"></span>
+    <span class="quota" id="quota"></span>
+    <a href="https://github.com/4KInc/travels-well">Source</a>
+</nav>
+<div class="strip"></div>
 
 <div class="shell">
   <aside class="side">
@@ -36,7 +181,6 @@
   </main>
 </div>
 
-<script src="/ui.js"></script>
 <script>
 const EX={
  slate:['3 Idiots','Dangal','RRR','Sholay','Gully Boy','City of God','Elite Squad','La Haine',
@@ -47,7 +191,10 @@ const EX={
 const state={slate:[...EX.slate],buyer:[...EX.buyer],home:[...EX.home]};
 let DATA=null, TAB='shortlist';
 
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;
+  if(x!==undefined)e.textContent=x;return e};
 const $=id=>document.getElementById(id);
+const fmt=v=>(v>=0?'+':'−')+Math.abs(v).toFixed(2);
 
 const GROUPS=[
  {key:'slate', id:'g-slate', label:'Your slate', help:'Titles you are selling.'},
