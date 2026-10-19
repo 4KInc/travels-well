@@ -1,104 +1,237 @@
 <!doctype html><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Taste Atlas — Map</title>
+<title>The Taste Atlas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;450;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/ui.css">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;
+  --screen:#0a0a0c;--seat:#141419;--seat-2:#1c1c23;--ink:#f4f1ea;--ink-2:#a9a49a;
+  --ink-3:#6f6b64;--rule:#26262e;--bulb:#e8b84b;--pos:#3987e5;--neg:#e66767;
+  --display:"Bebas Neue",Impact,sans-serif;
+  --sans:Inter,ui-sans-serif,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+*{box-sizing:border-box}
+body{margin:0;overflow-x:hidden;background:var(--screen);color:var(--ink);
+  font:400 15px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:0 clamp(14px,3.5vw,32px) 80px}
+header{padding:clamp(26px,5vw,44px) 0 0;text-align:center}
+h1{font:400 clamp(44px,10vw,92px)/0.88 var(--display);letter-spacing:.012em;
+  margin:0;text-transform:uppercase}
+h1 span{color:var(--bulb)}
+.tagline{font:400 12px/1.6 var(--mono);letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-3);margin:12px 0 0}
+.lede{max-width:66ch;margin:18px auto 0;color:var(--ink-2);font-size:15px;
+  line-height:1.65;text-align:center}
+.lede b{color:var(--ink);font-weight:500}
+.strip{height:14px;margin:24px 0 0;border-top:1px solid var(--rule);
+  border-bottom:1px solid var(--rule);
+  background:repeating-linear-gradient(90deg,transparent 0 9px,var(--rule) 9px 15px)}
+.homebar{display:flex;justify-content:center;align-items:center;gap:10px;
+  flex-wrap:wrap;margin:22px 0 2px}
+.homebar label{font:400 11px/1 var(--mono);letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3)}
+.homebar select{font:400 13px/1 var(--sans);padding:9px 12px;background:var(--seat);
+  color:var(--ink);border:1px solid var(--rule);border-radius:3px;max-width:min(92vw,380px)}
+.homebar select:focus-visible{outline:2px solid var(--bulb);outline-offset:2px}
+.routed{display:flex;gap:16px;flex-wrap:wrap;align-items:baseline;margin:6px 0 0;
+  font:400 11.5px/1 var(--mono);letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink-3)}
+.routed b{color:var(--ink);font-weight:500}
+.shift{position:absolute;top:6px;right:6px;padding:3px 6px;border-radius:2px;
+  font:500 11px/1 var(--mono);background:rgba(6,6,9,.82);border:1px solid currentColor}
+.shift.up{color:var(--pos)} .shift.down{color:var(--neg)}
+.caveat{margin-top:12px;border-left:2px solid var(--bulb);padding:9px 13px;
+  color:var(--ink-2);font-size:13px;max-width:72ch}
+.home-mark{font:400 10px/1 var(--mono);fill:var(--bulb)}
+.statline{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin:18px 0 6px;
+  font:400 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.mapwrap{position:relative;margin:14px 0 0;border:1px solid var(--rule);
+  border-radius:3px;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 42%,#15151c,#09090b 74%)}
+svg{display:block;width:100%;height:auto;touch-action:none;cursor:grab}
+svg.panning{cursor:grabbing}
+.edge{stroke:#5b5f6e;transition:stroke-opacity .18s,stroke .18s}
+.node{cursor:pointer}
+.node .ring{fill:none;stroke-width:2.5;transition:stroke-width .15s,opacity .18s}
+.node .disc{stroke:none;transition:opacity .18s}
+.node .veil{fill:#09090b;opacity:.42;transition:opacity .18s}
+.node:hover .veil,.node.sel .veil{opacity:0}
+.node:hover .ring,.node.sel .ring{stroke-width:4}
+.node text{font:400 11px var(--mono);fill:var(--ink-2);pointer-events:none;
+  paint-order:stroke;stroke:#09090b;stroke-width:3.5px;stroke-linejoin:round;
+  transition:fill .18s,opacity .18s}
+.node:hover text,.node.sel text{fill:var(--ink)}
+.node:focus{outline:none}
+.node:focus-visible .ring{stroke:var(--bulb);stroke-width:4}
+.faded{opacity:.14}
+.controls{position:absolute;right:10px;top:10px;display:flex;flex-direction:column;gap:6px}
+.controls button{width:30px;height:30px;padding:0;font:400 17px/1 var(--sans);
+  background:rgba(12,12,16,.82);color:var(--ink-2);border:1px solid var(--rule);
+  border-radius:3px;cursor:pointer;backdrop-filter:blur(3px)}
+.controls button:hover{color:var(--ink);border-color:var(--bulb)}
+.maplegend{position:absolute;left:12px;bottom:10px;display:flex;gap:14px;flex-wrap:wrap;
+  font:400 10px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.maplegend i{width:9px;height:9px;border-radius:50%;display:inline-block;
+  margin-right:5px;vertical-align:-1px;box-sizing:border-box}
+.hint{font:400 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);text-align:center;margin:12px 0 0}
+.panel{margin-top:26px;border-top:1px solid var(--rule);padding-top:22px}
+.panel h2{font:400 clamp(26px,4vw,38px)/1.05 var(--display);letter-spacing:.02em;
+  margin:0 0 6px;text-transform:uppercase}
+.namenote{font:400 12px/1.5 var(--sans);color:var(--ink-3);margin:8px 0 0}
+.members{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 4px}
+.m{font:400 11.5px/1 var(--mono);padding:5px 9px;border:1px solid var(--rule);
+  border-radius:2px;color:var(--ink-2)}
+.m i{color:var(--ink-3);font-style:normal}
+.slug{font:400 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-3);margin:22px 0 10px}
+.rail{display:grid;grid-auto-flow:column;grid-auto-columns:clamp(112px,15vw,150px);
+  gap:12px;overflow-x:auto;padding-bottom:6px}
+.poster{position:relative;aspect-ratio:2/3;background:var(--seat-2);
+  border:1px solid var(--rule);border-radius:3px;overflow:hidden}
+.poster img{width:100%;height:100%;object-fit:cover;display:block}
+.poster .fb{position:absolute;inset:0;display:grid;place-items:center;padding:8px;
+  text-align:center;font:400 15px/1.05 var(--display);color:var(--ink-3);
+  text-transform:uppercase}
+.cap{margin-top:7px;font-size:12px;color:var(--ink-2)}
+.dim .poster{filter:grayscale(1) brightness(.52)}
+.dim .cap{color:var(--ink-3)}
+footer{margin-top:40px;border-top:1px solid var(--rule);padding-top:18px;
+  color:var(--ink-3);font-size:12.5px;line-height:1.7;max-width:78ch}
+footer a{color:var(--ink-2)}
+@media (max-width:620px){.node text{font-size:9px}}
 
-<div class="bar">
-  <span class="brand">Taste Atlas <span>/ Map</span></span>
-  <nav>
+/* ---------- shared nav ---------- */
+.topnav{position:sticky;top:0;z-index:20;display:flex;align-items:center;
+  justify-content:center;gap:clamp(10px,2.5vw,26px);flex-wrap:wrap;
+  padding:11px clamp(14px,3.5vw,32px);background:rgba(10,10,12,.86);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.topnav .mark{font:400 19px/1 var(--display);letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ink);margin-right:4px}
+.topnav .mark b{color:var(--bulb);font-weight:400}
+.topnav a{font:400 11px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-3);text-decoration:none;padding:6px 2px;border-bottom:1px solid transparent}
+.topnav a:hover{color:var(--ink)}
+.topnav a[aria-current=page]{color:var(--ink);border-bottom-color:var(--bulb)}
+.topnav .spacer{flex:1 1 0;min-width:0}
+@media (max-width:620px){.topnav{gap:12px}.topnav .spacer{display:none}}
+</style>
+
+<nav class="topnav">
+    <span class="mark">Taste <b>Atlas</b></span>
+    <a href="/atlas" aria-current="page">The map</a>
     <a href="/">Pitch desk</a>
-    <a href="/atlas" aria-current="page">Map</a>
-    <a href="/slate">Slate</a>
-  </nav>
-  <span class="sp"></span>
-  <span class="meta" id="topmeta"></span>
-  <nav><a href="https://github.com/4KInc/travels-well">Source</a></nav>
+    <a href="/slate">Slate view</a>
+    <span class="spacer"></span>
+    <a href="https://github.com/4KInc/travels-well">Source</a>
+</nav>
+
+<div class="wrap">
+<header>
+  <h1>The Taste <span>Atlas</span></h1>
+  <p class="tagline">City is the wrong unit &mdash; the API says so</p>
+  <p class="lede">We measured something first: in Qloo's model, <b>location does
+  not move film taste at all</b> &mdash; affinities come back identical across five
+  cities. What does move it is <b>what an audience listens to and watches</b>. So
+  these groups are not places. Each is a set of artists, shows and games whose
+  film-affinity signatures correlate, found by clustering the graph, and distance
+  on this map is taste distance.</p>
+  <div class="strip"></div>
+</header>
+
+<div class="homebar">
+  <label for="home">Your slate already plays to</label>
+  <select id="home"><option value="">nobody yet &mdash; just show me each audience</option></select>
+</div>
+<div class="statline" id="stats"></div>
+<div class="mapwrap">
+  <svg id="map" viewBox="0 0 1000 620" role="img"
+    aria-label="Map of discovered audiences positioned by taste similarity"></svg>
+  <div class="controls">
+    <button id="zin" title="Zoom in" aria-label="Zoom in">+</button>
+    <button id="zout" title="Zoom out" aria-label="Zoom out">&minus;</button>
+    <button id="zfit" title="Reset view" aria-label="Reset view">&#9633;</button>
+  </div>
+  <div class="maplegend">
+    <span><i style="background:#3987e5"></i>music</span>
+    <span><i style="background:#e8b84b"></i>television</span>
+    <span><i style="background:#39c08a"></i>games</span>
+    <span><i style="background:#b98ae0"></i>mixed</span>
+    <span><i style="background:transparent;border:1.5px dashed #6f6b64"></i>single reading</span>
+  </div>
+</div>
+<p class="hint" style="text-transform:none;letter-spacing:0;font-size:12.5px;
+  line-height:1.6;max-width:72ch;margin:14px auto 0;font-family:var(--sans)">
+  These are discovered taste communities <em>within Qloo's graph</em> &mdash;
+  clusters of cultural anchors grouped by modelled film affinity, not observed
+  groups of people. Three of the eighteen have enough members to cross-check
+  against themselves; the rest are single readings.</p>
+<p class="hint">Drag to move &middot; scroll to zoom &middot; drag a node to rearrange &middot; click to see what it watches</p>
+
+<div class="panel" id="panel"></div>
+
+<footer>
+  Built from <span id="prov"></span>. Clusters are joined by average linkage at
+  correlation 0.75, the tightness measured to survive resampling of the film
+  set; looser grouping produced one large cluster that dissolved under the same
+  test. These are communities of film affinity as Qloo models it, not groups of
+  people, and anchors that joined no cluster are left off the map rather than
+  forced into one. The map is precomputed, so opening it spends no Qloo calls.
+  <br><a href="/pitch">Pitch Desk &mdash; bring your own slate and buyer</a>
+  &middot; <a href="/slate">Slate view</a> &middot;
+  <a href="https://github.com/4KInc/travels-well">Source and method</a>
+</footer>
 </div>
 
-<div class="shell">
-  <aside class="side">
-    <div class="grp">
-      <h2>Home audience</h2>
-      <p class="help">The audience your slate already plays to. Pick one to route
-      films against it.</p>
-      <select id="home"><option value="">None — show each audience on its own</option></select>
-    </div>
-
-    <div class="grp">
-      <h2>Audiences <span class="cnt" id="ncount"></span></h2>
-      <div class="rows" id="list"></div>
-    </div>
-
-    <div class="grp">
-      <h2>Legend</h2>
-      <div class="legend">
-        <span><i class="swatch" style="background:#3987e5"></i>music</span>
-        <span><i class="swatch" style="background:#e8b84b"></i>television</span>
-        <span><i class="swatch" style="background:#39c08a"></i>games</span>
-        <span><i class="swatch" style="background:#b98ae0"></i>mixed</span>
-        <span><i class="swatch" style="border:1.5px dashed #6b7280"></i>single reading</span>
-      </div>
-    </div>
-  </aside>
-
-  <main class="main">
-    <div class="canvas">
-      <svg id="map" viewBox="0 0 1000 620" role="img"
-        aria-label="Audiences positioned by taste similarity"></svg>
-      <div class="zoom">
-        <button id="zin" title="Zoom in" aria-label="Zoom in">+</button>
-        <button id="zout" title="Zoom out" aria-label="Zoom out">&minus;</button>
-        <button id="zfit" title="Reset view" aria-label="Reset view">&#9633;</button>
-      </div>
-      <span class="hintline">drag to pan · scroll to zoom · drag a node to rearrange</span>
-    </div>
-    <div class="rhead">
-      <div class="rtitle"><h1 id="rtitle">&nbsp;</h1><span class="pill" id="rpill"></span></div>
-      <div class="stats" id="rstats"></div>
-      <div class="tabs" id="tabs"></div>
-    </div>
-    <div id="panes"></div>
-  </main>
-</div>
-
-<script src="/ui.js"></script>
 <script>
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;
+  if(x!==undefined)e.textContent=x;return e};
+const svgEl=(t,attrs)=>{const e=document.createElementNS('http://www.w3.org/2000/svg',t);
+  for(const k in attrs)e.setAttribute(k,attrs[k]);return e};
+
+fetch('/api/atlas').then(r=>r.json()).then(d=>{ART=d.art||{};draw(d)});
 
 const DOMAIN_COLOR={artist:'#3987e5',tv_show:'#e8b84b',videogame:'#39c08a',mixed:'#b98ae0'};
 const W=1000,H=620,PAD=84;
 let view={k:1,x:0,y:0}, root=null, svg=null, NODES=[], EDGES=[], byId={};
-let HOME=null, CURRENT=null, ART={}, META=null, TAB=0;
-
-fetch('/api/atlas').then(r=>r.json()).then(d=>{ART=d.art||{};META=d;draw(d)});
 
 function dominant(members){
-  const c={}; members.forEach(m=>c[m.domain]=(c[m.domain]||0)+1);
-  const top=Object.entries(c).sort((a,b)=>b[1]-a[1]);
+  const counts={};
+  members.forEach(m=>counts[m.domain]=(counts[m.domain]||0)+1);
+  const top=Object.entries(counts).sort((a,b)=>b[1]-a[1]);
   if(top.length>1 && top[0][1]===top[1][1]) return 'mixed';
   return top[0][1]/members.length>=0.6?top[0][0]:'mixed';
 }
-const applyView=()=>root.setAttribute('transform',
-  `translate(${view.x},${view.y}) scale(${view.k})`);
-function zoomAt(cx,cy,f0){
-  const k=Math.min(4,Math.max(0.5,view.k*f0)), f=k/view.k;
-  view.x=cx-(cx-view.x)*f; view.y=cy-(cy-view.y)*f; view.k=k; applyView();
+
+function applyView(){
+  root.setAttribute('transform',
+    `translate(${view.x},${view.y}) scale(${view.k})`);
 }
+
+function zoomAt(cx,cy,factor){
+  const k=Math.min(4,Math.max(0.5,view.k*factor));
+  const f=k/view.k;
+  view.x=cx-(cx-view.x)*f; view.y=cy-(cy-view.y)*f; view.k=k;
+  applyView();
+}
+
 function svgPoint(ev){
   const r=svg.getBoundingClientRect();
-  return {x:(ev.clientX-r.left)/r.width*W,y:(ev.clientY-r.top)/r.height*H};
+  return {x:(ev.clientX-r.left)/r.width*W, y:(ev.clientY-r.top)/r.height*H};
 }
 
 function draw(d){
+  const stats=document.getElementById('stats');
+  stats.appendChild(el('span',null,d.nodes.length+' audiences'));
+  stats.appendChild(el('span',null,d.built_from.anchors+' anchors'));
+  stats.appendChild(el('span',null,d.built_from.films+' films'));
   const st=d.stability_at_threshold;
-  document.getElementById('topmeta').innerHTML =
-    '<b>'+d.nodes.length+'</b> audiences &nbsp; <b>'+d.built_from.anchors+
-    '</b> anchors &nbsp; <b>'+d.built_from.films+'</b> films' +
-    (st? ' &nbsp; <b>'+Math.round(100*st.survived_80pct/st.within_cluster_pairs)+
-      '%</b> stable':'');
-  document.getElementById('ncount').textContent=d.nodes.length;
+  if(st) stats.appendChild(el('span',null,
+    Math.round(100*st.survived_80pct/st.within_cluster_pairs)+'% of pairings stable'));
+  document.getElementById('prov').textContent =
+    d.built_from.anchors+' anchors across music, television and games, scored against '+
+    d.built_from.films+' films';
 
   svg=document.getElementById('map');
   NODES=d.nodes; EDGES=d.edges;
@@ -108,7 +241,8 @@ function draw(d){
 
   const defs=svgEl('defs',{});
   NODES.forEach(n=>{
-    const art=(n.loves||[]).find(f=>f.image); if(!art) return;
+    const art=(n.loves||[]).find(f=>f.image);
+    if(!art) return;
     const pat=svgEl('pattern',{id:'pat-'+n.id,patternContentUnits:'objectBoundingBox',
       width:1,height:1});
     const im=svgEl('image',{href:art.image,width:1,height:1,
@@ -124,9 +258,9 @@ function draw(d){
 
   EDGES.forEach(e=>{
     const a=byId[e.a],b=byId[e.b];
-    e.el=svgEl('line',{x1:a.px,y1:a.py,x2:b.px,y2:b.py,class:'edge',
+    const ln=svgEl('line',{x1:a.px,y1:a.py,x2:b.px,y2:b.py,class:'edge',
       'stroke-width':Math.max(.5,(e.w-.45)*6),'stroke-opacity':.45});
-    edgeLayer.appendChild(e.el);
+    e.el=ln; edgeLayer.appendChild(ln);
   });
 
   const placed=[];
@@ -134,33 +268,41 @@ function draw(d){
     const g=svgEl('g',{class:'node',tabindex:0,role:'button'});
     const colour=DOMAIN_COLOR[n.dom]||DOMAIN_COLOR.mixed;
     const disc=svgEl('circle',{cx:n.px,cy:n.py,r:n.r,class:'disc',
-      fill:(n.loves||[]).some(f=>f.image)?'url(#pat-'+n.id+')':'#1a1d22'});
+      fill:(n.loves||[]).some(f=>f.image)?'url(#pat-'+n.id+')':'#1c1c23'});
     const veil=svgEl('circle',{cx:n.px,cy:n.py,r:n.r,class:'veil'});
     const ring=svgEl('circle',{cx:n.px,cy:n.py,r:n.r,class:'ring',stroke:colour});
-    // A cluster too small to split into halves that can disagree has never been
-    // cross-checked. Say so on the map, not only in the limitations.
+    // A cluster too small to split into halves that can disagree has never
+    // been cross-checked. Say so on the map, not only in the limitations.
     if(n.halves_agree==null) ring.setAttribute('stroke-dasharray','4 3');
     g.appendChild(disc); g.appendChild(veil); g.appendChild(ring);
 
-    const label=(n.tags&&n.tags.length?n.tags.slice(0,2).join(' · '):(n.short||n.label));
-    const halfW=label.length*3.1;
+    // Two tags on the map, three in the panel: the third rarely adds meaning
+    // and pushes neighbouring labels into each other.
+    const label=(n.tags&&n.tags.length? n.tags.slice(0,2).join(' \u00b7 ')
+                 : (n.short||n.label));
+    const halfW=label.length*3.3;
     let anchor='middle', tx=n.px;
     if(n.px-halfW<6){anchor='start';tx=Math.max(n.px-n.r,6)}
     else if(n.px+halfW>W-6){anchor='end';tx=Math.min(n.px+n.r,W-6)}
     let ty=n.py+n.r+15, guard=0;
-    const hitsLabel=()=>placed.some(p=>Math.abs(p.y-ty)<12&&Math.abs(p.x-tx)<(halfW+p.w));
-    const hitsNode=()=>NODES.some(b=>Math.abs(b.py-ty)<b.r+7&&Math.abs(b.px-tx)<halfW+b.r);
-    while(guard++<40&&(hitsLabel()||hitsNode())) ty+=13;
+    const hitsLabel=()=>placed.some(p=>Math.abs(p.y-ty)<12 && Math.abs(p.x-tx)<(halfW+p.w));
+    const hitsNode=()=>NODES.some(b=>Math.abs(b.py-ty)<b.r+7 && Math.abs(b.px-tx)<halfW+b.r);
+    while(guard++<40 && (hitsLabel()||hitsNode())) ty+=13;
     placed.push({x:tx,y:ty,w:halfW});
     const t=svgEl('text',{x:tx,y:ty,'text-anchor':anchor});
     t.textContent=label; g.appendChild(t);
     n.g=g; n.parts={disc,veil,ring,t}; n.labelDX=tx-n.px; n.labelDY=ty-n.py;
 
+    const select=()=>{
+      [...nodeLayer.children].forEach(x=>x.classList.remove('sel'));
+      g.classList.add('sel'); show(n);
+    };
     g.addEventListener('keydown',ev=>{
-      if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();select(n)}});
+      if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();select()}});
     g.addEventListener('pointerenter',()=>highlight(n));
     g.addEventListener('pointerleave',()=>highlight(null));
 
+    // drag a node, or click it if it never moved
     let dragging=false, moved=false, grab=null;
     g.addEventListener('pointerdown',ev=>{
       ev.stopPropagation(); dragging=true; moved=false;
@@ -177,11 +319,12 @@ function draw(d){
     });
     g.addEventListener('pointerup',ev=>{
       dragging=false; g.releasePointerCapture(ev.pointerId);
-      if(!moved) select(n);
+      if(!moved) select();
     });
     nodeLayer.appendChild(g);
   });
 
+  // pan the canvas
   let panning=false, from=null;
   svg.addEventListener('pointerdown',ev=>{
     panning=true; from=svgPoint(ev); svg.classList.add('panning');
@@ -189,50 +332,62 @@ function draw(d){
   });
   svg.addEventListener('pointermove',ev=>{
     if(!panning) return;
-    const p=svgPoint(ev); view.x+=p.x-from.x; view.y+=p.y-from.y; from=p; applyView();
+    const p=svgPoint(ev);
+    view.x+=p.x-from.x; view.y+=p.y-from.y; from=p; applyView();
   });
-  const endPan=ev=>{panning=false;svg.classList.remove('panning');
+  const endPan=ev=>{panning=false; svg.classList.remove('panning');
     try{svg.releasePointerCapture(ev.pointerId)}catch(e){}};
   svg.addEventListener('pointerup',endPan);
   svg.addEventListener('pointercancel',endPan);
   svg.addEventListener('wheel',ev=>{
-    ev.preventDefault(); const p=svgPoint(ev);
+    ev.preventDefault();
+    const p=svgPoint(ev);
     zoomAt(p.x,p.y,ev.deltaY<0?1.12:1/1.12);
   },{passive:false});
+
   document.getElementById('zin').onclick=()=>zoomAt(W/2,H/2,1.25);
   document.getElementById('zout').onclick=()=>zoomAt(W/2,H/2,1/1.25);
   document.getElementById('zfit').onclick=()=>{view={k:1,x:0,y:0};applyView()};
 
-  // sidebar list and home picker are two doors into the same selection
-  const list=document.getElementById('list');
-  NODES.forEach(n=>{
-    const b=el('button','rowbtn'); b.setAttribute('aria-selected','false');
-    b.appendChild(el('span','t',n.name||n.label));
-    b.appendChild(el('span','s',n.members.length+' anchors · '+
-      (n.halves_agree==null?'single reading':'agree '+n.halves_agree.toFixed(2))));
-    b.onclick=()=>select(n); n.btn=b; list.appendChild(b);
-  });
-
   const sel=document.getElementById('home');
   NODES.forEach(n=>{
     const o=document.createElement('option');
-    o.value=n.id; o.textContent=(n.name?n.name+' — ':'')+n.label;
+    o.value=n.id; o.textContent=(n.name? n.name+'  \u2014  ' : '')+n.label;
     sel.appendChild(o);
   });
   sel.addEventListener('change',()=>{
     HOME=byId[sel.value]||null;
     NODES.forEach(n=>n.parts.ring.setAttribute('stroke-dasharray',
-      HOME&&n.id===HOME.id ? '5 4' : (n.halves_agree==null?'4 3':'')));
-    TAB=0; if(CURRENT) select(CURRENT);
+      HOME && n.id===HOME.id ? '5 4' : ''));
+    if(CURRENT) show(CURRENT);
   });
 
-  select(NODES[0]);
+  NODES[0].g.classList.add('sel');
+  show(NODES[0]);
+}
+
+let HOME=null, CURRENT=null, ART={};
+
+function route(home,target){
+  // Both signatures are already on the page, so routing an audience against
+  // another costs nothing: the shift is the difference in rank position, over
+  // the films both audiences actually rank.
+  const withheld=new Set([...(home.uncertain||[]),...(target.uncertain||[])]);
+  const rows=[];
+  for(const f in target.ranks){
+    if(!(f in home.ranks)) continue;
+    if(withheld.has(f)) continue;
+    rows.push({title:f,image:ART[f],shift:target.ranks[f]-home.ranks[f]});
+  }
+  rows.sort((a,b)=>b.shift-a.shift);
+  return {rows,withheld:[...withheld]};
 }
 
 function reposition(n){
-  const {disc,veil,ring,t}=n.parts;
-  [disc,veil,ring].forEach(c=>{c.setAttribute('cx',n.px);c.setAttribute('cy',n.py)});
-  t.setAttribute('x',n.px+n.labelDX); t.setAttribute('y',n.py+n.labelDY);
+  n.parts.disc.setAttribute('cx',n.px); n.parts.disc.setAttribute('cy',n.py);
+  n.parts.veil.setAttribute('cx',n.px); n.parts.veil.setAttribute('cy',n.py);
+  n.parts.ring.setAttribute('cx',n.px); n.parts.ring.setAttribute('cy',n.py);
+  n.parts.t.setAttribute('x',n.px+n.labelDX); n.parts.t.setAttribute('y',n.py+n.labelDY);
   EDGES.forEach(e=>{
     if(e.a===n.id){e.el.setAttribute('x1',n.px);e.el.setAttribute('y1',n.py)}
     if(e.b===n.id){e.el.setAttribute('x2',n.px);e.el.setAttribute('y2',n.py)}
@@ -242,126 +397,77 @@ function reposition(n){
 function highlight(n){
   if(!n){
     NODES.forEach(x=>x.g.classList.remove('faded'));
-    EDGES.forEach(e=>{e.el.classList.remove('faded');e.el.setAttribute('stroke','#4b5260')});
+    EDGES.forEach(e=>{e.el.classList.remove('faded');
+      e.el.setAttribute('stroke','#5b5f6e')});
     return;
   }
   const near=new Set([n.id]);
-  EDGES.forEach(e=>{if(e.a===n.id)near.add(e.b);if(e.b===n.id)near.add(e.a)});
+  EDGES.forEach(e=>{if(e.a===n.id)near.add(e.b); if(e.b===n.id)near.add(e.a)});
   NODES.forEach(x=>x.g.classList.toggle('faded',!near.has(x.id)));
   EDGES.forEach(e=>{
     const on=e.a===n.id||e.b===n.id;
     e.el.classList.toggle('faded',!on);
-    e.el.setAttribute('stroke',on?(DOMAIN_COLOR[n.dom]||'#4b5260'):'#4b5260');
+    e.el.setAttribute('stroke',on?(DOMAIN_COLOR[n.dom]||'#5b5f6e'):'#5b5f6e');
   });
 }
 
-function route(home,target){
-  // Both signatures are already on the page, so routing one audience against
-  // another costs nothing: the shift is the difference in rank position, over
-  // the films both audiences actually rank.
-  const withheld=new Set([...(home.uncertain||[]),...(target.uncertain||[])]);
-  const rows=[];
-  for(const f in target.ranks){
-    if(!(f in home.ranks)||withheld.has(f)) continue;
-    rows.push({title:f,image:ART[f],shift:target.ranks[f]-home.ranks[f]});
-  }
-  rows.sort((a,b)=>b.shift-a.shift);
-  return {rows,withheld:[...withheld]};
+function rail(items,dim,withShift){
+  const r=el('div','rail'+(dim?' dim':''));
+  items.forEach(f=>{
+    const c=el('div');
+    const box=el('div','poster');
+    if(withShift && typeof f.shift==='number'){
+      const s=el('div','shift '+(f.shift>=0?'up':'down'),
+        (f.shift>=0?'+':'\u2212')+Math.abs(f.shift).toFixed(2));
+      box.appendChild(s);
+    }
+    if(f.image){const im=new Image();im.src=f.image;im.alt=f.title;im.loading='lazy';
+      im.onerror=()=>{im.remove();box.appendChild(el('div','fb',f.title))};
+      box.appendChild(im);}
+    else box.appendChild(el('div','fb',f.title));
+    c.appendChild(box); c.appendChild(el('div','cap',f.title)); r.appendChild(c);
+  });
+  return r;
 }
 
-function select(n){
-  if(!n) return;
+function show(n){
   CURRENT=n;
-  NODES.forEach(x=>{x.g.classList.toggle('sel',x.id===n.id);
-    if(x.btn) x.btn.setAttribute('aria-selected',String(x.id===n.id))});
+  const p=document.getElementById('panel');
+  p.innerHTML='';
+  p.appendChild(el('h2',null,n.name||n.label));
+  if(n.name) p.appendChild(el('p','namenote',
+    'Named from the tags its members share, not by us. Members:'));
+  const mem=el('div','members');
+  n.members.forEach(m=>{
+    const s=el('span','m'); const i=el('i',null,m.domain.replace('_',' ')+' · ');
+    s.appendChild(i); s.appendChild(document.createTextNode(m.name)); mem.appendChild(s);
+  });
+  p.appendChild(mem);
 
-  document.getElementById('rtitle').textContent=n.name||n.label;
-  const pill=document.getElementById('rpill');
-  const crossed=n.halves_agree!=null;
-  pill.textContent=crossed?'cross-checked':'single reading';
-  pill.className='pill '+(crossed?'LIVE':'UNAVAILABLE');
-
-  const routed = HOME && HOME.id!==n.id ? route(HOME,n) : null;
-  const stats=document.getElementById('rstats'); stats.innerHTML='';
-  const add=(k,v)=>{const s=el('span');s.appendChild(document.createTextNode(k+' '));
-    s.appendChild(el('b',null,v));stats.appendChild(s)};
-  add('anchors',n.members.length);
-  if(crossed) add('halves agree',n.halves_agree.toFixed(2));
-  if(routed){ add('home',HOME.name||HOME.label); add('compared on',routed.rows.length);
-    if(routed.withheld.length) add('withheld',routed.withheld.length); }
-  else if(HOME && HOME.id===n.id) add('','this is your home audience');
-
-  const tabs=[];
-  if(routed) tabs.push({name:'Against home',n:routed.rows.length,build:()=>{
-    const p=el('div','pane');
-    if(!routed.rows.length){p.appendChild(el('p','empty',
-      'No film is ranked by both audiences, so there is nothing to compare.'));return p}
-    p.appendChild(el('p','note','Rank position in '+(n.name||n.label)+
-      ' minus rank position in '+(HOME.name||HOME.label)+
-      ', over the '+routed.rows.length+' films both audiences rank. Positive means the film climbs when you leave home.'));
-    p.appendChild(shiftTable(routed.rows));
-    const single=[HOME,n].filter(x=>x.halves_agree==null).map(x=>x.name||x.label);
-    if(single.length) p.appendChild(el('p','warn',
+  if(HOME && HOME.id!==n.id){
+    const {rows,withheld}=route(HOME,n);
+    const meta=el('div','routed');
+    const a=el('span'); a.appendChild(document.createTextNode('routing from '));
+    a.appendChild(el('b',null,HOME.name||HOME.label)); meta.appendChild(a);
+    meta.appendChild(el('span',null,rows.length+' films compared'));
+    if(withheld.length) meta.appendChild(el('span',null,withheld.length+' withheld'));
+    p.appendChild(meta);
+    p.appendChild(el('p','slug','Travels here'));
+    p.appendChild(rail(rows.slice(0,8),false,true));
+    p.appendChild(el('p','slug','Stays behind'));
+    p.appendChild(rail(rows.slice(-8).reverse(),true,true));
+    const single=[HOME,n].filter(x=>x.halves_agree===null).map(x=>x.label);
+    if(single.length) p.appendChild(el('p','caveat',
       'Single reading, not cross-checked: '+single.join(' and ')+
       '. Audiences of two or three anchors cannot be split into halves that '+
-      'disagree, so nothing was withheld on their account.'));
-    return p;
-  }});
-  tabs.push({name:'Draws',n:(n.loves||[]).length,build:()=>{
-    const p=el('div','pane');
-    p.appendChild(el('h3','sec','Films this audience is drawn to'));
-    p.appendChild(gallery(n.loves||[]));
-    p.appendChild(el('h3','sec','Films it is not'));
-    p.appendChild(gallery(n.leaves||[],true));
-    return p;
-  }});
-  tabs.push({name:'Members',n:n.members.length,build:()=>{
-    const p=el('div','pane');
-    p.appendChild(el('p','note',n.name
-      ? 'Named from the tags its members share, not by us. Every anchor whose film-affinity signature put it in this cluster:'
-      : 'Every anchor whose film-affinity signature put it in this cluster:'));
-    const c=el('div','chips');
-    n.members.forEach(m=>{
-      const s=el('span','chip');
-      s.appendChild(el('i',null,m.domain.replace('_',' ')));
-      s.appendChild(document.createTextNode(m.name));
-      s.querySelector('i').style.cssText='font-style:normal;color:var(--ink-3);font-size:11px';
-      c.appendChild(s);
-    });
-    p.appendChild(c);
-    if(n.tags&&n.tags.length){
-      p.appendChild(el('h3','sec','Shared tags'));
-      const tc=el('div','chips');
-      n.tags.forEach(t=>tc.appendChild(el('span','chip',t)));
-      p.appendChild(tc);
-    }
-    return p;
-  }});
-  tabs.push({name:'Method',build:()=>{
-    const p=el('div','pane');
-    p.appendChild(el('p','note',
-      'City is the wrong unit, and the API says so: in Qloo’s model location does '+
-      'not move film affinity at all — the same films come back in the same order '+
-      'across five cities. What does move it is what an audience listens to and watches. '+
-      'So these groups are not places.'));
-    p.appendChild(el('p','note',
-      'Built from '+META.built_from.anchors+' anchors across music, television and games, '+
-      'scored against '+META.built_from.films+' films. Clusters are joined by average '+
-      'linkage at correlation 0.75 — the tightness measured to survive resampling of '+
-      'the film set; looser grouping produced one large cluster that dissolved under the '+
-      'same test. Anchors that joined no cluster are left off the map rather than forced '+
-      'into one. Distance on the map is taste distance, by classical scaling of the '+
-      'correlation matrix.'));
-    p.appendChild(el('p','note',
-      'These are discovered taste communities within Qloo’s graph — clusters of '+
-      'cultural anchors grouped by modelled film affinity, not observed groups of people. '+
-      'Only the clusters large enough to split can be cross-checked against themselves; '+
-      'the rest are marked single reading, here and on the map.'));
-    p.appendChild(el('p','note','The map is precomputed, so opening it spends no Qloo calls.'));
-    return p;
-  }});
-
-  tabs.forEach((t,i)=>t.onpick=j=>{TAB=j});
-  TAB=mountTabs(document.getElementById('tabs'),document.getElementById('panes'),tabs,TAB);
+      'agree with each other, so nothing here was withheld on their account.'));
+  } else {
+    if(HOME && HOME.id===n.id)
+      p.appendChild(el('p','routed','This is the audience your slate already plays to. Pick another to route it.'));
+    p.appendChild(el('p','slug','Films this audience is drawn to'));
+    p.appendChild(rail(n.loves,false));
+    p.appendChild(el('p','slug','Films it is not'));
+    p.appendChild(rail(n.leaves,true));
+  }
 }
 </script>
