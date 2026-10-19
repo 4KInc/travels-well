@@ -1,421 +1,410 @@
 <!doctype html><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Pitch Desk</title>
+<title>Pitch Desk · Taste Atlas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;450;500;600&display=swap" rel="stylesheet">
 <style>
-:root{color-scheme:dark;
-  --screen:#0a0a0c;--seat:#141419;--seat-2:#1c1c23;--ink:#f4f1ea;--ink-2:#a9a49a;
-  --ink-3:#6f6b64;--rule:#26262e;--bulb:#e8b84b;--pos:#3987e5;--neg:#e66767;
-  --display:"Bebas Neue",Impact,sans-serif;
-  --sans:Inter,ui-sans-serif,-apple-system,sans-serif;
-  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+:root{
+  color-scheme:dark;
+  --bg:#0e0f12; --panel:#15171b; --panel-2:#1a1d22; --line:#24282f; --line-2:#333843;
+  --ink:#e8eaee; --ink-2:#9aa1ad; --ink-3:#6b7280;
+  --accent:#3987e5; --good:#3987e5; --bad:#e66767; --warn:#e8b84b;
+  --sans:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
 *{box-sizing:border-box}
-body{margin:0;overflow-x:hidden;background:var(--screen);color:var(--ink);
-  font:400 15px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
-.wrap{max-width:1100px;margin:0 auto;padding:0 clamp(14px,3.5vw,32px) 80px}
-header{padding:clamp(26px,5vw,44px) 0 0;text-align:center}
-h1{font:400 clamp(44px,10vw,92px)/0.88 var(--display);letter-spacing:.012em;
-  margin:0;text-transform:uppercase}
-h1 span{color:var(--bulb)}
-.tagline{font:400 12px/1.6 var(--mono);letter-spacing:.18em;text-transform:uppercase;
-  color:var(--ink-3);margin:12px 0 0}
-.lede{max-width:64ch;margin:16px auto 0;color:var(--ink-2);text-align:center;line-height:1.65}
-.lede b{color:var(--ink);font-weight:500}
-.strip{height:14px;margin:24px 0 0;border-top:1px solid var(--rule);
-  border-bottom:1px solid var(--rule);
-  background:repeating-linear-gradient(90deg,transparent 0 9px,var(--rule) 9px 15px)}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:16px;
-  margin:26px 0 0}
-label{display:block;font:400 11px/1 var(--mono);letter-spacing:.12em;
-  text-transform:uppercase;color:var(--ink-3);margin-bottom:7px}
-label em{font-style:normal;color:var(--ink-3);opacity:.7;text-transform:none;
-  letter-spacing:0;font-size:11.5px}
-textarea{width:100%;min-height:168px;resize:vertical;background:var(--seat);
-  color:var(--ink);border:1px solid var(--rule);border-radius:3px;padding:11px 12px;
-  font:400 13.5px/1.6 var(--sans)}
-textarea:focus-visible{outline:2px solid var(--bulb);outline-offset:1px}
-.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:18px 0 0}
-button{font:400 20px/1 var(--display);letter-spacing:.05em;padding:11px 20px 9px;
-  border:1px solid var(--bulb);background:var(--bulb);color:#140f02;cursor:pointer;
-  border-radius:2px}
-button.ghost{background:transparent;color:var(--ink-2);border-color:var(--rule)}
-button.ghost:hover{color:var(--ink);border-color:var(--bulb)}
-button[disabled]{opacity:.5;cursor:default}
-.readout{margin:30px 0 0;border-top:1px solid var(--rule);padding-top:22px}
-.bar{display:flex;gap:18px;flex-wrap:wrap;font:400 11.5px/1 var(--mono);
-  letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
-.bar b{color:var(--ink);font-weight:500}
-h2{font:400 clamp(26px,4vw,38px)/1.05 var(--display);letter-spacing:.02em;
-  margin:22px 0 10px;text-transform:uppercase}
-h2.go{color:var(--pos)} h2.no{color:var(--neg)}
-.rail{display:grid;grid-auto-flow:column;grid-auto-columns:clamp(112px,15vw,148px);
-  gap:12px;overflow-x:auto;padding-bottom:6px}
-.poster{position:relative;aspect-ratio:2/3;background:var(--seat-2);
-  border:1px solid var(--rule);border-radius:3px;overflow:hidden}
-.poster img{width:100%;height:100%;object-fit:cover;display:block}
-.poster .fb{position:absolute;inset:0;display:grid;place-items:center;padding:8px;
-  text-align:center;font:400 15px/1.05 var(--display);color:var(--ink-3);
-  text-transform:uppercase}
-.chip{position:absolute;top:6px;right:6px;padding:3px 6px;border-radius:2px;
-  font:500 11px/1 var(--mono);background:rgba(6,6,9,.84);border:1px solid currentColor}
-.chip.up{color:var(--pos)} .chip.down{color:var(--neg)}
-.chip.fit{top:6px;left:6px;right:auto;color:var(--ink);border-color:var(--ink-3)}
-.rowdef{font:400 12.5px/1.6 var(--sans);color:var(--ink-2);margin:10px 0 0;max-width:78ch}
-.rowdef b{color:var(--ink);font-weight:500}
-.flagnote{font:400 11px/1.4 var(--mono);color:var(--bulb);margin-top:5px}
-.aff{font:400 10.5px/1.4 var(--mono);color:var(--ink-3);margin-top:2px}
-.chip.fit{font-size:10px;letter-spacing:.04em}
-.warn{border-left:2px solid var(--neg);padding:11px 14px;margin:14px 0 0;
-  color:var(--ink);font-size:13.5px;max-width:78ch;background:rgba(230,103,103,.06)}
-.absbar{display:flex;gap:16px;flex-wrap:wrap;align-items:baseline;margin:10px 0 0;
-  font:400 11.5px/1.6 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
-.absbar b{color:var(--ink)}
-/* ---------- ablation ---------- */
-.ablate{margin:26px 0 0;border:1px solid var(--rule);border-radius:3px;padding:16px 18px;
-  background:linear-gradient(180deg,rgba(57,135,229,.05),transparent)}
-.ablate h3{font:400 22px/1 var(--display);letter-spacing:.03em;text-transform:uppercase;margin:0 0 4px}
-.ablate .hint{font:400 12.5px/1.6 var(--sans);color:var(--ink-3);margin:0 0 12px;max-width:78ch}
-.ablate .agree{font:400 11.5px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;
-  color:var(--ink-3);margin-bottom:12px}
-.ablate .agree b{color:var(--ink)}
-.cmp{width:100%;border-collapse:collapse;font:400 13px/1.5 var(--sans)}
-.cmp th{text-align:left;font:400 10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;
-  color:var(--ink-3);padding:6px 10px 6px 0;border-bottom:1px solid var(--rule)}
-.cmp td{padding:7px 10px 7px 0;border-bottom:1px solid var(--rule);color:var(--ink-2)}
-.cmp td.t{color:var(--ink)}
-.cmp .q{color:var(--pos);font-family:var(--mono);font-size:12.5px}
-.cmp .l{color:var(--neg);font-family:var(--mono);font-size:12.5px}
-.ablate .caveat{font-size:12.5px;color:var(--ink-3);margin:12px 0 0;max-width:78ch;line-height:1.6}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:400 13.5px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
 
-/* ---------- invariance ---------- */
-.inv{margin:22px 0 0;border:1px solid var(--rule);border-radius:3px;padding:16px 18px}
-.inv h3{font:400 22px/1 var(--display);letter-spacing:.03em;text-transform:uppercase;margin:0 0 4px}
-.inv .hint{font:400 12.5px/1.6 var(--sans);color:var(--ink-3);margin:0 0 12px;max-width:78ch}
-.inv .verdict{font:400 13.5px/1.6 var(--sans);color:var(--ink);margin:0 0 12px;max-width:78ch}
-.spread{display:grid;grid-template-columns:minmax(92px,1fr) 1fr 48px;gap:12px;
-  align-items:center;padding:3px 0;font-size:13px}
-.spread+.spread{border-top:1px solid color-mix(in oklab,var(--rule) 60%,transparent)}
-.spread .track{position:relative;height:9px;background:var(--seat-2);border-radius:2px}
-.spread .fill{position:absolute;top:0;bottom:0;border-radius:2px;background:var(--pos)}
-.spread .fill.flat{background:var(--ink-3)}
-.spread .num{text-align:right;font:400 12px/1 var(--mono);color:var(--ink-3)}
-.spread .nm{color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* ---- top bar ---- */
+.bar{display:flex;align-items:center;gap:18px;height:46px;padding:0 14px;
+  border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:30}
+.brand{font-weight:600;letter-spacing:-.01em;font-size:14px;white-space:nowrap}
+.brand span{color:var(--ink-3);font-weight:450}
+.bar nav{display:flex;gap:2px}
+.bar nav a{font-size:12.5px;color:var(--ink-2);text-decoration:none;padding:5px 10px;
+  border-radius:5px}
+.bar nav a:hover{background:var(--panel-2);color:var(--ink)}
+.bar nav a[aria-current=page]{background:var(--panel-2);color:var(--ink)}
+.bar .sp{flex:1}
+.bar .meta{font:400 11.5px/1 var(--mono);color:var(--ink-3);white-space:nowrap}
+.bar .meta b{color:var(--ink-2);font-weight:500}
 
-/* ---------- agent trace ---------- */
-.trace{margin:26px 0 0;border-top:1px solid var(--rule);padding-top:18px}
-.trace h3{font:400 22px/1 var(--display);letter-spacing:.03em;text-transform:uppercase;
-  margin:0 0 4px}
-.trace .hint{font:400 12.5px/1.6 var(--sans);color:var(--ink-3);margin:0 0 14px;max-width:76ch}
-ol.steps{list-style:none;margin:0;padding:0;counter-reset:s}
-ol.steps li{display:grid;grid-template-columns:30px 76px 1fr;gap:12px;
-  padding:0 0 15px;counter-increment:s}
-ol.steps li::before{content:counter(s,decimal-leading-zero);
-  font:400 11px/1.6 var(--mono);color:var(--ink-3)}
-.who{font:400 10px/1.7 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+/* ---- layout ---- */
+.shell{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - 46px)}
+@media (max-width:900px){.shell{grid-template-columns:1fr;height:auto}}
+.side{border-right:1px solid var(--line);background:var(--panel);overflow-y:auto;
+  padding:14px 14px 28px}
+.main{overflow-y:auto;padding:0 0 40px}
+
+/* ---- input groups ---- */
+.grp{margin-bottom:18px}
+.grp h2{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink-3);margin:0 0 2px;display:flex;align-items:baseline;gap:6px}
+.grp h2 i{font-style:normal;color:var(--ink-3);font-weight:400;letter-spacing:0;
+  text-transform:none;font-size:11.5px}
+.grp .cnt{margin-left:auto;font:400 11px var(--mono);color:var(--ink-3)}
+.grp p.help{font-size:11.5px;color:var(--ink-3);margin:0 0 7px}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:3px 5px 3px 8px;
+  background:var(--panel-2);border:1px solid var(--line);border-radius:5px;color:var(--ink-2)}
+.chip button{all:unset;cursor:pointer;color:var(--ink-3);font-size:13px;line-height:1;padding:0 1px}
+.chip button:hover{color:var(--bad)}
+.chip.miss{border-color:color-mix(in oklab,var(--bad) 45%,transparent);color:var(--bad)}
+input[type=text]{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ink);
+  border-radius:5px;padding:6px 8px;font:inherit}
+input[type=text]:focus-visible{outline:none;border-color:var(--accent)}
+.run{width:100%;margin-top:4px;background:var(--accent);color:#fff;border:0;border-radius:6px;
+  padding:9px;font:500 13.5px var(--sans);cursor:pointer}
+.run:hover{filter:brightness(1.08)}
+.run[disabled]{opacity:.55;cursor:default}
+.reset{all:unset;cursor:pointer;font-size:11.5px;color:var(--ink-3);margin-top:8px;display:block}
+.reset:hover{color:var(--ink-2)}
+
+/* ---- results header ---- */
+.rhead{padding:14px 18px 0;border-bottom:1px solid var(--line)}
+.rtitle{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.rtitle h1{font-size:16px;font-weight:600;margin:0;letter-spacing:-.01em}
+.pill{font:400 10.5px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;
+  padding:3px 7px;border-radius:4px;border:1px solid currentColor}
+.pill.LIVE{color:var(--good)} .pill.CACHED{color:var(--warn)}
+.stats{display:flex;gap:18px;flex-wrap:wrap;margin:8px 0 0;font:400 11.5px/1.6 var(--mono);
   color:var(--ink-3)}
-.who.buyer{color:var(--pos)} .who.home{color:var(--bulb)}
-.act{font:400 15px/1.25 var(--display);letter-spacing:.06em;text-transform:uppercase;
-  color:var(--ink)}
-.why{font-size:13px;color:var(--ink-2);margin-top:2px;max-width:72ch}
-.obs{font:400 11.5px/1.5 var(--mono);color:var(--ink-3);margin-top:4px}
-.did{font:400 11.5px/1.5 var(--mono);color:var(--bulb);margin-top:3px}
-.cap{margin-top:7px;font-size:12px;color:var(--ink-2)}
-.dim .poster{filter:grayscale(1) brightness(.5)}
-.note{border-left:2px solid var(--bulb);padding:10px 14px;margin:18px 0 0;
-  color:var(--ink-2);font-size:13.5px;max-width:76ch}
-.err{border-left-color:var(--neg);color:var(--ink)}
-footer{margin-top:40px;border-top:1px solid var(--rule);padding-top:18px;
-  color:var(--ink-3);font-size:12.5px;line-height:1.7;max-width:78ch}
-footer a{color:var(--ink-2)}
+.stats b{color:var(--ink);font-weight:500}
+.tabs{display:flex;gap:2px;margin:12px 0 -1px;overflow-x:auto}
+.tabs button{all:unset;cursor:pointer;font-size:12.5px;color:var(--ink-2);padding:7px 11px;
+  border-bottom:2px solid transparent;white-space:nowrap}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent)}
+.tabs .n{font:400 10.5px var(--mono);color:var(--ink-3);margin-left:5px}
 
-/* ---------- shared nav ---------- */
-.topnav{position:sticky;top:0;z-index:20;display:flex;align-items:center;
-  justify-content:center;gap:clamp(10px,2.5vw,26px);flex-wrap:wrap;
-  padding:11px clamp(14px,3.5vw,32px);background:rgba(10,10,12,.86);
-  backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
-.topnav .mark{font:400 19px/1 var(--display);letter-spacing:.06em;
-  text-transform:uppercase;color:var(--ink);margin-right:4px}
-.topnav .mark b{color:var(--bulb);font-weight:400}
-.topnav a{font:400 11px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;
-  color:var(--ink-3);text-decoration:none;padding:6px 2px;border-bottom:1px solid transparent}
-.topnav a:hover{color:var(--ink)}
-.topnav a[aria-current=page]{color:var(--ink);border-bottom-color:var(--bulb)}
-.topnav .spacer{flex:1 1 0;min-width:0}
-@media (max-width:620px){.topnav{gap:12px}.topnav .spacer{display:none}}
+/* ---- panes ---- */
+.pane{padding:16px 18px}
+.warn{border-left:2px solid var(--warn);background:color-mix(in oklab,var(--warn) 7%,transparent);
+  padding:9px 12px;margin:0 0 14px;font-size:12.5px;color:var(--ink-2);max-width:82ch}
+.warn b{color:var(--ink)}
+
+/* ---- result table ---- */
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font:500 10.5px/1 var(--mono);letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink-3);padding:0 10px 7px 0;border-bottom:1px solid var(--line);white-space:nowrap}
+th.n,td.n{text-align:right;padding-right:0}
+td{padding:7px 10px 7px 0;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:hover td{background:var(--panel)}
+.poster{width:30px;height:45px;object-fit:cover;border-radius:3px;display:block;
+  background:var(--panel-2)}
+.ttl{font-weight:450}
+.sub{font-size:11.5px;color:var(--ink-3)}
+.num{font:400 12.5px var(--mono)}
+.up{color:var(--good)} .down{color:var(--bad)}
+.bar-cell{min-width:90px}
+.mini{position:relative;height:6px;background:var(--panel-2);border-radius:2px}
+.mini i{position:absolute;top:0;bottom:0;border-radius:2px;background:var(--accent)}
+.flag{font-size:11px;color:var(--warn)}
+
+/* ---- gallery ---- */
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:12px;margin-top:4px}
+.gal figure{margin:0}
+.gal img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:4px;display:block;
+  border:1px solid var(--line)}
+.gal figcaption{font-size:11.5px;color:var(--ink-2);margin-top:5px;line-height:1.35}
+.gal .r{font:400 10.5px var(--mono);color:var(--ink-3)}
+.gal.dim img{filter:grayscale(1) brightness(.5)}
+
+/* ---- trace ---- */
+ol.steps{list-style:none;margin:0;padding:0;counter-reset:s}
+ol.steps li{display:grid;grid-template-columns:26px 70px 1fr;gap:10px;padding:0 0 11px;
+  counter-increment:s}
+ol.steps li::before{content:counter(s,decimal-leading-zero);font:400 11px/1.5 var(--mono);
+  color:var(--ink-3)}
+.who{font:400 10px/1.6 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.who.buyer{color:var(--accent)} .who.home{color:var(--warn)}
+.act{font-size:12.5px;font-weight:500}
+.why{font-size:12.5px;color:var(--ink-2);margin-top:1px;max-width:84ch}
+.obs{font:400 11.5px/1.5 var(--mono);color:var(--ink-3);margin-top:2px}
+.did{font:400 11.5px/1.5 var(--mono);color:var(--warn);margin-top:2px}
+.empty{color:var(--ink-3);font-size:12.5px}
+h3.sec{font-size:12px;font-weight:600;letter-spacing:.04em;margin:18px 0 8px;color:var(--ink)}
+h3.sec:first-child{margin-top:0}
+p.note{font-size:12.5px;color:var(--ink-2);max-width:84ch;margin:0 0 10px}
+.skel{height:45px;background:linear-gradient(90deg,var(--panel) 25%,var(--panel-2) 37%,var(--panel) 63%);
+  background-size:400% 100%;animation:sh 1.3s ease infinite;border-radius:4px;margin:8px 0}
+@keyframes sh{0%{background-position:100% 0}100%{background-position:0 0}}
+@media (prefers-reduced-motion:reduce){.skel{animation:none}}
 </style>
 
-<nav class="topnav">
-    <span class="mark">Taste <b>Atlas</b></span>
-    <a href="/atlas">The map</a>
+<div class="bar">
+  <span class="brand">Taste Atlas <span>/ Pitch desk</span></span>
+  <nav>
     <a href="/" aria-current="page">Pitch desk</a>
-    <a href="/slate">Slate view</a>
-    <a href="/evidence">Evidence</a>
-    <span class="spacer"></span>
-    <a href="https://github.com/4KInc/travels-well">Source</a>
-</nav>
-
-<div class="wrap">
-<header>
-  <h1>Pitch <span>Desk</span></h1>
-  <p class="tagline">Your slate &middot; their catalogue &middot; what to lead with</p>
-  <p class="lede">You have twenty minutes and five slots. Describe a buyer by
-  <b>what they have already licensed</b>, and this ranks your own titles for
-  them. Your strongest domestic titles are <b>not necessarily</b> your
-  strongest pitch to a particular buyer &mdash; the shortlist is ordered by how
-  well each title fits <em>them</em>, with its movement against your home
-  audience shown beside it.</p>
-  <div class="strip"></div>
-</header>
-
-<div class="grid">
-  <div>
-    <label for="slate">Your slate <em>&mdash; one title per line</em></label>
-    <textarea id="slate" spellcheck="false"></textarea>
-  </div>
-  <div>
-    <label for="buyer">The buyer's catalogue <em>&mdash; what they already hold</em></label>
-    <textarea id="buyer" spellcheck="false"></textarea>
-  </div>
-  <div>
-    <label for="home">Your home audience <em>&mdash; optional, what works for you</em></label>
-    <textarea id="home" spellcheck="false"></textarea>
-  </div>
-</div>
-<div class="actions">
-  <button id="run">Rank my slate</button>
-  <button class="ghost" id="demo">Load the example</button>
+    <a href="/atlas">Map</a>
+    <a href="/slate">Slate</a>
+  </nav>
+  <span class="sp"></span>
+  <span class="meta" id="quota"></span>
+  <nav><a href="https://github.com/4KInc/travels-well">Source</a></nav>
 </div>
 
-<div class="readout" id="out"></div>
-
-<footer>
-  A buyer's catalogue of six titles or more is split into halves, each half read
-  separately, and any of your titles the two halves rank very differently is
-  withheld rather than reported. Titles appearing in both your slate and a
-  describing catalogue are removed and named: Qloo excludes an entity from its
-  own results, so they cannot be scored against themselves.
-  <br><a href="/">The Taste Atlas</a> &middot; <a href="/slate">Slate view</a>
-  &middot; <a href="https://github.com/4KInc/travels-well">Source and method</a>
-</footer>
+<div class="shell">
+  <aside class="side">
+    <div class="grp" id="g-slate"></div>
+    <div class="grp" id="g-buyer"></div>
+    <div class="grp" id="g-home"></div>
+    <button class="run" id="run">Rank slate</button>
+    <button class="reset" id="reset">Reset to the worked example</button>
+  </aside>
+  <main class="main">
+    <div class="rhead">
+      <div class="rtitle"><h1 id="rh">Ranking…</h1><span id="src"></span></div>
+      <div class="stats" id="stats"></div>
+      <div class="tabs" id="tabs"></div>
+    </div>
+    <div id="pane" class="pane"></div>
+  </main>
 </div>
 
 <script>
+const EX={
+ slate:['3 Idiots','Dangal','RRR','Sholay','Gully Boy','City of God','Elite Squad','La Haine',
+        'Parasite','Amelie','Lagaan','Barfi!'],
+ buyer:['The Wire','The Sopranos','Breaking Bad','Narcos','Snowfall','Goodfellas','Scarface','Training Day'],
+ home:['Kabhi Khushi Kabhie Gham','Dilwale Dulhania Le Jayenge','Kuch Kuch Hota Hai','Jab We Met',
+       'Yeh Jawaani Hai Deewani','Zindagi Na Milegi Dobara']};
+const state={slate:[...EX.slate],buyer:[...EX.buyer],home:[...EX.home]};
+let DATA=null, TAB='shortlist';
+
 const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;
   if(x!==undefined)e.textContent=x;return e};
 const $=id=>document.getElementById(id);
 const fmt=v=>(v>=0?'+':'−')+Math.abs(v).toFixed(2);
 
-const EXAMPLE={
-  slate:['3 Idiots','Dangal','RRR','Sholay','Gully Boy','City of God','Elite Squad',
-         'La Haine','Parasite','Amelie','Lagaan','Barfi!'],
-  buyer:['The Wire','The Sopranos','Breaking Bad','Narcos','Snowfall','Goodfellas',
-         'Scarface','Training Day'],
-  home:['Kabhi Khushi Kabhie Gham','Dilwale Dulhania Le Jayenge','Kuch Kuch Hota Hai',
-        'Jab We Met','Yeh Jawaani Hai Deewani','Zindagi Na Milegi Dobara']};
+const GROUPS=[
+ {key:'slate', id:'g-slate', label:'Your slate', help:'Titles you are selling.'},
+ {key:'buyer', id:'g-buyer', label:'Buyer', help:'What they have already licensed.'},
+ {key:'home',  id:'g-home',  label:'Home audience', help:'Optional. What already works for you.'}];
 
-function loadExample(){
-  $('slate').value=EXAMPLE.slate.join('\n');
-  $('buyer').value=EXAMPLE.buyer.join('\n');
-  $('home').value=EXAMPLE.home.join('\n');
-}
-// Prefilled on arrival: nobody judging this is going to type 26 film titles
-// before seeing whether it works.
-loadExample();
-// Run on arrival so a judge lands on the answer, not an empty form. The
-// example is served from a recorded run, so this costs nothing.
-window.addEventListener('load',()=>$('run').click());
-$('demo').onclick=()=>{
-  $('slate').value=EXAMPLE.slate.join('\n');
-  $('buyer').value=EXAMPLE.buyer.join('\n');
-  $('home').value=EXAMPLE.home.join('\n');
-};
-
-$('run').onclick=()=>{
-  const body={slate:$('slate').value.split('\n'),
-              buyer:$('buyer').value.split('\n'),
-              home:$('home').value.split('\n')};
-  const out=$('out'); out.innerHTML='';
-  out.appendChild(el('p','bar','Resolving titles and reading the buyer twice…'));
-  $('run').disabled=true;
-  fetch('/api/pitch',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify(body)})
-    .then(r=>r.json()).then(render)
-    .catch(e=>{out.innerHTML='';out.appendChild(el('p','note err',String(e)))})
-    .finally(()=>{$('run').disabled=false});
-};
-
-function rail(items,dim){
-  const r=el('div','rail'+(dim?' dim':''));
-  items.forEach(f=>{
-    const c=el('div'), box=el('div','poster');
-    // Two numbers, never merged: fit is where the buyer puts it, movement is
-    // how far that is from where your home audience puts it.
-    if(f.place) box.appendChild(el('div','chip fit',f.place));
-    if(typeof f.shift==='number')
-      box.appendChild(el('div','chip '+(f.shift>=0?'up':'down'),fmt(f.shift)));
-    if(f.image){const im=new Image();im.src=f.image;im.alt=f.title;im.loading='lazy';
-      im.onerror=()=>{im.remove();box.appendChild(el('div','fb',f.title))};
-      box.appendChild(im);}
-    else box.appendChild(el('div','fb',f.title));
-    c.appendChild(box); c.appendChild(el('div','cap',f.title));
-    if(typeof f.affinity==='number')
-      c.appendChild(el('div','aff','affinity '+f.affinity.toFixed(3)));
-    if(f.note) c.appendChild(el('div','flagnote',f.note));
-    r.appendChild(c);
-  });
-  return r;
-}
-
-function invariance(iv){
-  const w=el('div','inv');
-  w.appendChild(el('h3',null,'Does the buyer actually decide this?'));
-  if(!iv.available){ w.appendChild(el('p','hint',iv.note||'')); return w; }
-  w.appendChild(el('p','hint','Each title was also scored against '
-    +iv.audiences.length+' deliberately unalike reference audiences \u2014 '
-    +iv.audiences.join(', ')+'. A title that sits in the same place for all of '
-    +'them is not evidence of fit with your buyer; it is this slate\u2019s '
-    +'version of popularity.'));
-  const flagged=iv.rows.filter(r=>r.invariant);
-  const v=el('p','verdict');
-  v.textContent = flagged.length
-    ? flagged.length+' title(s) rank the same wherever you ask and are marked: '
-      +flagged.map(r=>r.title).join(', ')+'. Treat their place in the shortlist with caution.'
-    : 'None of these titles is buyer-invariant \u2014 every one of them moves '
-      +'with who is asking, the smallest range being '
-      +iv.rows[0].spread.toFixed(2)+' against a '+iv.threshold.toFixed(2)
-      +' threshold. That is a property of this slate, not a guarantee: the '
-      +'check does fire on others.';
-  w.appendChild(v);
-  iv.rows.forEach(r=>{
-    const row=el('div','spread');
-    row.appendChild(el('div','nm',r.title));
-    const t=el('div','track'), f=el('div','fill'+(r.invariant?' flat':''));
-    f.style.left=Math.round(100*Math.max(0,r.mean_rank-r.spread/2))+'%';
-    f.style.width=Math.max(2,Math.round(100*r.spread))+'%';
-    t.appendChild(f); row.appendChild(t);
-    row.appendChild(el('div','num',r.spread.toFixed(2)));
-    w.appendChild(row);
-  });
-  return w;
-}
-
-function ablation(l){
-  const w=el('div','ablate');
-  w.appendChild(el('h3',null,'Without the taste graph'));
-  if(!l.available){
-    w.appendChild(el('p','hint', l.note||'No comparison available.'));
-    return w;
-  }
-  w.appendChild(el('p','hint','The same question put to a language model that '
-    +'sees only the two title lists \u2014 no Qloo, no affinities. This is the '
-    +'brief\u2019s own test of whether the project would work the same without '
-    +'the taste graph, run rather than asserted.'));
-  const a=el('p','agree');
-  if(typeof l.top5_overlap==='number'){
-    a.appendChild(document.createTextNode('top five: '));
-    a.appendChild(el('b',null,l.top5_overlap+' of 5 shared'));
-    a.appendChild(document.createTextNode('  \u00b7  an LLM-only agent would open with '
-      +(5-l.top5_overlap)+' different title'+(5-l.top5_overlap===1?'':'s')));
-  }
-  a.appendChild(document.createTextNode('  \u00b7  full-list agreement '
-    +(l.agreement==null?'n/a':l.agreement.toFixed(2))));
-  w.appendChild(a);
-  if(l.disagreements&&l.disagreements.length){
-    const t=el('table','cmp');
-    t.innerHTML='<thead><tr><th>Title</th><th>Qloo places it</th>'
-      +'<th>LLM places it</th></tr></thead>';
-    const b=el('tbody');
-    l.disagreements.forEach(d=>{
-      const tr=el('tr');
-      tr.appendChild(el('td','t',d.title));
-      tr.appendChild(el('td','q','#'+d.qloo_place));
-      tr.appendChild(el('td','l','#'+d.llm_place));
-      b.appendChild(tr);
+function drawInputs(){
+  GROUPS.forEach(g=>{
+    const box=$(g.id); box.innerHTML='';
+    const h=el('h2'); h.appendChild(document.createTextNode(g.label));
+    h.appendChild(el('span','cnt',state[g.key].length+''));
+    box.appendChild(h);
+    box.appendChild(el('p','help',g.help));
+    const chips=el('chips'.replace('chips','div'),'chips');
+    state[g.key].forEach((t,i)=>{
+      const miss=DATA&&DATA.slate&&g.key==='slate'&&(DATA.slate.missing||[]).includes(t);
+      const c=el('span','chip'+(miss?' miss':''));
+      c.appendChild(document.createTextNode(t));
+      const b=el('button',null,'×'); b.title='Remove';
+      b.onclick=()=>{state[g.key].splice(i,1);drawInputs()};
+      c.appendChild(b); chips.appendChild(c);
     });
-    t.appendChild(b); w.appendChild(t);
-  }
-  const c1=el('p','caveat');
-  c1.textContent='A frontier model is a strong baseline here, and we are not '
-    +'claiming otherwise: across every buyer and slate we tried, including '
-    +'deliberately obscure titles, it shares three to four of the top five. '
-    +'It is also perfectly repeatable \u2014 four identical runs at temperature '
-    +'zero gave the same order.';
-  w.appendChild(c1);
-  const c2=el('p','caveat');
-  c2.innerHTML='<b>What it cannot do is decline.</b> It returned a confident '
-    +'ranking for all twelve titles. The grounded run withheld four of them '
-    +'because two halves of the buyer\u2019s catalogue disagreed, and it can '
-    +'say when a title ranks the same for every buyer. Neither is something a '
-    +'model without the graph can tell you \u2014 and neither is visible in a '
-    +'ranking that always looks certain.';
-  w.appendChild(c2);
-  return w;
+    box.appendChild(chips);
+    const inp=el('input'); inp.type='text'; inp.placeholder='Add a title…';
+    inp.onkeydown=e=>{ if(e.key==='Enter'&&inp.value.trim()){
+      state[g.key].push(inp.value.trim()); inp.value=''; drawInputs(); } };
+    box.appendChild(inp);
+  });
 }
 
-function trace(steps,calls){
-  const w=el('div','trace');
-  w.appendChild(el('h3',null,'What the agent did'));
-  w.appendChild(el('p','hint','Each line is a decision, not a stage. Where a '
-    +'reading was too flat to separate anything, or two halves of a catalogue '
-    +'disagreed, the agent changed what it did next and recorded both the '
-    +'observation and the change. '+(calls?calls+' Qloo calls.':'')));
+function run(){
+  $('run').disabled=true;
+  $('rh').textContent='Ranking…'; $('src').innerHTML=''; $('stats').innerHTML='';
+  $('tabs').innerHTML=''; $('pane').innerHTML='';
+  for(let i=0;i<6;i++) $('pane').appendChild(el('div','skel'));
+  fetch('/api/pitch',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(state)})
+    .then(r=>r.json()).then(d=>{DATA=d;drawInputs();render()})
+    .catch(e=>{$('pane').innerHTML='';$('pane').appendChild(el('p','empty',String(e)))})
+    .finally(()=>{$('run').disabled=false});
+}
+
+function render(){
+  const d=DATA, pane=$('pane');
+  if(d.error){ $('rh').textContent='Could not rank'; pane.innerHTML='';
+    pane.appendChild(el('p','note',d.error)); return; }
+  $('rh').textContent='Shortlist for this buyer';
+  $('src').innerHTML='<span class="pill '+(d.source||'')+'">'+(d.source||'')+'</span>';
+  const st=$('stats'); st.innerHTML='';
+  const put=(k,v)=>{const s=el('span');s.appendChild(document.createTextNode(k+' '));
+    s.appendChild(el('b',null,v));st.appendChild(s)};
+  put('slate',d.slate.resolved+' titles');
+  put('buyer',d.buyer.resolved.length+' titles');
+  if(d.buyer.halves_agree!=null) put('halves agree',d.buyer.halves_agree.toFixed(2));
+  if(d.absolute) put('affinity',d.absolute.worst.toFixed(3)+'–'+d.absolute.best.toFixed(3));
+  if(d.calls) put('qloo calls',d.calls);
+
+  const tabs=[['shortlist','Shortlist',d.rows.length],
+              ['withheld','Withheld',(d.withheld||[]).length],
+              ['trace','How it decided',(d.steps||[]).length],
+              ['ablation','Without Qloo',null],
+              ['method','Method',null]];
+  const tb=$('tabs'); tb.innerHTML='';
+  tabs.forEach(([k,label,n])=>{
+    const b=el('button',null,label); b.setAttribute('aria-selected',String(TAB===k));
+    if(n!=null) b.appendChild(el('span','n',String(n)));
+    b.onclick=()=>{TAB=k;render()}; tb.appendChild(b);
+  });
+  pane.innerHTML='';
+  ({shortlist:paneShortlist,withheld:paneWithheld,trace:paneTrace,
+    ablation:paneAblation,method:paneMethod}[TAB])(pane,d);
+}
+
+function paneShortlist(p,d){
+  if(d.low_separation){
+    const w=el('div','warn');
+    w.innerHTML='<b>Low separation.</b> This buyer’s catalogue barely '
+      +'distinguishes your titles from one another, so treat the top few as a '
+      +'group rather than a strict order.';
+    p.appendChild(w);
+  }
+  // One line here; the full definition lives in the Method tab.
+  p.appendChild(el('p','note','Place is a rank among the titles you offered, not '
+    +'a score \u2014 the raw affinity beside it is the absolute reading.'));
+  const t=el('table');
+  t.innerHTML='<thead><tr><th style="width:40px"></th><th>Title</th>'
+    +'<th class="n" style="width:72px">Place</th>'
+    +'<th class="n" style="width:74px">Affinity</th>'
+    +'<th style="width:120px;padding-left:16px">Relative</th>'
+    +'<th class="n" style="width:78px">Vs home</th></tr></thead>';
+  const b=el('tbody');
+  d.rows.forEach(r=>{
+    const tr=el('tr');
+    const td0=el('td');
+    if(r.image){const im=new Image();im.className='poster';im.src=r.image;im.alt='';im.loading='lazy';td0.appendChild(im)}
+    tr.appendChild(td0);
+    const td1=el('td'); td1.appendChild(el('div','ttl',r.title));
+    if(r.note) td1.appendChild(el('div','flag',r.note));
+    if(r.invariant) td1.appendChild(el('div','flag','ranks the same for every buyer'));
+    tr.appendChild(td1);
+    tr.appendChild(el('td','n num',r.place||''));
+    tr.appendChild(el('td','n num',r.affinity!=null?r.affinity.toFixed(3):'—'));
+    const td4=el('td','bar-cell'); td4.style.paddingLeft='16px';
+    const mini=el('div','mini'), f=el('i');
+    f.style.left='0'; f.style.width=Math.round((r.fit||0)*100)+'%';
+    mini.appendChild(f); td4.appendChild(mini); tr.appendChild(td4);
+    const td5=el('td','n num '+(r.shift>=0?'up':'down'));
+    td5.textContent=typeof r.shift==='number'?fmt(r.shift):'—';
+    tr.appendChild(td5);
+    b.appendChild(tr);
+  });
+  t.appendChild(b); p.appendChild(t);
+  if(d.uncomparable&&d.uncomparable.length)
+    p.appendChild(el('p','note','Scored for the buyer but not comparable against home: '
+      +d.uncomparable.map(r=>r.title).join(', ')+'. Reporting them as no movement would be false.'));
+}
+
+function paneWithheld(p,d){
+  const w=d.withheld||[];
+  if(!w.length){ p.appendChild(el('p','empty','Nothing withheld: the two halves of the buyer’s catalogue agreed about every title.')); return; }
+  p.appendChild(el('p','note','The buyer’s catalogue was split in two and read '
+    +'separately. These titles landed in very different places in the two readings, '
+    +'so no verdict is offered on them.'));
+  const g=el('div','gal dim');
+  w.forEach(t=>{const f=el('figure');
+    const im=new Image(); im.src=(d.art&&d.art[t])||''; im.alt='';
+    f.appendChild(im); f.appendChild(el('figcaption',null,t)); g.appendChild(f)});
+  p.appendChild(g);
+  if(d.excluded_overlap&&d.excluded_overlap.length)
+    p.appendChild(el('p','note','Removed before scoring because they also describe the buyer: '
+      +d.excluded_overlap.join(', ')+'. Qloo excludes an entity from its own results.'));
+}
+
+function paneTrace(p,d){
+  p.appendChild(el('p','note','Each line is a decision. Where a reading was too '
+    +'flat to separate anything, or two halves of a catalogue disagreed, the agent '
+    +'changed what it did next.'));
   const ol=el('ol','steps');
-  steps.forEach(s=>{
+  (d.steps||[]).forEach(s=>{
     const li=el('li');
-    const who=el('div','who '+(s.profile||''),s.profile||'');
+    li.appendChild(el('div','who '+(s.profile||''),s.profile||''));
     const body=el('div');
     body.appendChild(el('div','act',s.action));
     if(s.reason) body.appendChild(el('div','why',s.reason));
-    if(s.observed) body.appendChild(el('div','obs','observed: '+s.observed));
-    if(s.changed) body.appendChild(el('div','did','\u21aa '+s.changed));
-    li.appendChild(who); li.appendChild(body); ol.appendChild(li);
+    if(s.observed) body.appendChild(el('div','obs',s.observed));
+    if(s.changed) body.appendChild(el('div','did','↪ '+s.changed));
+    li.appendChild(body); ol.appendChild(li);
   });
-  w.appendChild(ol);
-  return w;
+  p.appendChild(ol);
 }
 
-function render(d){
-  const out=$('out'); out.innerHTML='';
-  if(d.error){ out.appendChild(el('p','note err',d.error)); return; }
-  const bar=el('div','bar');
-  const add=(label,val)=>{const s=el('span');s.appendChild(document.createTextNode(label+' '));
-    s.appendChild(el('b',null,val));bar.appendChild(s)};
-  add('slate',d.slate.resolved+' titles');
-  add('buyer',d.buyer.resolved.length+' titles');
-  if(d.buyer.halves_agree!=null) add('halves agree',d.buyer.halves_agree.toFixed(2));
-  if(d.mode==='fit') bar.appendChild(el('span',null,'no home audience — showing fit, not movement'));
-  out.appendChild(bar);
-
-  // Split without overlap. slice(0,6) and slice(-6) shared four titles when
-  // only eight survived the cross-check, which read as a bug.
-  const half=Math.ceil(d.rows.length/2);
-  const good=d.rows.slice(0,Math.min(6,half));
-  const bad=d.rows.slice(half).slice(-6).reverse();
-  out.appendChild(el('h2','go','Best fit for this buyer'));
-  out.appendChild(rail(good,false));
-  if(bad.length){
-    out.appendChild(el('h2','no','Weakest fit'));
-    out.appendChild(rail(bad,true));
+function paneAblation(p,d){
+  const l=d.llm;
+  if(!l||!l.available){ p.appendChild(el('p','empty',(l&&l.note)||'No comparison available.')); return; }
+  p.appendChild(el('p','note','The same question put to a language model that sees '
+    +'only the two title lists — no Qloo, no affinities.'));
+  const st=el('div','stats');
+  const put=(k,v)=>{const s=el('span');s.appendChild(document.createTextNode(k+' '));
+    s.appendChild(el('b',null,v));st.appendChild(s)};
+  if(typeof l.top5_overlap==='number'){
+    put('top five',l.top5_overlap+' of 5 shared');
+    put('it would open with',(5-l.top5_overlap)+' different title'+(5-l.top5_overlap===1?'':'s'));
   }
-
-  if(d.withheld&&d.withheld.length) out.appendChild(el('p','note',
-    'Withheld as unstable ('+d.withheld.length+'): '+d.withheld.join(', ')+
-    '. The two halves of the buyer’s catalogue disagreed about where these sit.'));
-  if(d.uncomparable&&d.uncomparable.length) out.appendChild(el('p','note',
-    'Scored for the buyer but not comparable ('+d.uncomparable.length+'): '+
-    d.uncomparable.map(r=>r.title).join(', ')+'. Reporting them as no movement would be false.'));
-  if(d.excluded_overlap&&d.excluded_overlap.length) out.appendChild(el('p','note',
-    'Removed because they also describe the buyer or your home audience: '+
-    d.excluded_overlap.join(', ')+'.'));
-  if(d.slate.missing&&d.slate.missing.length) out.appendChild(el('p','note',
-    'Not found in the graph: '+d.slate.missing.join(', ')+'.'));
-  if(d.invariance) out.appendChild(invariance(d.invariance));
-  if(d.llm) out.appendChild(ablation(d.llm));
-  if(d.steps&&d.steps.length) out.appendChild(trace(d.steps,d.calls));
-  if(d.buyer.halves_agree!=null&&d.buyer.halves_agree<0.5) out.appendChild(el('p','note',
-    'The buyer’s two halves agree at only '+d.buyer.halves_agree.toFixed(2)+
-    '. That catalogue describes more than one taste; the ranking below is weak evidence.'));
+  if(l.agreement!=null) put('full-list agreement',l.agreement.toFixed(2));
+  p.appendChild(st);
+  if(l.disagreements&&l.disagreements.length){
+    const t=el('table');
+    t.innerHTML='<thead><tr><th>Title</th><th class="n">Qloo</th><th class="n">LLM only</th></tr></thead>';
+    const b=el('tbody');
+    l.disagreements.forEach(x=>{const tr=el('tr');
+      tr.appendChild(el('td','ttl',x.title));
+      tr.appendChild(el('td','n num up','#'+x.qloo_place));
+      tr.appendChild(el('td','n num down','#'+x.llm_place));
+      b.appendChild(tr)});
+    t.appendChild(b); p.appendChild(t);
+  }
+  p.appendChild(el('h3','sec','What this does and does not show'));
+  p.appendChild(el('p','note','A frontier model is a strong baseline here and we are '
+    +'not claiming otherwise: across every buyer and slate tried, including obscure '
+    +'titles, it shares three to four of the top five, and it is perfectly repeatable '
+    +'at temperature zero. What it cannot do is decline — it ranked every title '
+    +'confidently, where this run withheld '+((d.withheld||[]).length)+' and can report '
+    +'which titles rank the same for every buyer.'));
 }
+
+function paneMethod(p,d){
+  const add=(h,t)=>{p.appendChild(el('h3','sec',h));p.appendChild(el('p','note',t))};
+  add('Measured on the hackathon endpoint, not read from the docs',
+    'filter.location.query is silently ignored for movies — affinities come back '
+    +'identical to four decimals across five cities — though it is honoured for '
+    +'places. Affinity is not normalised per candidate set; it varies with the signal. '
+    +'query.affinity is the taste score and popularity sits beside it, identical in '
+    +'every market. take is capped at 50. Cross-domain signal varies enormously: TV '
+    +'0.06, games 0.08, music 0.11 discriminate film taste; books, podcasts and places '
+    +'barely or not at all.');
+  add('What the numbers here mean',
+    'Place is a rank among the titles you offered, not a score: first place reads first '
+    +'even if this buyer is lukewarm about everything, which is why the raw affinity is '
+    +'shown beside it. Vs home is that place minus its place with your home audience.');
+  add('Validation, including where it fails',
+    '11 of 11 regionally-skewed films rank highest with their own home audience '
+    +'(p = 0.0005) — a validity check rather than a finding, since we chose which '
+    +'films count as regional. 10 of 11 survive replacing every anchor artist '
+    +'(p = 0.0059), which is the result with weight. Cluster membership survives '
+    +'bootstrap resampling for 67% of pairings. An external backtest against Wikipedia '
+    +'pageview ranks, collected before any Qloo call, agrees in Mumbai and Berlin and '
+    +'not in the other three markets.');
+  add('What is not claimed',
+    'The map’s eighteen audiences are clusters of cultural anchors grouped by '
+    +'modelled film affinity — communities within Qloo’s graph, not observed '
+    +'groups of people. Fifteen have too few members to cross-check and are drawn dashed. '
+    +'The two readings of any audience share no anchors but come from the same graph, so '
+    +'their agreement is a consistency check, not independent corroboration.');
+  const a=el('p','note'); a.innerHTML='Everything above is reproducible from the '
+    +'<a href="https://github.com/4KInc/travels-well" style="color:var(--accent)">repository</a>: '
+    +'run_all.py for the API harness, atlas_build.py for the clustering and bootstrap. '
+    +'The pre-registration and both amendments are committed.';
+  p.appendChild(a);
+}
+
+$('run').onclick=run;
+$('reset').onclick=()=>{state.slate=[...EX.slate];state.buyer=[...EX.buyer];state.home=[...EX.home];
+  drawInputs();run()};
+fetch('/status').then(r=>r.json()).then(s=>{
+  if(s.quota_remaining!=null)
+    $('quota').innerHTML='qloo quota <b>'+s.quota_remaining.toLocaleString()+'</b>';
+}).catch(()=>{});
+drawInputs(); run();
 </script>

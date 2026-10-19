@@ -175,9 +175,6 @@ class Handler(BaseHTTPRequestHandler):
         if route.path in ("/", "/pitch", "/pitch.html"):
             return self._send(200, (HERE / "pitch.html").read_text(),
                               "text/html; charset=utf-8")
-        if route.path in ("/evidence", "/evidence.html"):
-            return self._send(200, (HERE / "evidence.html").read_text(),
-                              "text/html; charset=utf-8")
         if route.path in ("/atlas", "/atlas.html", "/map"):
             return self._send(200, (HERE / "atlas.html").read_text(),
                               "text/html; charset=utf-8")

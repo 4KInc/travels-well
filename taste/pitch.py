@@ -361,6 +361,7 @@ def run(client, slate_titles, buyer_titles, home_titles=None,
                  "halves_agree": (round(home_agreement, 3)
                                   if home_agreement is not None else None)},
         "slate": {"resolved": len(slate), "missing": slate_missing},
+        "art": {s_["name"]: s_["image"] for s_ in slate if s_.get("image")},
         "steps": steps,
         "llm": llm_block,
         "invariance": invariance,
