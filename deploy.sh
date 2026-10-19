@@ -9,7 +9,7 @@
 set -euo pipefail
 
 : "${GOOGLE_CLOUD_PROJECT:?set GOOGLE_CLOUD_PROJECT explicitly, do not rely on the gcloud default}"
-REGION="${REGION:-asia-south1}"
+REGION="${REGION:-us-central1}"   # where travels-well actually runs; asia-south1 would fork a second service
 SERVICE="${SERVICE:-travels-well}"
 : "${QLOO_API_KEY:?QLOO_API_KEY must be set in the deploying shell}"
 
