@@ -1,386 +1,212 @@
 <!doctype html><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>the Slate view</title>
+<title>Taste Atlas — Slate</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-:root{
-  color-scheme:dark;
-  --screen:#0a0a0c;        /* the house lights are down */
-  --seat:#141419;
-  --seat-2:#1c1c23;
-  --ink:#f4f1ea;
-  --ink-2:#a9a49a;
-  --ink-3:#6f6b64;
-  --rule:#26262e;
-  --bulb:#e8b84b;          /* marquee amber */
-  --pos:#3987e5;           /* validated diverging pair, dark steps */
-  --neg:#e66767;
-  --display:"Bebas Neue",Impact,"Haettenschweiler",sans-serif;
-  --sans:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,sans-serif;
-  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
-}
-*{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
-body{margin:0;overflow-x:hidden;background:var(--screen);color:var(--ink);
-  font:400 15px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
-.wrap{width:100%;max-width:1180px;margin:0 auto;padding:0 clamp(14px,3.5vw,32px) 90px}
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;450;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/ui.css">
 
-/* ---------- marquee ---------- */
-.marquee{padding:clamp(26px,5vw,46px) 0 0;text-align:center}
-.bulbs{display:flex;justify-content:center;gap:9px;margin-bottom:16px}
-.bulbs i{width:5px;height:5px;border-radius:50%;background:var(--bulb);
-  box-shadow:0 0 7px var(--bulb);opacity:.85}
-h1{font:400 clamp(52px,12vw,112px)/0.86 var(--display);letter-spacing:.012em;
-  margin:0;color:var(--ink);text-transform:uppercase}
-h1 span{color:var(--bulb)}
-.tagline{font:400 12px/1.5 var(--mono);letter-spacing:.2em;text-transform:uppercase;
-  color:var(--ink-3);margin:14px 0 0}
-.strip{height:14px;margin:26px 0 0;border-top:1px solid var(--rule);
-  border-bottom:1px solid var(--rule);
-  background:repeating-linear-gradient(90deg,transparent 0 9px,var(--rule) 9px 15px)}
-
-/* ---------- picker ---------- */
-.pickrow{display:flex;align-items:center;justify-content:center;gap:10px;
-  flex-wrap:wrap;margin:24px 0 8px}
-.picklabel{font:400 11px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;
-  color:var(--ink-3)}
-button{font:400 20px/1 var(--display);letter-spacing:.05em;padding:9px 17px 7px;
-  border:1px solid var(--rule);background:var(--seat);color:var(--ink-2);
-  cursor:pointer;border-radius:2px;transition:.14s}
-button:hover{color:var(--ink);border-color:var(--bulb)}
-button[aria-pressed=true]{background:var(--bulb);color:#140f02;border-color:var(--bulb)}
-button:focus-visible{outline:2px solid var(--bulb);outline-offset:3px}
-
-.legendrow{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;
-  margin:14px 0 2px;font:400 11px/1 var(--mono);letter-spacing:.09em;
-  text-transform:uppercase;color:var(--ink-3)}
-.legendrow .key{display:inline-flex;align-items:center;gap:7px}
-.sw{width:10px;height:10px;border-radius:1px;display:inline-block}
-.sw.up{background:var(--pos)} .sw.down{background:var(--neg)}
-.sw.muted{background:var(--ink-3)}
-
-/* ---------- run bar ---------- */
-.runbar{display:flex;align-items:center;justify-content:center;gap:14px;
-  flex-wrap:wrap;font:400 11.5px/1 var(--mono);color:var(--ink-3);
-  letter-spacing:.08em;text-transform:uppercase;margin:16px 0 4px}
-.badge{padding:5px 9px;border:1px solid currentColor;border-radius:2px}
-.badge.LIVE{color:var(--pos)}
-.badge.CACHED{color:var(--bulb)}
-.badge.UNAVAILABLE{color:var(--ink-3)}
-.note{max-width:74ch;margin:14px auto 0;text-align:center;color:var(--ink-2);
-  font-size:14px;line-height:1.6}
-
-/* ---------- market row ---------- */
-.row-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
-  margin:38px 0 4px}
-.row-head h2{font:400 clamp(28px,4.4vw,42px)/1 var(--display);letter-spacing:.02em;
-  margin:0;text-transform:uppercase}
-.row-meta{font:400 11px/1 var(--mono);color:var(--ink-3);letter-spacing:.08em;
-  text-transform:uppercase}
-.rail{display:grid;grid-auto-flow:column;grid-auto-columns:clamp(124px,17vw,168px);
-  gap:clamp(10px,1.6vw,18px);overflow-x:auto;padding:16px 2px 8px;
-  scroll-snap-type:x proximity;scrollbar-width:thin}
-.rail::-webkit-scrollbar{height:6px}
-.rail::-webkit-scrollbar-thumb{background:var(--rule);border-radius:3px}
-.card{scroll-snap-align:start;position:relative;text-decoration:none;color:inherit}
-.poster{position:relative;aspect-ratio:2/3;background:var(--seat-2);
-  border:1px solid var(--rule);border-radius:3px;overflow:hidden;
-  transition:transform .16s ease,border-color .16s ease}
-.card:hover .poster{transform:translateY(-4px) scale(1.022);border-color:var(--ink-3)}
-.poster img{width:100%;height:100%;object-fit:cover;display:block}
-.poster .fallback{position:absolute;inset:0;display:grid;place-items:center;
-  padding:10px;text-align:center;font:400 17px/1.05 var(--display);
-  letter-spacing:.03em;color:var(--ink-3);text-transform:uppercase}
-.verdict{position:absolute;top:7px;right:7px;padding:4px 7px;border-radius:2px;
-  font:500 12px/1 var(--mono);backdrop-filter:blur(3px);
-  background:rgba(5,5,7,.78);border:1px solid currentColor}
-.verdict.up{color:var(--pos)}
-.verdict.down{color:var(--neg)}
-.poster::after{content:"";position:absolute;left:0;right:0;bottom:0;height:34px;
-  background:linear-gradient(to top,rgba(5,5,7,.8),transparent);pointer-events:none}
-.bar{position:absolute;left:0;bottom:0;height:4px;z-index:2}
-.bar.up{background:var(--pos)}
-.bar.down{background:var(--neg)}
-.cap{margin-top:8px;font-size:12.5px;line-height:1.3;color:var(--ink-2)}
-.card.muted .poster{filter:grayscale(1) brightness(.5)}
-.card.muted .cap{color:var(--ink-3);text-decoration:line-through;
-  text-decoration-color:var(--ink-3)}
-.ribbon{position:absolute;top:9px;left:-30px;transform:rotate(-45deg);
-  background:var(--ink-3);color:var(--screen);font:500 9px/1 var(--mono);
-  letter-spacing:.14em;padding:4px 34px;text-transform:uppercase}
-
-/* ---------- refusal ---------- */
-.refusal{border:1px solid var(--bulb);border-radius:3px;padding:26px 28px;
-  margin:34px 0;background:linear-gradient(180deg,rgba(232,184,75,.07),transparent)}
-.refusal h2{font:400 clamp(30px,5vw,44px)/1 var(--display);letter-spacing:.02em;
-  margin:0 0 12px;color:var(--bulb);text-transform:uppercase}
-.refusal p{margin:0;color:var(--ink-2);font-size:15px;max-width:72ch;line-height:1.65}
-
-/* ---------- back matter ---------- */
-.backmatter{margin-top:52px;border-top:1px solid var(--rule);padding-top:22px}
-details{margin-top:14px}
-summary{display:inline-block;cursor:pointer;font:400 11px/1 var(--mono);
-  letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
-summary:hover{color:var(--bulb)}
-summary:focus-visible{outline:2px solid var(--bulb);outline-offset:3px}
-ol.trace{list-style:none;margin:16px 0 0;padding:0;counter-reset:s}
-ol.trace li{display:grid;grid-template-columns:30px 1fr;gap:14px;padding-bottom:14px;
-  counter-increment:s}
-ol.trace li::before{content:counter(s,decimal-leading-zero);
-  font:400 11px/1.6 var(--mono);color:var(--ink-3)}
-.act{font:400 15px/1.2 var(--display);letter-spacing:.06em;text-transform:uppercase;
-  color:var(--ink)}
-.why{font-size:13.5px;color:var(--ink-2);margin-top:3px;max-width:70ch}
-.passed{font:400 11.5px/1.5 var(--mono);color:var(--ink-3);margin-top:4px}
-table{width:100%;border-collapse:collapse;font:400 12px/1.5 var(--mono);margin-top:12px}
-details>table{display:block;overflow-x:auto}
-th{text-align:left;font-weight:500;color:var(--ink-3);font-size:10px;
-  letter-spacing:.12em;text-transform:uppercase;padding:7px 12px 7px 0;
-  border-bottom:1px solid var(--rule)}
-td{padding:7px 12px 7px 0;border-bottom:1px solid var(--rule);color:var(--ink-2)}
-td.num,th.num{text-align:right;padding-right:0}
-.skel{aspect-ratio:2/3;background:linear-gradient(90deg,var(--seat) 25%,
-  var(--seat-2) 37%,var(--seat) 63%);background-size:400% 100%;
-  animation:sh 1.4s ease infinite;border-radius:3px}
-@keyframes sh{0%{background-position:100% 0}100%{background-position:0 0}}
-@media (prefers-reduced-motion:reduce){.skel{animation:none}
-  .card:hover .poster{transform:none}}
-footer{margin-top:40px;color:var(--ink-3);font-size:12.5px;line-height:1.7;
-  max-width:76ch}
-footer a{color:var(--ink-2)}
-
-/* ---------- shared nav ---------- */
-.topnav{position:sticky;top:0;z-index:20;display:flex;align-items:center;
-  justify-content:center;gap:clamp(10px,2.5vw,26px);flex-wrap:wrap;
-  padding:11px clamp(14px,3.5vw,32px);background:rgba(10,10,12,.86);
-  backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
-.topnav .mark{font:400 19px/1 var(--display);letter-spacing:.06em;
-  text-transform:uppercase;color:var(--ink);margin-right:4px}
-.topnav .mark b{color:var(--bulb);font-weight:400}
-.topnav a{font:400 11px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;
-  color:var(--ink-3);text-decoration:none;padding:6px 2px;border-bottom:1px solid transparent}
-.topnav a:hover{color:var(--ink)}
-.topnav a[aria-current=page]{color:var(--ink);border-bottom-color:var(--bulb)}
-.topnav .spacer{flex:1 1 0;min-width:0}
-@media (max-width:620px){.topnav{gap:12px}.topnav .spacer{display:none}}
-</style>
-
-<nav class="topnav">
-    <span class="mark">Taste <b>Atlas</b></span>
-    <a href="/atlas">The map</a>
+<div class="bar">
+  <span class="brand">Taste Atlas <span>/ Slate</span></span>
+  <nav>
     <a href="/">Pitch desk</a>
-    <a href="/slate" aria-current="page">Slate view</a>
-    <span class="spacer"></span>
-    <a href="https://github.com/4KInc/travels-well">Source</a>
-</nav>
-
-<div class="wrap">
-  <header class="marquee">
-    <div class="bulbs"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-    <h1>Slate <span>View</span></h1>
-    <p class="tagline">Taste Atlas &middot; the fixed-catalogue view</p>
-    <div class="strip"></div>
-  </header>
-
-  <div class="pickrow">
-    <span class="picklabel">The audience this slate already plays to</span>
-    <span id="controls"></span>
-  </div>
-
-  <div class="legendrow" id="legend">
-    <span class="key"><i class="sw up"></i>travels — rises against home</span>
-    <span class="key"><i class="sw down"></i>stays home — falls</span>
-    <span class="key"><i class="sw muted"></i>withheld — readings disagree</span>
-  </div>
-  <div id="out"></div>
-
-  <footer class="backmatter">
-    Posters and affinities both come from Qloo. Answers are labelled LIVE or
-    CACHED; a cached answer is a recorded run of this same pipeline, never a
-    synthetic stand-in. Where two disjoint readings of a market disagree about
-    a film, it is withheld rather than ranked. Where a market is too thinly
-    covered, or a baseline too unstable to measure against, the agent says so
-    instead of guessing.
-    <br><a href="/pitch">Pitch Desk &mdash; rank your own slate for a named buyer</a>
-    &middot; <a href="/">Open the Taste Atlas &mdash; 18 audiences discovered by clustering
-    the graph, and route a slate between any two</a>
-    &middot; <a href="https://github.com/4KInc/travels-well">Source and method</a>
-  </footer>
+    <a href="/atlas">Map</a>
+    <a href="/slate" aria-current="page">Slate</a>
+  </nav>
+  <span class="sp"></span>
+  <span class="meta" id="topmeta"></span>
+  <nav><a href="https://github.com/4KInc/travels-well">Source</a></nav>
 </div>
 
+<div class="shell">
+  <aside class="side">
+    <div class="grp">
+      <h2>Fixed slates</h2>
+      <p class="help">Recorded catalogues with a home audience already chosen.
+      Pick one and the agent runs it end to end.</p>
+      <div class="rows" id="presets"></div>
+    </div>
+
+    <div class="grp">
+      <h2>Reading the numbers</h2>
+      <div class="legend">
+        <span><i class="swatch" style="background:#3987e5"></i>travels — rises against home</span>
+        <span><i class="swatch" style="background:#e66767"></i>stays behind — falls</span>
+        <span><i class="swatch" style="border:1.5px dashed #6b7280"></i>withheld — the two readings disagree</span>
+      </div>
+      <p class="help" style="margin-top:9px">Shift is a difference in rank
+      position against the home audience, over the films both rank.</p>
+    </div>
+
+    <div class="grp">
+      <h2>Bring your own</h2>
+      <p class="help">The <a href="/">Pitch desk</a> runs the same agent against
+      a catalogue and a buyer you type in yourself.</p>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="rhead">
+      <div class="rtitle"><h1 id="rtitle">&nbsp;</h1><span class="pill" id="rpill"></span></div>
+      <div class="stats" id="rstats"></div>
+      <div class="tabs" id="tabs"></div>
+    </div>
+    <div id="panes"></div>
+  </main>
+</div>
+
+<script src="/ui.js"></script>
 <script>
 const PRESETS = __PRESETS__;
-const controls = document.getElementById('controls');
-const out = document.getElementById('out');
-const el = (t,c,x) => { const e=document.createElement(t);
-  if(c) e.className=c; if(x!==undefined) e.textContent=x; return e; };
-const fmt = v => (v>=0?'+':'−') + Math.abs(v).toFixed(2);
+const presetBox = document.getElementById('presets');
+let TAB = 0, RUNNING = null;
 
 PRESETS.forEach(p => {
-  const b = el('button', null, p.label);
-  b.setAttribute('aria-pressed','false'); b.dataset.id = p.id;
-  b.onclick = () => run(p,b);
-  controls.appendChild(b);
+  const b = el('button', 'rowbtn');
+  b.setAttribute('aria-selected', 'false');
+  b.appendChild(el('span', 't', p.label));
+  if (p.home_market) b.appendChild(el('span', 's', p.home_market));
+  b.dataset.id = p.id;
+  b.onclick = () => run(p);
+  presetBox.appendChild(b);
 });
 
-function skeleton(){
-  out.innerHTML = '';
-  const h = el('div','row-head'); h.appendChild(el('h2',null,'Reading each market twice'));
-  out.appendChild(h);
-  const rail = el('div','rail');
-  for(let i=0;i<7;i++) rail.appendChild(el('div','skel'));
-  out.appendChild(rail);
-}
+function run(p) {
+  [...presetBox.children].forEach(c =>
+    c.setAttribute('aria-selected', String(c.dataset.id === p.id)));
+  RUNNING = p; TAB = 0;
+  document.getElementById('rtitle').textContent = p.label;
+  document.getElementById('rpill').textContent = '';
+  document.getElementById('rpill').className = 'pill';
+  document.getElementById('rstats').textContent = 'running the agent…';
+  document.getElementById('tabs').innerHTML = '';
+  const panes = document.getElementById('panes');
+  panes.innerHTML = '';
+  const sk = el('div', 'pane');
+  for (let i = 0; i < 6; i++) sk.appendChild(el('div', 'skel'));
+  panes.appendChild(sk);
 
-function run(p, btn){
-  [...controls.children].forEach(c=>c.setAttribute('aria-pressed','false'));
-  btn.setAttribute('aria-pressed','true');
-  skeleton();
-  fetch('/api/run?preset='+encodeURIComponent(p.id))
-    .then(r=>r.json()).then(d=>render(d,p))
-    .catch(e=>{ out.innerHTML=''; out.appendChild(el('p','note','Could not reach the server: '+e)); });
-}
-
-function posterCard(item, kind){
-  // kind: 'up' | 'down' | 'muted'
-  const c = el('div','card' + (kind==='muted' ? ' muted' : ''));
-  const box = el('div','poster');
-  if(item.image){
-    const img = new Image();
-    img.src = item.image; img.alt = item.title; img.loading = 'lazy';
-    img.onerror = () => { img.remove(); box.appendChild(el('div','fallback',item.title)); };
-    box.appendChild(img);
-  } else {
-    box.appendChild(el('div','fallback',item.title));
-  }
-  if(kind==='muted'){
-    box.appendChild(el('div','ribbon','withheld'));
-  } else {
-    box.appendChild(el('div','verdict '+kind, fmt(item.shift)));
-    // The chip carries the number only; the legend above says what the
-    // colours mean, so the poster does not repeat it twenty times.
-    const bar = el('div','bar '+kind);
-    bar.style.width = Math.round(Math.min(Math.abs(item.shift),1)*100)+'%';
-    box.appendChild(bar);
-  }
-  c.appendChild(box);
-  c.appendChild(el('div','cap',item.title));
-  c.title = item.title + (kind==='muted' ? ' — two readings disagree, withheld'
-    : ' — ' + fmt(item.shift) + ' against home');
-  return c;
-}
-
-function rail(items, kind){
-  const r = el('div','rail');
-  items.forEach(i => r.appendChild(posterCard(i, kind)));
-  return r;
-}
-
-function marketBlock(m){
-  const frag = document.createDocumentFragment();
-  const head = el('div','row-head');
-  head.appendChild(el('h2',null,m.market));
-  head.appendChild(el('span','row-meta',
-    m.compared_on + ' films · readings agree ' +
-    (m.anchor_agreement==null?'n/a':m.anchor_agreement.toFixed(2))));
-  frag.appendChild(head);
-
-  const ranked = [...(m.travels||[]), ...(m.does_not_travel||[])]
-    .sort((a,b)=>b.shift-a.shift);
-  if(ranked.length){
-    const r = el('div','rail');
-    ranked.forEach(i => r.appendChild(posterCard(i, i.shift>=0?'up':'down')));
-    frag.appendChild(r);
-  }
-  if(m.uncertain && m.uncertain.length){
-    const h = el('div','row-head');
-    h.appendChild(el('span','row-meta','Evidence unstable — withheld ('+m.uncertain.length+')'));
-    frag.appendChild(h);
-    frag.appendChild(rail(m.uncertain,'muted'));
-  }
-  if(ranked.length){
-    const d = el('details');
-    d.appendChild(el('summary',null,'Table view'));
-    const tb = el('table');
-    tb.innerHTML = '<thead><tr><th>Film</th><th>Verdict</th>'+
-      '<th class="num">Shift vs home</th></tr></thead>';
-    const body = el('tbody');
-    ranked.forEach(i=>{
-      const tr = el('tr');
-      tr.appendChild(el('td',null,i.title));
-      tr.appendChild(el('td',null,i.shift>=0?'Travels':'Stays home'));
-      tr.appendChild(el('td','num',fmt(i.shift)));
-      body.appendChild(tr);
+  fetch('/api/run?preset=' + encodeURIComponent(p.id))
+    .then(r => r.json())
+    .then(d => { if (RUNNING === p) render(d, p); })
+    .catch(e => {
+      panes.innerHTML = '';
+      const w = el('div', 'pane');
+      w.appendChild(el('p', 'refuse', 'Could not reach the server: ' + e));
+      panes.appendChild(w);
     });
-    tb.appendChild(body); d.appendChild(tb); frag.appendChild(d);
-  }
-  return frag;
 }
 
-function render(d,p){
-  out.innerHTML='';
-  const bar = el('div','runbar');
-  bar.appendChild(el('span','badge '+(d.source||''), d.source||'?'));
-  if(d.home_market) bar.appendChild(el('span',null,'home · '+d.home_market));
-  const ev = d.evidence && d.evidence.summary;
-  if(ev) bar.appendChild(el('span',null, ev.calls+' qloo calls'));
-  out.appendChild(bar);
-  if(p.note) out.appendChild(el('p','note',p.note));
-  if(d.disclosure) out.appendChild(el('p','note',d.disclosure));
+function marketPane(m) {
+  const p = el('div', 'pane');
+  const ranked = [...(m.travels || []), ...(m.does_not_travel || [])]
+    .sort((a, b) => b.shift - a.shift);
 
-  if(d.aborted){
-    const r = el('div','refusal');
-    r.appendChild(el('h2',null,'No verdict offered'));
-    r.appendChild(el('p',null,d.aborted));
-    out.appendChild(r);
+  p.appendChild(el('p', 'note', m.compared_on + ' films compared · two disjoint ' +
+    'readings of this audience agree ' +
+    (m.anchor_agreement == null ? 'n/a' : m.anchor_agreement.toFixed(2)) +
+    (m.uncertain && m.uncertain.length
+      ? ' · ' + m.uncertain.length + ' film' + (m.uncertain.length > 1 ? 's' : '') +
+        ' withheld where they disagreed'
+      : '')));
+
+  if (ranked.length) p.appendChild(shiftTable(ranked));
+  else p.appendChild(el('p', 'empty', 'Nothing survived both readings here.'));
+
+  if (m.uncertain && m.uncertain.length) {
+    p.appendChild(el('h3', 'sec', 'Withheld — the two readings disagreed'));
+    p.appendChild(el('p', 'note', 'Each of these was ranked differently by the ' +
+      'two halves of the audience, by more than the tolerance. Rather than ' +
+      'average them into a number that looks confident, the agent declines to ' +
+      'rank them.'));
+    p.appendChild(gallery(m.uncertain, true));
   }
-  (d.markets||[]).forEach(m => out.appendChild(marketBlock(m)));
-  Object.entries(d.abstained||{}).forEach(([mk,why])=>{
-    const r = el('div','refusal');
-    r.appendChild(el('h2',null,mk.split(',')[0]+' — abstained'));
-    r.appendChild(el('p',null,why));
-    out.appendChild(r);
+  return p;
+}
+
+function render(d, p) {
+  const pill = document.getElementById('rpill');
+  pill.textContent = d.source || '?';
+  pill.className = 'pill ' + (d.source || '');
+
+  const stats = document.getElementById('rstats'); stats.innerHTML = '';
+  const add = (k, v) => { const s = el('span');
+    s.appendChild(document.createTextNode(k + ' '));
+    s.appendChild(el('b', null, v)); stats.appendChild(s); };
+  if (d.home_market) add('home', d.home_market);
+  const markets = d.markets || [];
+  add('audiences read', markets.length);
+  const ev = d.evidence && d.evidence.summary;
+  if (ev) add('qloo calls', ev.calls);
+  const abst = Object.entries(d.abstained || {});
+  if (abst.length) add('abstained on', abst.length);
+  document.getElementById('topmeta').innerHTML =
+    '<b>' + PRESETS.length + '</b> fixed slates';
+
+  const tabs = [];
+
+  if (d.aborted) tabs.push({ name: 'No verdict', build: () => {
+    const q = el('div', 'pane');
+    const r = el('div', 'refuse');
+    r.appendChild(el('b', null, 'No verdict offered. '));
+    r.appendChild(document.createTextNode(d.aborted));
+    q.appendChild(r);
+    return q;
+  }});
+
+  markets.forEach(m => tabs.push({
+    name: m.market.split(',')[0],
+    n: (m.travels || []).length + (m.does_not_travel || []).length,
+    build: () => marketPane(m)
+  }));
+
+  if (abst.length) tabs.push({ name: 'Abstained', n: abst.length, build: () => {
+    const q = el('div', 'pane');
+    q.appendChild(el('p', 'note', 'The agent was asked about these and declined. ' +
+      'Each reason is the specific test that failed, not a generic apology.'));
+    abst.forEach(([mk, why]) => {
+      const r = el('div', 'refuse');
+      r.appendChild(el('b', null, mk.split(',')[0] + ' — '));
+      r.appendChild(document.createTextNode(why));
+      q.appendChild(r);
+    });
+    return q;
+  }});
+
+  if (d.steps && d.steps.length) tabs.push({
+    name: 'How it decided', n: d.steps.length, build: () => {
+      const q = el('div', 'pane');
+      q.appendChild(el('p', 'note', 'Every decision the agent made on this run, ' +
+        'in order, with what it saw and what it did about it.'));
+      q.appendChild(traceList(d.steps));
+      return q;
+    }
   });
 
-  if(d.steps && d.steps.length){
-    const back = el('div','backmatter');
-    const det = el('details');
-    det.appendChild(el('summary',null,'How it decided ('+d.steps.length+' steps)'));
-    const ol = el('ol','trace');
-    d.steps.forEach(s=>{
-      const li = el('li'); const b = el('div');
-      b.appendChild(el('div','act', s.action.replace(/_/g,' ')));
-      b.appendChild(el('div','why', s.reason));
-      if(s.rejected && s.rejected.length)
-        b.appendChild(el('div','passed','passed over: '+s.rejected.join(', ')));
-      li.appendChild(b); ol.appendChild(li);
-    });
-    det.appendChild(ol); back.appendChild(det);
-    if(d.evidence && d.evidence.calls){
-      const ed = el('details');
-      ed.appendChild(el('summary',null,'Evidence — every call behind these numbers ('+d.evidence.calls.length+')'));
-      const tb = el('table');
-      tb.innerHTML = '<thead><tr><th>#</th><th>Endpoint</th><th>Market</th>'+
-        '<th>Anchors</th><th class="num">Results</th></tr></thead>';
-      const body = el('tbody');
-      d.evidence.calls.forEach(cl=>{
-        const tr = el('tr');
-        tr.appendChild(el('td',null,cl.id));
-        tr.appendChild(el('td',null,cl.path));
-        tr.appendChild(el('td',null,(cl.params&&cl.params._market)||'—'));
-        tr.appendChild(el('td',null,(cl.params&&cl.params._anchor_set)||'—'));
-        tr.appendChild(el('td','num',cl.results));
-        body.appendChild(tr);
-      });
-      tb.appendChild(body); ed.appendChild(tb); back.appendChild(ed);
-    }
-    out.appendChild(back);
-  }
+  tabs.push({ name: 'Method', build: () => {
+    const q = el('div', 'pane');
+    if (p.note) q.appendChild(el('p', 'note', p.note));
+    if (d.disclosure) q.appendChild(el('p', 'note', d.disclosure));
+    q.appendChild(el('p', 'note', 'Posters and affinities both come from Qloo. ' +
+      'Answers are labelled LIVE or CACHED; a cached answer is a recorded run of ' +
+      'this same pipeline against the same key, never a synthetic stand-in.'));
+    q.appendChild(el('p', 'note', 'Each audience is read twice, through two ' +
+      'disjoint sets of cultural anchors. Where the two readings disagree about a ' +
+      'film by more than the tolerance it is withheld rather than ranked. Where an ' +
+      'audience is too thinly covered, or the home baseline too unstable to measure ' +
+      'against, the agent abstains and says which test failed.'));
+    q.appendChild(el('p', 'note', 'This view runs fixed catalogues so the numbers ' +
+      'can be checked against a recorded run. The Pitch desk runs the same agent on ' +
+      'a catalogue you type in.'));
+    return q;
+  }});
+
+  tabs.forEach(t => t.onpick = j => { TAB = j; });
+  TAB = mountTabs(document.getElementById('tabs'),
+                  document.getElementById('panes'), tabs, TAB);
 }
 
 const want = new URLSearchParams(location.search).get('preset');
-const first = [...controls.children].find(c=>c.dataset.id===want) || controls.children[0];
-if(first) first.click();
+const first = PRESETS.find(p => p.id === want) || PRESETS[0];
+if (first) run(first);
 </script>
