@@ -50,9 +50,23 @@ must("sweep size (%d pairs)" % HERO["provenance"]["pairs_evaluated"],
      str(HERO["provenance"]["pairs_evaluated"]) in DOC)
 must("sweep qualifiers (%d)" % HERO["provenance"]["pairs_qualified"],
      str(HERO["provenance"]["pairs_qualified"]) in DOC)
-for title, place in places.items():
-    if place and place >= HERO["ranked_total"] - 3:
-        must("placement of %s (%d)" % (title, place), str(place) in DOC)
+# EVERY placement, not the ones that flatter us. Quoting only the lowest
+# three dropped the model's best-placed pick, which anyone opening /evidence
+# would see immediately.
+_ordinals = []
+for title, place in sorted(places.items(), key=lambda kv: kv[1] or 99):
+    must("placement of %s (%d) appears" % (title, place), str(place) in DOC)
+    if place:
+        _ordinals.append("%d%s" % (place, "th" if 11 <= place % 100 <= 13
+                                   else {1: "st", 2: "nd", 3: "rd"}.get(place % 10, "th")))
+_flat = re.sub(r"\s+", " ", DOC)
+must("the headline lists all %d placements together (%s)"
+     % (len(_ordinals), ", ".join(_ordinals)),
+     all(o in _flat for o in _ordinals)
+     and (", ".join(_ordinals[:-1]) + " and " + _ordinals[-1]) in _flat)
+must("it does not quote a subset of the placements as if complete",
+     (", ".join(_ordinals[1:-1]) + " and " + _ordinals[-1]) not in _flat
+     or (", ".join(_ordinals[:-1]) + " and " + _ordinals[-1]) in _flat)
 for title in HERO["rows"][:5]:
     must("names the grounded pick %s" % title["title"], title["title"] in DOC)
 for title in HERO["llm_top5"]:

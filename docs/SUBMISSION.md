@@ -17,7 +17,8 @@ guessed differently.
 
 **For an audience described by the games it loves, four of our five
 recommendations are titles a language model without Qloo would not have
-picked — and its own picks land 8th, 9th and 11th of 11 for that audience.**
+picked — and the model's four other picks rank 6th, 8th, 9th and 11th
+of 11 for that audience.**
 We measured four ways Qloo's API behaves differently from how entrants assume
 it does, and built the agent to refuse when the evidence is weak.
 
@@ -40,8 +41,9 @@ films. Both columns rank the same twelve; only one can see Qloo.
 
 One title in common. The model read *punishing* as transgressive content;
 the graph read it as what those players actually watch. Asked where the
-model's own picks belong for this audience, the grounded reading puts
-**Ichi the Killer 8th, Martyrs 9th and REC last of 11**.
+model's four other picks belong for this audience, the grounded reading puts
+**Tetsuo: The Iron Man 6th, Ichi the Killer 8th, Martyrs 9th and REC
+11th of 11** — none of them in the top five.
 
 Two more surfaces run the same engine: an **Audience Map** of 18 audiences
 discovered by clustering the graph, and a **Pitch desk** where you type your
@@ -166,8 +168,10 @@ this, so there is no number there.
 
 ### How to try it
 
-Everything except a custom run costs **zero** Qloo calls — the landing page,
-the map and all four presets are recorded runs served from the image.
+The landing page, the Audience Map and the prefilled pitch example cost **zero**
+Qloo calls — they are recorded runs served from the image. The four slate
+presets run live when the budget allows, about 10 calls each, and fall back to
+their recorded run otherwise; that is what the LIVE/CACHED badge reports.
 
 1. **/** — the worked case above, already answered.
 2. **/pitch** — type your own audience and catalogue.

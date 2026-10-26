@@ -2,7 +2,8 @@
 
 **For an audience described by the games it loves, four of our five
 recommendations are titles a language model without Qloo would not have picked
-— and its own picks land 8th, 9th and 11th of 11 for that audience.**
+— and the model's four other picks rank 6th, 8th, 9th and 11th of 11
+for that audience.**
 
 Describe an audience by what it already loves — games, television, music — and
 this ranks a catalogue for them, shows where an AI without the taste graph

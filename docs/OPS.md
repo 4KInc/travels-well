@@ -10,14 +10,25 @@ for the next visitor.
 |---|---|
 | `/` the landing page | **nothing** — a recorded run baked into the image |
 | `/atlas` the Audience Map | **nothing** — every signature ships with the page |
-| `/slate` the four presets | **nothing** — recorded runs |
 | `/pitch` the prefilled example | **nothing** — recognised by fingerprint, served from cache |
+| `/evidence`, `/about`, `/status` | **nothing** |
+| `/slate`, each preset | **live by default**: 10 calls, except the refusal preset at 2 |
 | `/pitch` after you edit a box | live, roughly 40 calls |
-| `/evidence`, `/about`, `/status` | nothing |
 
-A judge who opens every page and never edits an input spends **zero** calls.
-That is the design: the cost is only paid by someone who has already decided to
-try their own audience.
+So a judge who opens every page and clicks all four slate presets spends about
+**32 calls**, not zero. The slate presets deliberately run live when a key and
+budget are available and fall back to the recorded run otherwise — that is why
+they carry a LIVE/CACHED badge, and showing a real LIVE answer is worth more
+than the calls it costs. Everything else is recorded.
+
+Against a 50,000-call month that is roughly 1,500 judges' worth, so it is
+comfortable. If it stops being comfortable, `answer()` in `app/server.py` is
+the one function to change: serve `cached_result()` first and keep live behind
+an explicit control.
+
+An earlier version of this document claimed the slate presets cost nothing.
+They never did; the claim was written from the intent rather than from the
+code, and the LIVE badge on the deployed page is what contradicted it.
 
 ## The guards
 
