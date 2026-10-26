@@ -160,8 +160,18 @@ class Handler(BaseHTTPRequestHandler):
             # has a recorded run baked into the image.
             cached = sorted(q.stem for q in (HERE / "cache").glob("*.json"))
             want = [p["id"] for p in PRESETS] + ["pitch_example", "hero"]
+            # The caller's own forwarding chain, echoed back to the caller
+            # only. This is here to establish empirically where Cloud Run puts
+            # the real client address when a request arrives with a forged
+            # X-Forwarded-For, which decides how the per-IP cap keys visitors.
             return self._send(200, json.dumps(
                 {"ok": True, "key_present": has_key(),
+                 "forwarded_for": self.headers.get("X-Forwarded-For"),
+                 "forwarded_chain": [x.strip() for x in
+                                     (self.headers.get("X-Forwarded-For") or "").split(",")
+                                     if x.strip()],
+                 "socket_peer": self.client_address[0] if self.client_address else None,
+                 "keyed_as": self.client_ip(),
                  "cached_runs": cached,
                  "presets_all_cached": all(w in cached for w in want),
                  "missing_from_cache": [w for w in want if w not in cached],

@@ -168,23 +168,35 @@ check("every refusal has a message that mentions the cached examples",
 
 print("visitor identity behind a proxy")
 _ck = _b.client_key
-check("the first X-Forwarded-For entry identifies the visitor",
-      _ck("203.0.113.7, 169.254.1.1", "169.254.1.1") == "203.0.113.7")
+# Measured against the deployed service: Cloud Run APPENDS the real peer to
+# whatever the client sent, so the rightmost entry is the unforgeable one.
+check("the appended (rightmost) entry identifies the visitor",
+      _ck("2600:1700::1", "169.254.169.126") == "2600:1700::1")
+check("a forged prefix does not change who is counted",
+      _ck("1.2.3.4, 2600:1700::1", "169.254.169.126") == "2600:1700::1")
+check("nor does a forged multi-hop prefix",
+      _ck("1.2.3.4, 5.6.7.8, 9.9.9.9, 2600:1700::1", "x") == "2600:1700::1")
 check("the socket address is used only when there is no header",
       _ck(None, "127.0.0.1") == "127.0.0.1" and _ck("", "127.0.0.1") == "127.0.0.1")
 check("surrounding whitespace does not create a separate bucket",
-      _ck("  198.51.100.4 , 10.0.0.1 ", "10.0.0.1") == "198.51.100.4")
+      _ck("  10.0.0.1 , 198.51.100.4 ", "x") == "198.51.100.4")
 
-# The failure this guards against: every visitor arriving through one proxy
-# sharing a single bucket, so the first five exhaust the cap for everyone.
+# The hole this closes: keying on the leftmost entry let one visitor send a
+# different forged header per request and never hit the cap.
+_evade = _b.Budget()
+for _n in range(_b.PITCH_PER_IP_PER_HOUR):
+    _evade.record_pitch(_ck("10.0.0.%d, 203.0.113.9" % _n, "x"))
+check("a visitor cycling forged headers still hits their cap",
+      _evade.allow_pitch(_ck("10.0.0.99, 203.0.113.9", "x"))[1] == "pitch_per_ip_cap")
+
+# ...without lumping genuinely different visitors together.
 _prox = _b.Budget()
-_a, _z = "203.0.113.7, 169.254.1.1", "198.51.100.4, 169.254.1.1"
 for _ in range(_b.PITCH_PER_IP_PER_HOUR):
-    _prox.record_pitch(_ck(_a, "169.254.1.1"))
-check("one visitor behind the proxy is capped",
-      _prox.allow_pitch(_ck(_a, "169.254.1.1"))[1] == "pitch_per_ip_cap")
-check("a DIFFERENT visitor behind the SAME proxy gets its own bucket",
-      _prox.allow_pitch(_ck(_z, "169.254.1.1"))[0] is True)
+    _prox.record_pitch(_ck("1.2.3.4, 203.0.113.7", "x"))
+check("one visitor behind the front end is capped",
+      _prox.allow_pitch(_ck("1.2.3.4, 203.0.113.7", "x"))[1] == "pitch_per_ip_cap")
+check("a DIFFERENT visitor behind the same front end gets its own bucket",
+      _prox.allow_pitch(_ck("1.2.3.4, 198.51.100.4", "x"))[0] is True)
 
 print("\n%d passed, %d failed" % (passed, failed))
 sys.exit(1 if failed else 0)

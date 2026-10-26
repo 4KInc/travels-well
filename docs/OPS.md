@@ -13,7 +13,7 @@ for the next visitor.
 | `/slate` the four presets | **nothing** — recorded runs |
 | `/pitch` the prefilled example | **nothing** — recognised by fingerprint, served from cache |
 | `/pitch` after you edit a box | live, roughly 40 calls |
-| `/evidence`, `/about`, `/healthz` | nothing |
+| `/evidence`, `/about`, `/status` | nothing |
 
 A judge who opens every page and never edits an input spends **zero** calls.
 That is the design: the cost is only paid by someone who has already decided to
@@ -29,7 +29,22 @@ back to a recorded run and says so.
   (`x-month-ratelimit-limit`, 26 Oct 2026), so the floor is an absolute
   reserve rather than a fraction.
 - **`PITCH_PER_IP_PER_HOUR = 5`.** One visitor cannot drain the month. The cap
-  lifts an hour after their first run.
+  lifts an hour after their first run. Visitors are keyed on the **rightmost**
+  `X-Forwarded-For` entry, which is measured behaviour rather than an
+  assumption — against the deployed service on 26 Oct 2026:
+
+  | request sent | header as received |
+  |---|---|
+  | no header | `<real>` |
+  | `X-Forwarded-For: 1.2.3.4` | `1.2.3.4, <real>` |
+  | `X-Forwarded-For: 1.2.3.4, 5.6.7.8, 9.9.9.9` | `1.2.3.4, 5.6.7.8, 9.9.9.9, <real>` |
+
+  Cloud Run appends and a client cannot displace it, so the last entry is the
+  one address in the chain that cannot be forged. Keying on the first — which
+  this did until it was measured — let one visitor evade the cap entirely by
+  varying the header per request. `/status` echoes `forwarded_chain` and
+  `keyed_as` so the behaviour can be re-checked after any infrastructure
+  change.
 - **`LIVE_CALLS_GLOBAL_PER_HOUR = 200`.** A burst of traffic, or a crawler,
   cannot either.
 
@@ -39,7 +54,9 @@ mentions the recorded examples.
 
 ## Health
 
-`GET /healthz` (also `/status`) returns:
+`GET /status` returns the following. **Use `/status`, not `/healthz`**: Google's front end intercepts `/healthz` before it reaches the
+container, so from outside it 404s. The deploy check probes `/status`.
+
 
 ```json
 {"ok": true, "key_present": true, "quota_remaining": 49700,

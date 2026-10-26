@@ -25,24 +25,38 @@ QUOTA_FLOOR = 1500         # stop live calls entirely below this many remaining
 PITCH_PER_IP_PER_HOUR = 5  # a custom pitch costs ~40 calls; the URL is public
 
 
-def client_key(forwarded_for, socket_addr):
+# How many trailing X-Forwarded-For entries were appended by infrastructure we
+# control. On Cloud Run this is exactly one: Google's front end appends the
+# real peer address to whatever the client sent. Measured 26 Oct 2026 against
+# the deployed service:
+#
+#   sent nothing                 -> ["<real>"]
+#   sent "1.2.3.4"               -> ["1.2.3.4", "<real>"]
+#   sent "1.2.3.4, 5.6.7.8, ..." -> ["1.2.3.4", "5.6.7.8", "...", "<real>"]
+#
+# The appended entry is always last and a client cannot displace it, so the
+# rightmost entry is the one address in the chain that cannot be forged.
+TRUSTED_APPENDED_HOPS = 1
+
+
+def client_key(forwarded_for, socket_addr, trusted_hops=TRUSTED_APPENDED_HOPS):
     """Which visitor a request counts against.
 
-    On Cloud Run the Google frontend sets X-Forwarded-For as
-    "<client>, <proxy>...", so the first entry is the client. The socket
-    address is only ever the frontend, which would put every visitor in one
-    bucket, so it is a local-development fallback and nothing else.
+    Read from the RIGHT, not the left. The leftmost entry is whatever the
+    client claimed, so keying on it lets anyone evade the per-IP cap by
+    sending a different X-Forwarded-For on each request. The rightmost is the
+    address Cloud Run observed and appended itself.
 
-    A client can send its own X-Forwarded-For and Cloud Run appends to it,
-    which means this first entry is not trustworthy against someone who wants
-    to evade the per-IP cap. That is accepted deliberately: the per-IP cap is
-    there to stop one honest visitor draining the month by accident, and
-    LIVE_CALLS_GLOBAL_PER_HOUR is the backstop that a forged header cannot get
-    past. The expensive failure is a drained quota, and the global cap bounds
-    it regardless.
+    Behind a different number of trusted proxies, pass `trusted_hops`. With no
+    header at all -- local development, where nothing is in front of the
+    server -- the socket address is the client.
     """
-    first = (forwarded_for or "").split(",")[0].strip()
-    return first or socket_addr or "unknown"
+    chain = [x.strip() for x in (forwarded_for or "").split(",") if x.strip()]
+    if not chain:
+        return socket_addr or "unknown"
+    hops = max(1, int(trusted_hops))
+    # Shorter chain than expected: take the leftmost rather than inventing one.
+    return chain[-hops] if len(chain) >= hops else chain[0]
 
 
 class Budget:

@@ -77,7 +77,9 @@ curl -fsS "$URL/api/run?preset=mumbai-out" >/dev/null && echo "preset path OK"
 # quickly: it is the first thing seen and MIN_INSTANCES=1 exists to keep it
 # warm. A 404 here means a nav link ships broken.
 FAILED=0
-for path in / /pitch /atlas /slate /evidence /about /healthz; do
+# /healthz is intercepted by the Google front end and never reaches the
+# container, so the health route to probe from outside is /status.
+for path in / /pitch /atlas /slate /evidence /about /status; do
   code="$(curl -s -o /dev/null -w '%{http_code}' "$URL$path")"
   printf '  %-12s %s\n' "$path" "$code"
   [ "$code" = "200" ] || FAILED=1
@@ -87,7 +89,7 @@ echo "  landing page cold load: ${LOAD}s"
 awk -v t="$LOAD" 'BEGIN{ if (t+0 > 3.0) { print "  !! slower than 3s"; exit 1 } }' || FAILED=1
 
 # The whole point of the recorded runs: a judge who only reads costs nothing.
-CACHED_OK="$(curl -fsS "$URL/healthz" | tr -d ' ' | grep -c '"presets_all_cached":true' || true)"
+CACHED_OK="$(curl -fsS "$URL/status" | tr -d ' ' | grep -c '"presets_all_cached":true' || true)"
 if [ "$CACHED_OK" != "1" ]; then
   echo "  !! a recorded run is missing from the image; pages will spend quota"
   FAILED=1
