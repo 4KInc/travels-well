@@ -18,6 +18,9 @@ import time
 # recorded run, so the demo degrades rather than dying.
 LIVE_CALLS_PER_IP_PER_HOUR = 20
 LIVE_CALLS_GLOBAL_PER_HOUR = 200
+# Measured 26 Oct 2026: the hackathon key's monthly limit is 50,000, not the
+# 10,000 assumed when this floor was chosen. 1,500 is kept anyway -- it is an
+# absolute reserve for the cached presets, not a fraction of the month.
 QUOTA_FLOOR = 1500         # stop live calls entirely below this many remaining
 PITCH_PER_IP_PER_HOUR = 6  # a custom pitch costs ~40 calls; the URL is public
 

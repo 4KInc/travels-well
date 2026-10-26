@@ -3,8 +3,11 @@
 
 The catalog and the anchor sets never change, yet every run re-resolved all of
 them: 46 /search calls out of 65 per run, for answers that are identical every
-time. With a monthly quota of 10,000 that caps the demo at about 150 runs for
-the whole judging period.
+time. The hackathon key reports a monthly quota of 50,000
+(x-month-ratelimit-limit, measured 26 Oct 2026 -- an earlier note here said
+10,000, which was wrong), so the saving is less existential than it first
+looked, but a run that spends 10 calls instead of 65 is still the difference
+between a demo that survives judging and one that rations itself.
 
 This resolves once and writes fixtures/resolved.json. At runtime the backend
 reads it and spends calls only on the insights queries that actually differ.
