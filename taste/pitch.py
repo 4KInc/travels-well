@@ -29,18 +29,30 @@ class PitchError(RuntimeError):
 
 
 def resolve_titles(client, titles, entity_type="urn:entity:movie", trace=None):
-    """Resolve, reporting what the graph does not know rather than dropping it."""
+    """Resolve, reporting what the graph does not know rather than dropping it.
+
+    An entry is either a plain title, resolved as `entity_type`, or a mapping
+    {"name": ..., "type": "urn:entity:videogame"} carrying its own type. The
+    second form is what lets an audience be described by the things it already
+    loves -- games, shows, artists -- rather than only by films, while the
+    slate being ranked stays a single type.
+    """
     found, missing = [], []
     for raw in titles:
-        name = raw.strip()
+        if isinstance(raw, dict):
+            name = (raw.get("name") or "").strip()
+            etype = raw.get("type") or entity_type
+        else:
+            name, etype = raw.strip(), entity_type
         if not name:
             continue
         try:
-            hits = entities_of(client.search(name, types=entity_type))
+            hits = entities_of(client.search(name, types=etype))
         except QlooError:
             hits = []
         if trace is not None:
-            trace.record_call("/search", {"query": name}, 200, len(hits))
+            trace.record_call("/search", {"query": name, "_type": etype},
+                              200, len(hits))
         if not hits:
             missing.append(name)
             continue
@@ -48,6 +60,7 @@ def resolve_titles(client, titles, entity_type="urn:entity:movie", trace=None):
         found.append({"asked": name,
                       "name": hits[0].get("name") or name,
                       "id": id_of(hits[0]),
+                      "type": etype,
                       "image": (props.get("image") or {}).get("url")})
     return found, missing
 
@@ -178,7 +191,7 @@ def profile(client, slate_ids, catalogue_ids, entity_type, trace=None,
 
 def run(client, slate_titles, buyer_titles, home_titles=None,
         entity_type="urn:entity:movie", trace=None, with_llm=False,
-        with_invariance=False):
+        with_invariance=False, audience_label=None):
     steps = []
     slate, slate_missing = resolve_titles(client, slate_titles, entity_type, trace)
     steps.append({"action": "resolve", "profile": "setup",
@@ -270,7 +283,8 @@ def run(client, slate_titles, buyer_titles, home_titles=None,
         llm_block = llm_baseline.rank(
             [by_id[e]["name"] for e in buyer_ranks if e in by_id],
             [b["name"] for b in buyer],
-            {by_id[e]["name"]: v for e, v in buyer_ranks.items() if e in by_id})
+            {by_id[e]["name"]: v for e, v in buyer_ranks.items() if e in by_id},
+            audience_label=audience_label)
         if llm_block and llm_block.get("available"):
             steps.append({"action": "ablate", "profile": "result",
                           "reason": "ask the same question of a model with no "

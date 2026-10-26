@@ -31,26 +31,49 @@ def _ask(prompt):
     return probe_gap.call_llm(prompt, grounded=False)
 
 
-def rank(slate_titles, buyer_titles, qloo_ranks=None):
+def rank(slate_titles, buyer_titles, qloo_ranks=None, audience_label=None):
     """Returns the model's ordering and, where possible, its agreement with
-    Qloo's. `qloo_ranks` maps title -> rank percentile."""
+    Qloo's. `qloo_ranks` maps title -> rank percentile.
+
+    Two modes, because the product describes an audience two ways. Without
+    `audience_label` the describing list is a buyer's licensed catalogue, as
+    at a film market. With it, the list is what an audience already loves --
+    games, shows, artists -- and the label names them in plain words. The
+    model sees the same describing entities Qloo does and nothing else, so
+    the comparison isolates the taste graph rather than the information.
+    """
     if not available():
         return {"available": False, "note": "No model key configured on this server."}
     # The lists must be impossible to confuse. An earlier version put the
     # buyer's catalogue first and then said "rank these films", and the model
     # ranked the buyer's own titles back at us.
-    prompt = (
-        "You are advising a film sales agent.\n\n"
-        "LIST A -- titles the BUYER has already licensed (context only, do NOT "
-        "rank these):\n%s\n\n"
-        "LIST B -- the SLATE FOR SALE (%d titles, rank ALL of these):\n%s\n\n"
-        "Rank every title in LIST B from most to least likely to appeal to that "
-        "buyer's audience. Reply ONLY with a JSON array of exactly %d strings, "
-        "each spelled exactly as it appears in LIST B. No prose."
-        % ("\n".join("- " + t for t in buyer_titles),
-           len(slate_titles),
-           "\n".join("- " + t for t in slate_titles),
-           len(slate_titles)))
+    if audience_label:
+        frame = ("You are advising someone who programs films for a streaming "
+                 "audience.\n\n"
+                 "LIST A -- what this AUDIENCE already loves (context only, do "
+                 "NOT rank these):\n%s\n\n"
+                 "LIST B -- the CATALOGUE to choose from (%d titles, rank ALL "
+                 "of these):\n%s\n\n"
+                 "Rank every title in LIST B from most to least likely to "
+                 "appeal to that audience."
+                 % ("\n".join("- " + t for t in buyer_titles),
+                    len(slate_titles),
+                    "\n".join("- " + t for t in slate_titles)))
+    else:
+        frame = ("You are advising a film sales agent.\n\n"
+                 "LIST A -- titles the BUYER has already licensed (context "
+                 "only, do NOT rank these):\n%s\n\n"
+                 "LIST B -- the SLATE FOR SALE (%d titles, rank ALL of "
+                 "these):\n%s\n\n"
+                 "Rank every title in LIST B from most to least likely to "
+                 "appeal to that buyer's audience."
+                 % ("\n".join("- " + t for t in buyer_titles),
+                    len(slate_titles),
+                    "\n".join("- " + t for t in slate_titles)))
+    prompt = (frame +
+              " Reply ONLY with a JSON array of exactly %d strings, each "
+              "spelled exactly as it appears in LIST B. No prose."
+              % len(slate_titles))
     try:
         raw = _ask(prompt)
     except Exception as exc:

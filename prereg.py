@@ -131,3 +131,85 @@ def write():
 
 if __name__ == "__main__":
     print("pre-registration sha256:", write())
+
+
+# --- Hero-preset sweep -------------------------------------------------------
+# Registered before the sweep ran. The point of fixing these in advance is that
+# "we searched until we found a big divergence" and "we pre-committed to a
+# selection rule and reported every candidate" are indistinguishable after the
+# fact unless the rule is hashed first.
+HERO_RULES = {
+    "purpose": ("Select one hero audience x slate pair for the landing page, "
+                "where the grounded shortlist and an LLM with no taste graph "
+                "differ materially, without cherry-picking."),
+    "candidate_generation": {
+        "source": "fixtures/hero_candidates.json, fixed before any sweep data",
+        "audiences": ("12 candidates, each described by 3-5 entities drawn only "
+                      "from television, video games and music -- the three "
+                      "domains measured to discriminate film taste (0.06, 0.08, "
+                      "0.11). Music is a minority of any audience."),
+        "slates": "4 candidate slates of 12 films each",
+        "pairs": "every audience x slate pair is evaluated; none skipped",
+    },
+    "llm_baseline": {
+        "provider": "google",
+        "model": "gemini-2.5-flash",
+        "temperature": 0.0,
+        "repeats": 3,
+        "aggregate": ("modal top five across repeats; a title counts toward "
+                      "top-5 overlap only if it appears in the model's top "
+                      "five in at least 2 of 3 repeats"),
+        "prompt_mode": ("audience mode: LIST A names what the audience already "
+                        "loves, LIST B is the catalogue to rank. The model "
+                        "sees the same describing entities Qloo does."),
+        "run_when": ("only for pairs that already pass the grounded quality "
+                     "gates below, since the comparison cannot rescue a pair "
+                     "that fails them"),
+    },
+    "selection_criteria_all_must_hold": {
+        "top5_overlap_max": 2,
+        "buyer_halves_agree_min": 0.50,   # the existing WEAK_HALVES threshold
+        "withheld_max": 3,
+        "no_abort_or_abstain": True,
+        "every_divergent_grounded_top5_title_has_evidence": (
+            "shared Qloo tags and/or driving audience entities, with the "
+            "supporting call recorded through taste/evidence.py"),
+    },
+    "tie_break_in_order": [
+        "largest divergence (fewest shared titles in the top five)",
+        "highest buyer split-half agreement",
+        "fewest withheld titles",
+        "audience id, alphabetically, so the result is deterministic",
+    ],
+    "if_nothing_qualifies": ("report the closest candidates and their metrics "
+                             "and propose a further amendment; do not loosen "
+                             "these criteria silently"),
+    "reporting": ("every candidate evaluated is listed in docs/HERO_SWEEP.md "
+                  "with its metrics, qualifying or not"),
+}
+
+
+def write_hero():
+    """Amendment covering the hero sweep. Named to match the existing
+    `prereg_amended_*` pattern so .gitignore keeps tracking it: a record that
+    lives only on disk proves nothing."""
+    candidates = json.loads((HERE / "fixtures" / "hero_candidates.json").read_text())
+    blob = json.dumps({"candidates": candidates, "decision_rules": HERO_RULES},
+                      sort_keys=True)
+    digest = hashlib.sha256(blob.encode()).hexdigest()
+    out = HERE / "out" / ("prereg_amended_hero_%s.json" % digest[:12])
+    out.parent.mkdir(exist_ok=True)
+    if out.exists():
+        return digest
+    out.write_text(json.dumps({
+        "amended_at": datetime.datetime.now().isoformat(timespec="seconds"),
+        "scope": "hero-preset sweep only; does not supersede the original "
+                 "pre-registration in prereg.json",
+        "sha256": digest,
+        "candidates": candidates,
+        "decision_rules": HERO_RULES,
+        "warning": "Registered before the sweep ran. If any criterion here is "
+                   "changed after seeing sweep results, the change must be "
+                   "disclosed wherever the divergence number is quoted.",
+    }, indent=2))
+    return digest
