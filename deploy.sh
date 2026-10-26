@@ -72,3 +72,31 @@ echo "live at: $URL"
 echo "checking it answers cold..."
 curl -fsS "$URL/status" && echo
 curl -fsS "$URL/api/run?preset=mumbai-out" >/dev/null && echo "preset path OK"
+
+# Every page a judge can reach must answer, and the landing page must answer
+# quickly: it is the first thing seen and MIN_INSTANCES=1 exists to keep it
+# warm. A 404 here means a nav link ships broken.
+FAILED=0
+for path in / /pitch /atlas /slate /evidence /about /healthz; do
+  code="$(curl -s -o /dev/null -w '%{http_code}' "$URL$path")"
+  printf '  %-12s %s\n' "$path" "$code"
+  [ "$code" = "200" ] || FAILED=1
+done
+LOAD="$(curl -s -o /dev/null -w '%{time_total}' "$URL/")"
+echo "  landing page cold load: ${LOAD}s"
+awk -v t="$LOAD" 'BEGIN{ if (t+0 > 3.0) { print "  !! slower than 3s"; exit 1 } }' || FAILED=1
+
+# The whole point of the recorded runs: a judge who only reads costs nothing.
+CACHED_OK="$(curl -fsS "$URL/healthz" | tr -d ' ' | grep -c '"presets_all_cached":true' || true)"
+if [ "$CACHED_OK" != "1" ]; then
+  echo "  !! a recorded run is missing from the image; pages will spend quota"
+  FAILED=1
+else
+  echo "  all recorded runs present in the image"
+fi
+
+if [ "$FAILED" != "0" ]; then
+  echo "DEPLOY VERIFICATION FAILED"
+  exit 1
+fi
+echo "all routes OK"

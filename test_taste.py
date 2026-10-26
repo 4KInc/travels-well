@@ -146,5 +146,25 @@ check("a WITHHELD pick reports withheld instead of a rank",
 check("a pick the grounded reading never scored claims no place",
       _got["ZZ"]["grounded_place"] is None and _got["ZZ"]["withheld"] is False)
 
+print("budget guards")
+import importlib
+import app.budget as _b
+importlib.reload(_b)
+_bud = _b.Budget()
+_ok = [_bud.allow_pitch("1.2.3.4")[0] and (_bud.record_pitch("1.2.3.4") or True)
+       for _ in range(_b.PITCH_PER_IP_PER_HOUR)]
+check("a visitor gets exactly the configured number of custom runs",
+      all(_ok) and len(_ok) == _b.PITCH_PER_IP_PER_HOUR)
+_allowed, _why = _bud.allow_pitch("1.2.3.4")
+check("the next one is refused, naming the per-IP cap",
+      _allowed is False and _why == "pitch_per_ip_cap")
+check("a different visitor is unaffected", _bud.allow_pitch("5.6.7.8")[0] is True)
+_bud2 = _b.Budget()
+_bud2.quota_remaining = _b.QUOTA_FLOOR - 1
+check("below the quota floor live runs stop", _bud2.allow_pitch("9.9.9.9")[1] == "quota_floor")
+check("every refusal has a message that mentions the cached examples",
+      all("recorded example" in _b.message_for(r)
+          for r in ("quota_floor", "pitch_per_ip_cap", "per_ip_hourly_cap")))
+
 print("\n%d passed, %d failed" % (passed, failed))
 sys.exit(1 if failed else 0)

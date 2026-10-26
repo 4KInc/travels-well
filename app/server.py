@@ -31,7 +31,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 sys.path.insert(0, str(ROOT))
 
-from app.budget import Budget  # noqa: E402
+from app.budget import Budget, message_for as BUDGET_MESSAGES  # noqa: E402
 from qloo_client import load_dotenv  # noqa: E402
 
 # In the container the key arrives as an env var; locally it lives in .env.
@@ -158,7 +158,7 @@ class Handler(BaseHTTPRequestHandler):
             # judge must cost nothing, which is only true while every preset
             # has a recorded run baked into the image.
             cached = sorted(q.stem for q in (HERE / "cache").glob("*.json"))
-            want = [p["id"] for p in PRESETS] + ["pitch_example"]
+            want = [p["id"] for p in PRESETS] + ["pitch_example", "hero"]
             return self._send(200, json.dumps(
                 {"ok": True, "key_present": has_key(),
                  "cached_runs": cached,
@@ -212,11 +212,9 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(404, json.dumps({"error": "not found"}))
         allowed, reason = BUDGET.allow_pitch(self.client_ip())
         if not allowed:
-            return self._send(429, json.dumps({"error":
-                "Rate limit reached (%s). This is a shared hackathon key and "
-                "judging runs to 16 November, so custom runs are capped. The "
-                "worked example and the Atlas still work and cost nothing."
-                % reason}))
+            return self._send(429, json.dumps({
+                "error": BUDGET_MESSAGES(reason), "reason": reason,
+                "cached_still_work": True}))
         try:
             length = int(self.headers.get("Content-Length") or 0)
             payload = json.loads(self.rfile.read(length) or b"{}")

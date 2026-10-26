@@ -22,7 +22,7 @@ LIVE_CALLS_GLOBAL_PER_HOUR = 200
 # 10,000 assumed when this floor was chosen. 1,500 is kept anyway -- it is an
 # absolute reserve for the cached presets, not a fraction of the month.
 QUOTA_FLOOR = 1500         # stop live calls entirely below this many remaining
-PITCH_PER_IP_PER_HOUR = 6  # a custom pitch costs ~40 calls; the URL is public
+PITCH_PER_IP_PER_HOUR = 5  # a custom pitch costs ~40 calls; the URL is public
 
 
 class Budget:
@@ -92,3 +92,30 @@ class Budget:
                     "quota_floor": QUOTA_FLOOR,
                     "live_calls": self.live_calls,
                     "served_cached": self.served_cached}
+
+
+# A refusal is shown to a visitor, so it says what they can still do rather
+# than naming the counter that stopped them. Judging runs to 16 November and
+# every one of these paths leaves the recorded examples working.
+MESSAGES = {
+    "quota_floor":
+        "Live queries are paused to protect the demo for the rest of judging. "
+        "Every recorded example still works and costs nothing \u2014 the landing "
+        "page, the Audience Map and all four Slate presets are unaffected.",
+    "pitch_per_ip_cap":
+        "You have run %d custom rankings in the last hour, which is the cap on "
+        "a shared hackathon key. It lifts an hour after your first run. The "
+        "recorded examples work in the meantime."
+        % PITCH_PER_IP_PER_HOUR,
+    "per_ip_hourly_cap":
+        "You have made a lot of live queries in the last hour. The cap lifts "
+        "an hour after the first one; the recorded examples still work.",
+    "global_hourly_cap":
+        "The demo is busy: live queries across all visitors have hit the "
+        "hourly cap. It clears within the hour, and every recorded example "
+        "works now.",
+}
+
+
+def message_for(reason):
+    return MESSAGES.get(reason, MESSAGES["global_hourly_cap"])
