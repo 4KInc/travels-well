@@ -1,0 +1,81 @@
+"""Does the submission text still match what the site says?
+
+The numbers in docs/SUBMISSION.md and the numbers on /evidence come from the
+same recorded run, so they can drift apart only by someone editing the prose.
+This asserts they have not, and that phrasing we retired has not come back.
+
+Run: python3 check_submission.py
+"""
+from __future__ import annotations
+
+import json
+import pathlib
+import re
+import sys
+
+HERE = pathlib.Path(__file__).parent
+RAW = (HERE / "docs" / "SUBMISSION.md").read_text()
+# Normalise typography before comparing numbers: the prose uses a real minus
+# sign and real dashes, which should not count as a mismatch against a value
+# formatted with an ASCII hyphen.
+DOC = (RAW.replace("\u2212", "-").replace("\u2013", "-").replace("\u2014", "--")
+          .replace("\u00a0", " "))
+HERO = json.loads((HERE / "app" / "cache" / "hero.json").read_text())
+
+bad = []
+
+
+def must(label, cond):
+    print(("  ok    " if cond else "  WRONG ") + label)
+    if not cond:
+        bad.append(label)
+
+
+print("numbers in SUBMISSION.md against the recorded run")
+t = HERO["llm_tau"]
+overlap = len(HERO["shared_top5"])
+places = {r["title"]: r["grounded_place"] for r in HERO["llm_only_ranks"]}
+
+must("top-five overlap (%d of 5)" % overlap,
+     "%d of 5" % overlap in DOC)
+must("rank correlation %.2f" % t["min"],
+     ("%.2f" % t["min"]) in DOC or ("%.3f" % t["min"]) in DOC)
+must("null standard error %.2f" % t["null_se"],
+     ("%.2f" % t["null_se"]) in DOC)
+must("titles ranked (%d)" % HERO["ranked_total"],
+     "of %d" % HERO["ranked_total"] in DOC)
+must("top-five hold (%d of 5)" % HERO["buyer"]["top5_hold"],
+     "%d of 5" % HERO["buyer"]["top5_hold"] in DOC)
+must("sweep size (%d pairs)" % HERO["provenance"]["pairs_evaluated"],
+     str(HERO["provenance"]["pairs_evaluated"]) in DOC)
+must("sweep qualifiers (%d)" % HERO["provenance"]["pairs_qualified"],
+     str(HERO["provenance"]["pairs_qualified"]) in DOC)
+for title, place in places.items():
+    if place and place >= HERO["ranked_total"] - 3:
+        must("placement of %s (%d)" % (title, place), str(place) in DOC)
+for title in HERO["rows"][:5]:
+    must("names the grounded pick %s" % title["title"], title["title"] in DOC)
+for title in HERO["llm_top5"]:
+    must("names the model's pick %s" % title, title in DOC)
+
+print("\nretired phrasing must not reappear")
+RETIRED = {
+    "0.18": r"\b0\.18\b",
+    "a 10,000 monthly quota": r"10[,_]?000",
+    '"independent" for disjoint halves': r"(?<!not )(?<!fully )independent readings?",
+    '"contrary"/"runs against"': r"\b(contrary|runs against|inverse)\b",
+    '"opened with"': r"open(ed)? with",
+    '"perfectly repeatable"': r"perfectly repeatable",
+}
+for label, pattern in RETIRED.items():
+    hit = re.search(pattern, DOC, re.I)
+    must("no %s" % label, hit is None)
+    if hit:
+        line = DOC[:hit.start()].count("\n") + 1
+        print("        line %d: %s" % (line, hit.group(0)))
+
+print()
+if bad:
+    print("%d problem(s): %s" % (len(bad), "; ".join(bad)))
+    sys.exit(1)
+print("submission text agrees with the recorded run")

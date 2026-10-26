@@ -209,7 +209,12 @@ function missing(why){
 
 function art(title, image){
   const a=el('div','art');
-  if(image){const im=new Image();im.src=image;im.alt='';im.loading='lazy';
+  // Deliberately NOT lazy. These ten posters are the page's whole argument,
+  // they are all at or near the top, and deferring them means a browser that
+  // does not consider the tab visible -- a background tab, a screenshot
+  // harness -- renders the comparison with ten empty boxes.
+  if(image){const im=new Image();im.src=image;im.alt='';im.decoding='async';
+    im.fetchPriority='high';
     im.onerror=()=>{im.remove();a.appendChild(el('div','fb',title))};
     a.appendChild(im);}
   else a.appendChild(el('div','fb',title));

@@ -1,12 +1,31 @@
 # The Taste Atlas
 
-**Audiences discovered from Qloo's taste graph, mapped by taste rather than
-geography, and used to rank a film slate for any buyer you can describe.**
+**For an audience described by the games it loves, four of our five
+recommendations are titles a language model without Qloo would not have picked
+— and its own picks land 8th, 9th and 11th of 11 for that audience.**
 
-Live: https://travels-well-722527905604.us-central1.run.app
-(the repository and URL keep the name `travels-well`, an earlier name for the
-project; the product is the Taste Atlas)
-Built for the Qloo Agentic Hackathon. MIT licensed.
+Describe an audience by what it already loves — games, television, music — and
+this ranks a catalogue for them, shows where an AI without the taste graph
+would have guessed differently, and refuses when the evidence is too thin to
+carry a decision.
+
+**Live:** https://travels-well-722527905604.us-central1.run.app
+&nbsp;·&nbsp; **[Evidence](https://travels-well-722527905604.us-central1.run.app/evidence)**
+&nbsp;·&nbsp; MIT
+
+![The landing page: the same twelve films ranked with and without Qloo's taste graph](docs/gallery/1-hero-side-by-side.jpg)
+
+```bash
+cp .env.example .env     # add QLOO_API_KEY
+python3 app/server.py    # http://localhost:8080
+python3 test_taste.py && python3 test_loop.py && python3 test_startup.py
+```
+
+Stdlib only: no dependencies, no build step. A fresh checkout has no recorded
+runs — see [What a fresh checkout is missing](#what-a-fresh-checkout-is-missing).
+
+Built for the Qloo Agentic Hackathon. The repository and URL keep the earlier
+name `travels-well`; the product is the Taste Atlas.
 
 ---
 
