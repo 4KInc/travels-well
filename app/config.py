@@ -39,9 +39,15 @@ def render(html):
     """Substitute the naming placeholders in a template.
 
     Templates carry __PRODUCT_NAME__ and __VIEW_*__ rather than literals, so a
-    rename cannot leave one screen behind.
+    rename cannot leave one screen behind. The customer quote is JSON-encoded
+    rather than pasted: it arrives from an environment variable, and a stray
+    quote mark in it would otherwise break the page it appears on.
     """
+    import json as _json
     out = html.replace("__PRODUCT_NAME__", PRODUCT_NAME)
+    out = out.replace("__CUSTOMER_QUOTE__", _json.dumps(CUSTOMER_QUOTE))
+    out = out.replace("__CUSTOMER_QUOTE_ATTRIBUTION__",
+                      _json.dumps(CUSTOMER_QUOTE_ATTRIBUTION))
     out = out.replace("__REPO_URL__", REPO_URL)
     for key, name in VIEW_NAMES.items():
         out = out.replace("__VIEW_%s__" % key.upper(), name)

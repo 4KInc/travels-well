@@ -1,0 +1,157 @@
+<!doctype html><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>__PRODUCT_NAME__ — About</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;
+  --screen:#0a0a0c;--seat:#141419;--seat-2:#1c1c23;--ink:#f4f1ea;--ink-2:#a9a49a;
+  --ink-3:#6f6b64;--rule:#26262e;--bulb:#e8b84b;
+  --display:"Bebas Neue",Impact,sans-serif;
+  --sans:Inter,ui-sans-serif,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+*{box-sizing:border-box}
+body{margin:0;overflow-x:hidden;background:var(--screen);color:var(--ink);
+  font:400 15px/1.65 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:var(--bulb)}
+.wrap{max-width:820px;margin:0 auto;padding:0 clamp(14px,3.5vw,32px) 72px}
+.topnav{position:sticky;top:0;z-index:20;display:flex;align-items:center;
+  justify-content:center;gap:clamp(10px,2.5vw,26px);flex-wrap:wrap;
+  padding:11px clamp(14px,3.5vw,32px);background:rgba(10,10,12,.86);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.topnav .mark{font:400 19px/1 var(--display);letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ink);margin-right:4px}
+.topnav .mark b{color:var(--bulb);font-weight:400}
+.topnav a{font:400 11px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-3);text-decoration:none;padding:6px 2px;border-bottom:1px solid transparent}
+.topnav a:hover{color:var(--ink)}
+.topnav a[aria-current=page]{color:var(--ink);border-bottom-color:var(--bulb)}
+.topnav .spacer{flex:1 1 0;min-width:0}
+@media (max-width:620px){.topnav{gap:12px}.topnav .spacer{display:none}}
+.strip{height:11px;border-bottom:1px solid var(--rule);
+  background:repeating-linear-gradient(90deg,transparent 0 9px,var(--rule) 9px 15px)}
+h1{font:400 clamp(30px,5vw,48px)/1 var(--display);letter-spacing:.02em;
+  text-transform:uppercase;margin:clamp(24px,4vw,40px) 0 0}
+h2{font:400 clamp(20px,2.6vw,26px)/1.1 var(--display);letter-spacing:.03em;
+  text-transform:uppercase;margin:34px 0 6px;padding-top:16px;
+  border-top:1px solid var(--rule)}
+p{max-width:72ch;color:var(--ink-2)}
+p b,li b{color:var(--ink);font-weight:500}
+ul{max-width:72ch;padding-left:18px;color:var(--ink-2)}
+li{margin-bottom:8px}
+.tagline{font:400 12px/1.6 var(--mono);letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-3);margin:10px 0 0}
+.hyp{border-left:2px solid var(--bulb);padding:12px 16px;margin:14px 0 0;
+  background:rgba(232,184,75,.05);max-width:72ch}
+.hyp .label{font:400 10.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;
+  color:var(--bulb);display:block;margin-bottom:8px}
+.hyp p{margin:0 0 8px;color:var(--ink-2)}
+blockquote{margin:16px 0 0;padding:14px 18px;border-left:2px solid var(--rule);
+  background:var(--seat);max-width:72ch}
+blockquote p{margin:0;color:var(--ink);font-size:16px;line-height:1.6}
+blockquote cite{display:block;margin-top:9px;font:400 11.5px/1 var(--mono);
+  color:var(--ink-3);font-style:normal}
+footer{margin:40px 0 0;border-top:1px solid var(--rule);padding-top:16px;
+  color:var(--ink-3);font-size:12.5px}
+</style>
+
+<nav class="topnav">
+    <span class="mark">Taste <b>Atlas</b></span>
+    <a href="/">The question</a>
+    <a href="/pitch">__VIEW_PITCH__</a>
+    <a href="/atlas">__VIEW_ATLAS__</a>
+    <a href="/slate">__VIEW_SLATE__</a>
+    <span class="spacer"></span>
+    <a href="/evidence">Evidence</a>
+    <a href="/about" aria-current="page">About</a>
+    <a href="__REPO_URL__">Source</a>
+</nav>
+<div class="strip"></div>
+
+<div class="wrap">
+<h1>What this is for</h1>
+<p class="tagline">The taste-fit layer for anyone who licenses or programs content</p>
+
+<h2>The problem</h2>
+<p>Someone programming a niche channel has to decide which titles to license for
+a specific audience, and almost no taste data to decide with. The usual
+substitutes are genre tags, which describe the film rather than the viewer, and
+a language model, which defaults to what is famous. Fame is a reasonable guess
+and a poor answer: it is the same guess for every audience.</p>
+<p>This puts the decision on an audience's measured affinities instead, and —
+the part that matters — lets the agent decline when the evidence will not carry
+a decision.</p>
+
+<h2>Who it is for</h2>
+<ul>
+<li><b>Niche SVOD and FAST channel programmers</b>, who acquire against a
+defined audience rather than a broad one, and whose catalogue decisions repeat
+every month.</li>
+<li><b>Distributors and international sales agents</b>, deciding which titles to
+put in front of which buyer at a market.</li>
+<li><b>Acquisitions teams</b> who already keep a list of what they have
+licensed. That list is the input; no new data collection is required.</li>
+</ul>
+
+<h2>Why now</h2>
+<p>Channels are proliferating faster than the research budgets that used to
+support them, and the fallback — asking a general-purpose model — produces
+confident answers with nothing underneath them. An agent making a cultural call
+needs something to ground it in, and needs to know when it is not grounded.</p>
+
+<h2>Why Qloo specifically</h2>
+<p>The thing no language model holds is the <b>cross-domain</b> signal: that an
+audience's games and television predict its films. We measured how strongly each
+domain carries that signal — television 0.06, video games 0.08, music 0.11
+discriminate sharply; brands, books, podcasts and places barely or not at all —
+and built only on the three that work. Without the graph there is nothing to
+resolve titles against, no signatures to cluster, and ranking collapses to
+whatever the model remembers being famous.</p>
+<p><a href="/">The landing page</a> is that comparison run on a real audience,
+and <a href="/evidence">the evidence page</a> is every measurement behind it.</p>
+
+<div class="hyp">
+  <span class="label">Hypothesis, not a price list</span>
+  <p>We have not sold this. The shape we would test first is a per-seat tier for
+  a programming or acquisitions team, with a catalogue-sized tier above it for
+  groups running several channels — priced against the cost of one wrong
+  licensing decision rather than per query, since the whole point is that the
+  tool sometimes answers "not enough evidence".</p>
+  <p>Any number here would be invented, so there isn't one.</p>
+</div>
+
+<h2>Where it goes next</h2>
+<ul>
+<li><b>Other catalogues, same engine.</b> Music programming for a venue or a
+playlist, and live-event booking, are the same question with a different
+catalogue. Anchor quality varies by domain and we have only measured it for
+film, so each would need its own measurement rather than an assumption.</li>
+<li><b>Sponsorship and brand fit</b>, where the question is which property suits
+an audience — though our own measurement puts brands among the weak signals, so
+that one starts as a negative result to overturn.</li>
+<li><b>Catalogue feeds.</b> Today an audience is described by typing titles.
+Reading an existing acquisitions list directly turns a demo into something used
+on a Tuesday.</li>
+</ul>
+
+<div id="quote"></div>
+
+<footer>
+  No customer has used this in production, and nothing on this page claims
+  otherwise. <a href="/evidence">Evidence</a> · <a href="__REPO_URL__">Source</a>
+</footer>
+</div>
+
+<script>
+// The quote block renders only when a real one has been given, with
+// permission. There is no placeholder text standing in for a person.
+const Q=__CUSTOMER_QUOTE__, A=__CUSTOMER_QUOTE_ATTRIBUTION__;
+if(Q){
+  const b=document.createElement('blockquote');
+  const p=document.createElement('p'); p.textContent='“'+Q+'”';
+  b.appendChild(p);
+  if(A){const c=document.createElement('cite'); c.textContent=A; b.appendChild(c);}
+  document.getElementById('quote').appendChild(b);
+}
+</script>

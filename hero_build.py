@@ -75,6 +75,40 @@ def main():
         if nm and named:
             drivers[nm] = named[:3]
 
+    # Re-run the model the registered number of times, keeping each run's
+    # agreement separately. A single tau averages away the thing worth
+    # reporting: the set of five is stable, the ordering behind it is not, so
+    # one number would describe neither.
+    from taste import llm_baseline
+    ranked_names = [r["title"] for r in res["rows"]]
+    qloo_ranks = {r["title"]: (len(res["rows"]) - i) / len(res["rows"])
+                  for i, r in enumerate(res["rows"])}
+    taus, sets, orders = [], [], []
+    for _ in range(int(win["llm_runs"])):
+        out = llm_baseline.rank(ranked_names,
+                                [m["name"] for m in members],
+                                qloo_ranks,
+                                audience_label=aud["label"])
+        if not out.get("available"):
+            continue
+        orders.append(out["order"])
+        if out.get("agreement") is not None:
+            taus.append(out["agreement"])
+        if out.get("llm_top5"):
+            sets.append(tuple(sorted(out["llm_top5"])))
+    tau_block = {
+        "runs": len(taus),
+        "min": round(min(taus), 3) if taus else None,
+        "max": round(max(taus), 3) if taus else None,
+        "values": taus,
+        "set_identical_across_runs": (len(set(sets)) == 1) if sets else None,
+        "orders_identical_across_runs": (len(set(map(tuple, orders))) == 1)
+                                        if orders else None,
+        "note": ("Reported as a range, not a single number: the set of five the "
+                 "model picks is steady across runs while its full ordering is "
+                 "not, and rank correlation is computed from the ordering."),
+    }
+
     llm_top5 = sorted(win["llm_top5_stable"])   # a set, not an order
     grounded_top5 = [r["title"] for r in res["rows"][:5]]
 
@@ -105,6 +139,7 @@ def main():
         "drivers": drivers,
         "llm_top5": llm_top5,
         "llm_repeats": win["llm_runs"],
+        "llm_tau": tau_block,
         "llm_top5_counts": win["llm_top5_counts"],
         "llm_full_order_identical": win["llm_repeats_identical"],
         "shared_top5": [t for t in grounded_top5 if t in llm_top5],

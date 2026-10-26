@@ -1,0 +1,258 @@
+<!doctype html><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>__PRODUCT_NAME__ — Evidence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;
+  --screen:#0a0a0c;--seat:#141419;--seat-2:#1c1c23;--ink:#f4f1ea;--ink-2:#a9a49a;
+  --ink-3:#6f6b64;--rule:#26262e;--bulb:#e8b84b;--pos:#3987e5;--neg:#e66767;
+  --display:"Bebas Neue",Impact,sans-serif;
+  --sans:Inter,ui-sans-serif,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+*{box-sizing:border-box}
+body{margin:0;overflow-x:hidden;background:var(--screen);color:var(--ink);
+  font:400 15px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:var(--bulb)}
+.wrap{max-width:900px;margin:0 auto;padding:0 clamp(14px,3.5vw,32px) 72px}
+.topnav{position:sticky;top:0;z-index:20;display:flex;align-items:center;
+  justify-content:center;gap:clamp(10px,2.5vw,26px);flex-wrap:wrap;
+  padding:11px clamp(14px,3.5vw,32px);background:rgba(10,10,12,.86);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.topnav .mark{font:400 19px/1 var(--display);letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ink);margin-right:4px}
+.topnav .mark b{color:var(--bulb);font-weight:400}
+.topnav a{font:400 11px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-3);text-decoration:none;padding:6px 2px;border-bottom:1px solid transparent}
+.topnav a:hover{color:var(--ink)}
+.topnav a[aria-current=page]{color:var(--ink);border-bottom-color:var(--bulb)}
+.topnav .spacer{flex:1 1 0;min-width:0}
+@media (max-width:620px){.topnav{gap:12px}.topnav .spacer{display:none}}
+.strip{height:11px;border-bottom:1px solid var(--rule);
+  background:repeating-linear-gradient(90deg,transparent 0 9px,var(--rule) 9px 15px)}
+h1{font:400 clamp(30px,5vw,48px)/1 var(--display);letter-spacing:.02em;
+  text-transform:uppercase;margin:clamp(24px,4vw,40px) 0 0}
+.lede{color:var(--ink-2);max-width:72ch;margin:12px 0 0}
+h2{font:400 clamp(21px,2.8vw,28px)/1.1 var(--display);letter-spacing:.03em;
+  text-transform:uppercase;margin:38px 0 4px;padding-top:18px;
+  border-top:1px solid var(--rule)}
+h3{font:400 11px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-3);margin:24px 0 8px}
+p{max-width:76ch}
+table{width:100%;border-collapse:collapse;margin:10px 0 0;font-size:13.5px}
+th{text-align:left;font:400 10px/1.4 var(--mono);letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);padding:0 12px 8px 0;
+  border-bottom:1px solid var(--rule);vertical-align:bottom}
+td{padding:10px 12px 10px 0;border-bottom:1px solid var(--rule);
+  vertical-align:top;color:var(--ink-2)}
+td b{color:var(--ink);font-weight:500}
+td.num{font:400 12.5px var(--mono);color:var(--ink);white-space:nowrap}
+code{font:400 12px var(--mono);color:var(--bulb);background:var(--seat);
+  padding:1px 5px;border-radius:2px}
+.repro{font:400 11.5px/1.5 var(--mono);color:var(--ink-3);display:block;margin-top:4px}
+.callout{border-left:2px solid var(--bulb);padding:12px 16px;margin:16px 0 0;
+  background:rgba(232,184,75,.05);font-size:14px;color:var(--ink-2);max-width:76ch}
+.callout b{color:var(--ink)}
+.big{display:flex;gap:28px;flex-wrap:wrap;margin:14px 0 0}
+.big div{min-width:150px}
+.big .v{font:400 34px/1 var(--display);color:var(--bulb)}
+.big .k{font:400 10.5px/1.5 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3)}
+ul{max-width:76ch;padding-left:18px;color:var(--ink-2)}
+li{margin-bottom:7px}
+footer{margin:40px 0 0;border-top:1px solid var(--rule);padding-top:16px;
+  color:var(--ink-3);font-size:12.5px}
+</style>
+
+<nav class="topnav">
+    <span class="mark">Taste <b>Atlas</b></span>
+    <a href="/">The question</a>
+    <a href="/pitch">__VIEW_PITCH__</a>
+    <a href="/atlas">__VIEW_ATLAS__</a>
+    <a href="/slate">__VIEW_SLATE__</a>
+    <span class="spacer"></span>
+    <a href="/evidence" aria-current="page">Evidence</a>
+    <a href="/about">About</a>
+    <a href="__REPO_URL__">Source</a>
+</nav>
+<div class="strip"></div>
+
+<div class="wrap">
+<h1>Evidence</h1>
+<p class="lede">Everything the product claims, with the measurement behind it and
+the assumption that limits it. Thresholds were registered and hashed before any
+data was collected; where one moved afterwards, the amendment says so.</p>
+
+<h2>What we measured about the API</h2>
+<p>Every parameter was differential-tested — assert the response <em>changes</em>
+when the parameter is removed — because this API silently ignores what it does
+not understand, which makes an untested parameter indistinguishable from a
+working one.</p>
+<table>
+<thead><tr><th style="width:38%">Finding</th><th>What it means</th></tr></thead>
+<tbody>
+<tr><td><b><code>filter.location.query</code> is ignored for movies</b></td>
+    <td>Pin a candidate set and vary the city across New York, São Paulo, Tokyo,
+    Mumbai and Berlin: affinities come back identical to four decimals. It
+    <em>is</em> honoured for places. Any entry that pins a set and varies
+    location is reading a parameter the API never applied.
+    <span class="repro">reproduce: <code>python3 run_all.py</code> — tests F0 and F</span></td></tr>
+<tr><td><b><code>affinity</code> and <code>popularity</code> sit side by side</b></td>
+    <td>They are different numbers in the same response. Popularity is identical
+    in every market, so a client that reads it makes every audience look alike.
+    Ranking here uses <code>query.affinity</code> with no fallback.
+    <span class="repro">reproduce: <code>python3 probe_api.py</code></span></td></tr>
+<tr><td><b>Affinity is not normalised per candidate set</b></td>
+    <td>The same entity scored inside two different pinned sets, with the same
+    signal, returns the same value. It varies with the signal, not the set — so
+    rank positions from one pinned query are comparable by construction.
+    <span class="repro">reproduce: <code>python3 run_all.py</code> — tests B
+    (normalisation) and C (<code>filter.results.entities</code>)</span></td></tr>
+<tr><td><b>Cross-domain signal strength varies enormously</b></td>
+    <td>Television (0.06), video games (0.08) and music (0.11) discriminate film
+    taste sharply. Brands (0.39), books (0.70), podcasts (0.72) and places
+    (0.67–0.98) barely or not at all. Audiences here are built only from the
+    three that work.
+    <span class="repro">reproduce: <code>python3 probe_api.py</code></span></td></tr>
+<tr><td><b>Neighbourhood granularity does not exist for film</b></td>
+    <td>Bronx against Manhattan returns the same film affinities. The idea that
+    a taste graph can route a slate by postcode was tested and abandoned.
+    <span class="repro">reproduce: <code>python3 probe_location.py</code></span></td></tr>
+<tr><td><b><code>take</code> is capped at 50</b></td>
+    <td>A larger value returns a 400 that reads downstream as "no data" unless
+    the status is checked. Ours is. Test D covers the wider rule that invalid
+    parameters are ignored without complaint.
+    <span class="repro">reproduce: <code>python3 probe_api.py</code>; <code>run_all.py</code> — test D</span></td></tr>
+</tbody>
+</table>
+
+<h2>What the agent does without Qloo</h2>
+<p>The same question, put to a language model that sees only the two title
+lists. There is no ground truth for what a programmer would license, so this
+measures <em>divergence</em>, never correctness.</p>
+
+<div class="big" id="big"></div>
+
+<div class="callout" id="tauNote"></div>
+
+<h3>Why the set, and not the rank correlation</h3>
+<p>Rank correlation is computed from the model's full ordering, and that
+ordering is not stable. Its <em>set</em> of five is. So the set overlap is the
+headline number and the correlation is shown as a range across runs — a single
+value would describe the unstable quantity and look more precise than it is.</p>
+<table id="runs"></table>
+
+<h2>What the validation shows, and what it assumes</h2>
+<table>
+<thead><tr><th style="width:34%">Result</th><th>The assumption that limits it</th></tr></thead>
+<tbody>
+<tr><td><b>11 of 11</b> regionally-skewed films rank highest with their own home
+    audience <span class="repro">p = 0.0005</span></td>
+    <td>This is a <b>validity check, not a finding</b>. Indian musicians
+    favouring Indian films is what a working system should do. We also chose
+    which films count as regionally skewed and which anchors represent each
+    home, so the selection is ours, and the eleven cases are not fully
+    independent because films sharing an audience move together.</td></tr>
+<tr><td><b>10 of 11</b> survive replacing every anchor artist
+    <span class="repro">p = 0.0059</span></td>
+    <td>This is the result with weight: the effect belongs to the audience, not
+    to the three names we picked. But both readings come from the same graph, so
+    a second anchor set is a <b>disjoint</b> check, not an independent one — the
+    halves share no entities, and that is all.</td></tr>
+<tr><td><b>67%</b> of cluster pairings survive bootstrap resampling</td>
+    <td>Measured at the 0.75 linkage threshold. Looser grouping produced one
+    large cluster that dissolved under the same test. 15 of the 18 audiences are
+    too small to split at all and are labelled single-reading.</td></tr>
+<tr><td><b>2 of 5</b> markets agree with an external backtest</td>
+    <td>Wikipedia pageview ranks, collected <em>before</em> any Qloo call.
+    Mumbai (tau 0.39) and Berlin (0.20) agree; the other three do not. Reported
+    either way. Pageviews measure attention, not licensing demand.</td></tr>
+<tr><td><b>Every hero-sweep qualifier</b> fell below the separation floor</td>
+    <td>The 0.35 floor was in the code from 17 October, nine days before the
+    sweep was registered. All four qualifying pairs sit under it. We label that
+    on the page rather than hide it, and the floor was not recalibrated
+    afterwards to make any pair look better.</td></tr>
+</tbody>
+</table>
+
+<h2>How the hero pair was chosen</h2>
+<p id="prov"></p>
+<p>Every candidate evaluated, with the reason each did or did not qualify, is
+published in <a href="https://github.com/4KInc/travels-well/blob/main/docs/HERO_SWEEP.md">HERO_SWEEP.md</a>.
+The rule was hashed before the data existed; the amendment that enlarged the
+candidate audiences records what had been seen at the time and states that no
+criterion, threshold, tie-break or model setting changed.</p>
+
+<h2>Honest limits</h2>
+<ul>
+<li>Qloo knows brands, not products. This works for films, artists, places,
+books, shows, podcasts and games — not arbitrary retail SKUs.</li>
+<li>15 of the 18 map audiences have too few members to split into halves that
+can disagree, and are drawn dashed rather than implying a check that did not
+happen.</li>
+<li>The two readings of any audience are disjoint, not independent. They share
+no entities but both come out of the same graph, so their agreement is a
+consistency check rather than corroboration.</li>
+<li>Divergence from a language model is not evidence that the model is wrong.
+There is no ground truth here.</li>
+<li>Every number on this site is a snapshot of the graph in October 2026.</li>
+</ul>
+
+<footer id="foot"></footer>
+</div>
+
+<script>
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;
+  if(x!==undefined)e.textContent=x;return e};
+const $=id=>document.getElementById(id);
+
+fetch('/api/hero').then(r=>r.json()).then(d=>{
+  const t=d.llm_tau||{}, overlap=5-(d.llm_only_top5||[]).length;
+
+  const big=(v,k)=>{const w=el('div');w.appendChild(el('div','v',v));
+    w.appendChild(el('div','k',k));$('big').appendChild(w)};
+  big(overlap+' of 5','top-five titles shared');
+  big((t.min!=null? t.min.toFixed(2)+' to '+t.max.toFixed(2) : '—'),
+      'rank correlation, range over '+(t.runs||0)+' runs');
+  big(d.buyer&&d.buyer.top5_hold!=null? d.buyer.top5_hold+' of 5':'—',
+      'grounded picks that hold on re-reading');
+
+  $('tauNote').innerHTML='<b>The set is stable; the order is not.</b> Across '+
+    (t.runs||0)+' runs at temperature zero the model returned '+
+    (t.set_identical_across_runs? 'the <b>same five titles every time</b>':
+     'a varying set of five')+', while its full ordering was '+
+    (t.orders_identical_across_runs? 'also identical':'<b>not identical</b>')+
+    '. Rank correlation is computed from that ordering, which is why it is '+
+    'reported here as a range rather than a single number.'+
+    (t.min!=null && t.max!=null && t.max<0 ?
+      ' Both ends are negative: for this audience the model’s ordering runs '+
+      'contrary to the grounded one, rather than merely differing from it.':'');
+
+  const tb=$('runs');
+  tb.innerHTML='<thead><tr><th>Run</th><th class="num">Rank correlation</th>'+
+    '<th>Its five</th></tr></thead>';
+  const body=el('tbody');
+  (t.values||[]).forEach((v,i)=>{
+    const tr=el('tr');
+    tr.appendChild(el('td',null,'run '+(i+1)));
+    tr.appendChild(el('td','num',v.toFixed(3)));
+    tr.appendChild(el('td',null,i===0&&t.set_identical_across_runs
+      ? 'same five in every run' : (t.set_identical_across_runs?'— same —':'varied')));
+    body.appendChild(tr);
+  });
+  tb.appendChild(body);
+
+  const p=d.provenance||{};
+  $('prov').innerHTML='The pair on the landing page was selected from <b>'+
+    p.pairs_evaluated+'</b> audience-and-slate combinations, of which <b>'+
+    p.pairs_qualified+'</b> met every registered criterion. Pre-registration '+
+    '<code>'+(p.sha256||'').slice(0,16)+'</code> in <code>'+
+    (p.pre_registration||'')+'</code>.';
+  $('foot').innerHTML='Thresholds and amendments are committed in '+
+    '<code>out/</code>. Raw Qloo responses are not: the data-publishing rule '+
+    'for this hackathon is unresolved, so recorded runs ship in the deployed '+
+    'image and stay out of the public repository. '+
+    '<a href="__REPO_URL__">Source</a>';
+}).catch(e=>{$('big').textContent='Could not load the recorded run: '+e;});
+</script>

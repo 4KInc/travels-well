@@ -189,6 +189,12 @@ class Handler(BaseHTTPRequestHandler):
         if route.path in ("/pitch", "/pitch.html"):
             return self._send(200, _cfg.render((HERE / "pitch.html").read_text()),
                               "text/html; charset=utf-8")
+        if route.path in ("/about", "/about.html"):
+            return self._send(200, _cfg.render((HERE / "about.html").read_text()),
+                              "text/html; charset=utf-8")
+        if route.path in ("/evidence", "/evidence.html"):
+            return self._send(200, _cfg.render((HERE / "evidence.html").read_text()),
+                              "text/html; charset=utf-8")
         if route.path == "/api/hero":
             path = HERE / "cache" / "hero.json"
             if not path.exists():

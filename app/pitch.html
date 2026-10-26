@@ -351,6 +351,11 @@ function paneAblation(p,d){
   if(!l||!l.available){ p.appendChild(el('p','empty',(l&&l.note)||'No comparison available.')); return; }
   p.appendChild(el('p','note','The same question put to a language model that sees '
     +'only the two title lists — no Qloo, no affinities.'));
+  p.appendChild(el('p','note','Top-five overlap is the measure to read. Full-list '
+    +'agreement is computed from the model\u2019s ordering, and that ordering is '
+    +'not stable between runs, so the single value below is one draw rather than '
+    +'a property of the model. The recorded example on the '
+    +'<a href="/evidence">evidence page</a> reports it as a range.'));
   const st=el('div','stats');
   const put=(k,v)=>{const s=el('span');s.appendChild(document.createTextNode(k+' '));
     s.appendChild(el('b',null,v));st.appendChild(s)};
@@ -358,7 +363,7 @@ function paneAblation(p,d){
     put('top five',l.top5_overlap+' of 5 shared');
     put('different titles',(5-l.top5_overlap)+' of 5');
   }
-  if(l.agreement!=null) put('full-list agreement',l.agreement.toFixed(2));
+  if(l.agreement!=null) put('full-list agreement',l.agreement.toFixed(2)+' (one run)');
   p.appendChild(st);
   if(l.placements&&l.placements.length){
     p.appendChild(el('p','note','The model picked these five. Shown unordered, '
