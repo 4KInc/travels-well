@@ -25,6 +25,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
+import config as _cfg
+
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 sys.path.insert(0, str(ROOT))
@@ -181,9 +183,18 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, page, "text/html; charset=utf-8")
         # The front door is the decision, with its answer already on screen.
         # The map explains why the answer differs and is one click away.
-        if route.path in ("/", "/pitch", "/pitch.html"):
-            return self._send(200, (HERE / "pitch.html").read_text(),
+        if route.path in ("/", "/hero"):
+            return self._send(200, _cfg.render((HERE / "hero.html").read_text()),
                               "text/html; charset=utf-8")
+        if route.path in ("/pitch", "/pitch.html"):
+            return self._send(200, _cfg.render((HERE / "pitch.html").read_text()),
+                              "text/html; charset=utf-8")
+        if route.path == "/api/hero":
+            path = HERE / "cache" / "hero.json"
+            if not path.exists():
+                return self._send(503, json.dumps(
+                    {"error": "The recorded hero run is missing from this build."}))
+            return self._send(200, path.read_text())
         if route.path in ("/atlas", "/atlas.html", "/map"):
             return self._send(200, (HERE / "atlas.html").read_text(),
                               "text/html; charset=utf-8")

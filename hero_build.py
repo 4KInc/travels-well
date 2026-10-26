@@ -77,6 +77,24 @@ def main():
 
     llm_top5 = win["llm_top5_stable"]
     grounded_top5 = [r["title"] for r in res["rows"][:5]]
+
+    # The plainest explanation of the divergence is not a driver score, it is
+    # where the model's picks actually landed. Both columns come from the same
+    # pinned query, so "#9 of 11" is the grounded reading's own answer about a
+    # title the model opened with.
+    place_of = {r["title"]: i + 1 for i, r in enumerate(res["rows"])}
+    total = len(res["rows"])
+    withheld_names = set(res["withheld"])
+    llm_only_ranks = []
+    for t in llm_top5:
+        if t in grounded_top5:
+            continue
+        llm_only_ranks.append({
+            "title": t,
+            "grounded_place": place_of.get(t),
+            "of": total,
+            "withheld": t in withheld_names,
+        })
     payload = dict(res)
     payload.update({
         "hero": True,
@@ -92,6 +110,8 @@ def main():
         "shared_top5": [t for t in grounded_top5 if t in llm_top5],
         "grounded_only_top5": [t for t in grounded_top5 if t not in llm_top5],
         "llm_only_top5": [t for t in llm_top5 if t not in grounded_top5],
+        "llm_only_ranks": llm_only_ranks,
+        "ranked_total": len(res["rows"]),
         "provenance": {
             "pre_registration": SWEEP["pre_registration_file"],
             "sha256": SWEEP["pre_registration_sha256"],

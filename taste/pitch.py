@@ -7,7 +7,8 @@ catalogue -- and the profile is built from those films directly.
 
 That also restores the consensus check the small clusters could not support: a
 catalogue of eight titles splits into two halves of four, each half becomes an
-independent reading, and any title the two halves rank very differently is
+separate reading -- disjoint, not independent, since both still come from
+the same graph -- and any title the two halves rank very differently is
 withheld rather than reported.
 """
 from __future__ import annotations
@@ -201,7 +202,9 @@ def profile(client, slate_ids, catalogue_ids, entity_type, trace=None,
         step("withhold", "the two halves placed these titles far apart, so no "
              "verdict is offered on them", "%d of %d titles withheld"
              % (len(withheld), len(shared)))
-    # How many of the top five survive an independent re-reading. Rank
+    # How many of the top five survive a re-reading from the other half of
+    # the describing catalogue. The halves are disjoint, not independent: they
+    # share no entities, but both are read out of the same graph. Rank
     # correlation over the whole slate can look healthy while the five titles
     # actually shown churn, and the five are what someone acts on.
     top5_a = [e for e in sorted(pa, key=lambda x: -pa[x])[:5]]
@@ -210,7 +213,7 @@ def profile(client, slate_ids, catalogue_ids, entity_type, trace=None,
     step("top-five check",
          "rank correlation can look healthy while the five titles actually "
          "shown change, and the five are what someone acts on",
-         "%d of 5 top titles appear in both independent readings" % top5_hold)
+         "%d of 5 top titles appear in both halves' readings" % top5_hold)
     return rank_percentiles(whole), withheld, agreement, flat_warning[0], top5_hold
 
 

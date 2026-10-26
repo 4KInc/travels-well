@@ -102,7 +102,7 @@ Described by: Dark Souls, Elden Ring, Bloodborne, Castlevania, Sekiro: Shadows D
 
 Shared: **The Raid: Redemption**. The other four differ.
 
-**5 of 5** of the grounded top five appear in both independent readings of this audience, so the selection holds up under re-reading even though the order within it does not.
+**5 of 5** of the grounded top five survive when the audience is re-read from a separate set of games, so the selection holds up even though the order within it does not. The two halves are disjoint, not independent: they share no entities, but both are read out of the same graph.
 
 ### What drives each divergent title
 

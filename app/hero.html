@@ -1,0 +1,307 @@
+<!doctype html><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>__PRODUCT_NAME__</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;
+  --screen:#0a0a0c;--seat:#141419;--seat-2:#1c1c23;--ink:#f4f1ea;--ink-2:#a9a49a;
+  --ink-3:#6f6b64;--rule:#26262e;--bulb:#e8b84b;--pos:#3987e5;--neg:#e66767;
+  --display:"Bebas Neue",Impact,sans-serif;
+  --sans:Inter,ui-sans-serif,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+*{box-sizing:border-box}
+body{margin:0;overflow-x:hidden;background:var(--screen);color:var(--ink);
+  font:400 15px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:var(--bulb)}
+.wrap{max-width:1120px;margin:0 auto;padding:0 clamp(14px,3.5vw,32px) 72px}
+
+/* ---------- shared nav ---------- */
+.topnav{position:sticky;top:0;z-index:20;display:flex;align-items:center;
+  justify-content:center;gap:clamp(10px,2.5vw,26px);flex-wrap:wrap;
+  padding:11px clamp(14px,3.5vw,32px);background:rgba(10,10,12,.86);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.topnav .mark{font:400 19px/1 var(--display);letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ink);margin-right:4px}
+.topnav .mark b{color:var(--bulb);font-weight:400}
+.topnav a{font:400 11px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-3);text-decoration:none;padding:6px 2px;border-bottom:1px solid transparent}
+.topnav a:hover{color:var(--ink)}
+.topnav a[aria-current=page]{color:var(--ink);border-bottom-color:var(--bulb)}
+.topnav .spacer{flex:1 1 0;min-width:0}
+@media (max-width:620px){.topnav{gap:12px}.topnav .spacer{display:none}}
+.strip{height:11px;border-bottom:1px solid var(--rule);
+  background:repeating-linear-gradient(90deg,transparent 0 9px,var(--rule) 9px 15px)}
+
+/* ---------- the question ---------- */
+header{padding:clamp(24px,4.5vw,42px) 0 0;text-align:center}
+h1{font:400 clamp(30px,5.2vw,56px)/1.02 var(--display);letter-spacing:.015em;
+  margin:0;text-transform:uppercase;max-width:20ch;margin-inline:auto}
+h1 b{color:var(--bulb);font-weight:400}
+.sub{max-width:58ch;margin:14px auto 0;color:var(--ink-2);font-size:15px;line-height:1.6}
+.sub b{color:var(--ink);font-weight:500}
+.who{margin:16px auto 0;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;
+  max-width:70ch}
+.who span{font:400 11.5px/1 var(--mono);padding:6px 9px;border:1px solid var(--rule);
+  border-radius:2px;color:var(--ink-2);background:var(--seat)}
+.who span i{font-style:normal;color:var(--ink-3)}
+
+/* ---------- the chip ---------- */
+.chip{display:inline-block;margin:20px auto 0;padding:9px 15px;border-radius:2px;
+  border:1px solid var(--bulb);color:var(--bulb);background:rgba(232,184,75,.07);
+  font:400 13px/1.45 var(--sans);max-width:62ch}
+.chip b{font-weight:600}
+
+/* ---------- the two fives ---------- */
+.fives{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,2.6vw,30px);
+  margin:26px 0 0}
+@media (max-width:700px){.fives{grid-template-columns:1fr;gap:26px}}
+.col h2{font:400 clamp(19px,2.4vw,25px)/1.1 var(--display);letter-spacing:.04em;
+  text-transform:uppercase;margin:0 0 3px}
+.col .tag{font:400 10.5px/1.5 var(--mono);letter-spacing:.11em;text-transform:uppercase;
+  color:var(--ink-3);display:block;margin-bottom:12px;min-height:2.6em}
+.col.qloo h2{color:var(--ink)}
+.col.llm h2{color:var(--ink-2)}
+.pick{display:flex;gap:13px;padding:12px 0;border-top:1px solid var(--rule)}
+.pick:last-child{border-bottom:1px solid var(--rule)}
+.art{width:64px;flex:0 0 64px;aspect-ratio:2/3;border-radius:2px;overflow:hidden;
+  background:var(--seat-2);border:1px solid var(--rule);position:relative}
+.art img{width:100%;height:100%;object-fit:cover;display:block}
+.art .fb{position:absolute;inset:0;display:grid;place-items:center;padding:4px;
+  text-align:center;font:400 13px/1.05 var(--display);color:var(--ink-3);
+  text-transform:uppercase}
+.pick .body{min-width:0;flex:1}
+.pick .t{font-size:14px;line-height:1.3}
+.pick .n{font:400 10.5px/1 var(--mono);color:var(--ink-3);float:right;margin-left:8px}
+.why{font:400 12px/1.45 var(--sans);color:var(--ink-2);margin-top:4px}
+.why b{color:var(--ink);font-weight:500}
+.shared .t{color:var(--ink-3)}
+.shared .art{filter:grayscale(1) brightness(.55)}
+.only .t::before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;
+  background:var(--bulb);margin-right:7px;vertical-align:2px}
+.col.llm .only .t::before{background:var(--neg)}
+details.ev{margin-top:5px}
+details.ev summary{font:400 11px/1 var(--mono);letter-spacing:.04em;
+  color:#55524c;cursor:pointer;list-style:none;margin-top:6px}
+details.ev summary::-webkit-details-marker{display:none}
+details.ev summary:hover{color:var(--bulb)}
+details.ev .inner{font:400 11.5px/1.6 var(--mono);color:var(--ink-3);margin-top:5px;
+  padding-left:10px;border-left:1px solid var(--rule)}
+
+/* ---------- the rest ---------- */
+.note{max-width:76ch;margin:22px auto 0;color:var(--ink-2);font-size:13.5px;
+  line-height:1.65;text-align:center}
+.withheld{margin:26px 0 0;border-top:1px solid var(--rule);padding-top:16px}
+.slug{font:400 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-3);margin:0 0 9px}
+.withheld .items{display:flex;flex-wrap:wrap;gap:8px}
+.withheld .items span{font:400 12.5px/1 var(--sans);padding:7px 10px;
+  border:1px solid var(--rule);border-radius:2px;color:var(--ink-3);
+  text-decoration:line-through}
+details.trace{margin:26px 0 0;border-top:1px solid var(--rule);padding-top:16px}
+details.trace summary{font:400 11px/1 var(--mono);letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-3);cursor:pointer}
+details.trace summary:hover{color:var(--bulb)}
+ol.steps{list-style:none;margin:14px 0 0;padding:0;counter-reset:s}
+ol.steps li{display:grid;grid-template-columns:26px 1fr;gap:10px;padding:0 0 12px;
+  counter-increment:s}
+ol.steps li::before{content:counter(s,decimal-leading-zero);
+  font:400 11px/1.6 var(--mono);color:var(--ink-3)}
+.act{font-size:13px}
+.obs{font:400 11.5px/1.5 var(--mono);color:var(--ink-3);margin-top:2px}
+.did{font:400 11.5px/1.5 var(--mono);color:var(--bulb);margin-top:2px}
+.cta{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:30px 0 0}
+.cta a{font:400 19px/1 var(--display);letter-spacing:.05em;text-transform:uppercase;
+  padding:12px 20px 10px;border-radius:2px;text-decoration:none;
+  border:1px solid var(--rule);color:var(--ink-2)}
+.cta a:hover{color:var(--ink);border-color:var(--bulb)}
+.cta a.go{background:var(--bulb);border-color:var(--bulb);color:#140f02}
+footer{margin:34px 0 0;border-top:1px solid var(--rule);padding-top:16px;
+  color:var(--ink-3);font-size:12.5px;line-height:1.7}
+.badge{font:500 10px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 7px;border-radius:2px;border:1px solid currentColor;color:var(--bulb)}
+</style>
+
+<nav class="topnav">
+    <span class="mark">Taste <b>Atlas</b></span>
+    <a href="/" aria-current="page">The question</a>
+    <a href="/pitch">__VIEW_PITCH__</a>
+    <a href="/atlas">__VIEW_ATLAS__</a>
+    <a href="/slate">__VIEW_SLATE__</a>
+    <span class="spacer"></span>
+    <a href="/evidence">Evidence</a>
+    <a href="__REPO_URL__">Source</a>
+</nav>
+<div class="strip"></div>
+
+<div class="wrap">
+<header>
+  <h1>Which five films would <b>this audience</b> actually want?</h1>
+  <p class="sub" id="sub"></p>
+  <div class="who" id="who"></div>
+  <div style="text-align:center"><span class="chip" id="chip"></span></div>
+</header>
+
+<div class="fives">
+  <div class="col qloo">
+    <h2>With the taste graph</h2>
+    <span class="tag" id="tagq">Ranked from Qloo affinity for this audience</span>
+    <div id="colq"></div>
+  </div>
+  <div class="col llm">
+    <h2>Without it</h2>
+    <span class="tag" id="tagl">The same question to a language model that sees only the two title lists</span>
+    <div id="coll"></div>
+  </div>
+</div>
+
+<p class="note" id="caveat"></p>
+
+<div class="withheld" id="withheld" hidden>
+  <p class="slug">Withheld — no verdict offered</p>
+  <div class="items" id="withitems"></div>
+  <p class="note" style="text-align:left;margin:10px 0 0;max-width:78ch" id="withwhy"></p>
+</div>
+
+<details class="trace">
+  <summary>How the agent decided</summary>
+  <ol class="steps" id="steps"></ol>
+</details>
+
+<div class="cta">
+  <a class="go" href="/pitch">Try your own audience</a>
+  <a href="/evidence">See the evidence</a>
+  <a href="/atlas">__VIEW_ATLAS__</a>
+</div>
+
+<footer id="foot"></footer>
+</div>
+
+<script>
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;
+  if(x!==undefined)e.textContent=x;return e};
+const $=id=>document.getElementById(id);
+
+fetch('/api/hero').then(r=>r.json()).then(draw).catch(e=>{
+  $('sub').textContent='Could not load the recorded run: '+e;});
+
+function art(title, image){
+  const a=el('div','art');
+  if(image){const im=new Image();im.src=image;im.alt='';im.loading='lazy';
+    im.onerror=()=>{im.remove();a.appendChild(el('div','fb',title))};
+    a.appendChild(im);}
+  else a.appendChild(el('div','fb',title));
+  return a;
+}
+
+function draw(d){
+  const A=d.audience;
+  $('sub').innerHTML='A channel whose viewers already love these games and shows. '+
+    'Both columns rank the <b>same 12 films</b>; only the left one can see Qloo.';
+  A.members.forEach(m=>{
+    const s=el('span'); s.appendChild(el('i',null,
+      ({'urn:entity:videogame':'game','urn:entity:tv_show':'tv','urn:entity:artist':'music'}[m.kind]||'')+' '));
+    s.appendChild(document.createTextNode(m.name)); $('who').appendChild(s);
+  });
+
+  const diff=d.llm_only_top5.length;
+  $('chip').innerHTML='Without the taste graph it would have opened with <b>'+
+    diff+' different title'+(diff===1?'':'s')+'</b> out of five.';
+
+  const groundedTop5=d.rows.slice(0,5);
+  const shared=new Set(d.shared_top5);
+  const rankOf={}; (d.llm_only_ranks||[]).forEach(r=>rankOf[r.title]=r);
+
+  // LEFT: the grounded five. Rank is secondary -- small, to the right.
+  groundedTop5.forEach((r,i)=>{
+    const p=el('div','pick '+(shared.has(r.title)?'shared':'only'));
+    p.appendChild(art(r.title, r.image));
+    const b=el('div','body');
+    const n=el('span','n','#'+(i+1)+' of '+d.ranked_total);
+    const t=el('div','t'); t.appendChild(n);
+    t.appendChild(document.createTextNode(r.title));
+    b.appendChild(t);
+    if(shared.has(r.title))
+      b.appendChild(el('div','why','Both columns picked this one.'));
+    // Drivers live in the drawer, not the headline: they say which part of the
+    // audience pulls hardest, not that the titles are sharply separated.
+    const ds=(d.drivers||{})[r.title];
+    if(ds&&ds.length){
+      const det=el('details','ev');
+      det.appendChild(el('summary',null,'why \u203a'));
+      const inner=el('div','inner');
+      inner.appendChild(el('div',null,'driven most by '+
+        ds.map(x=>x.name+' ('+x.score.toFixed(3)+')').join(', ')));
+      inner.appendChild(el('div',null,'affinity '+(r.affinity!=null?r.affinity.toFixed(3):'—')+
+        ' · from feature.explainability on the same pinned query'));
+      det.appendChild(inner); b.appendChild(det);
+    }
+    p.appendChild(b); $('colq').appendChild(p);
+  });
+
+  // RIGHT: the model's five. The primary explanation of the divergence is
+  // where each of its picks actually landed in the grounded reading.
+  d.llm_top5.forEach((title,i)=>{
+    const isShared=shared.has(title);
+    const p=el('div','pick '+(isShared?'shared':'only'));
+    p.appendChild(art(title, (d.art||{})[title]));
+    const b=el('div','body');
+    const t=el('div','t'); t.appendChild(document.createTextNode(title));
+    b.appendChild(t);
+    if(isShared) b.appendChild(el('div','why','Both columns picked this one.'));
+    else{
+      const r=rankOf[title];
+      const w=el('div','why');
+      if(r&&r.withheld) w.innerHTML='For this audience this title was <b>withheld</b> — the two halves disagreed about it.';
+      else if(r&&r.grounded_place) w.innerHTML='For this audience it ranks <b>#'+
+        r.grounded_place+' of '+r.of+'</b>.';
+      else w.textContent='Not ranked for this audience.';
+      b.appendChild(w);
+    }
+    p.appendChild(b); $('coll').appendChild(p);
+  });
+
+  // The honest label, decided by the numbers rather than by taste.
+  const hold=d.buyer&&d.buyer.top5_hold;
+  let line;
+  if(hold!=null&&hold>=4)
+    line='Close call: these titles cluster tightly for this audience. '+hold+
+         ' of 5 picks hold up when the audience is re-read from a separate set '+
+         'of games; the order within them is less certain.';
+  else
+    line='Close call: the graph points somewhere different from the language '+
+         'model, but margins are thin.';
+  $('caveat').innerHTML=line+' This is divergence with the evidence behind it, '+
+    'not proof the model is wrong — there is no ground truth for what a '+
+    'programmer would license. <a href="/evidence">How this pair was chosen</a>.';
+
+  if((d.withheld||[]).length){
+    $('withheld').hidden=false;
+    d.withheld.forEach(t=>$('withitems').appendChild(el('span',null,t)));
+    $('withwhy').textContent='The audience was read twice, from two halves that '+
+      'share no games or shows. These titles landed too far apart in the two '+
+      'readings to report, so the agent offers no verdict on them rather than '+
+      'averaging them into a number that looks confident.';
+  }
+
+  (d.steps||[]).forEach(s=>{
+    const li=el('li'), b=el('div');
+    b.appendChild(el('div','act',(s.action||'').replace(/_/g,' ')+
+      (s.reason?' — '+s.reason:'')));
+    if(s.observed) b.appendChild(el('div','obs',s.observed));
+    if(s.changed) b.appendChild(el('div','did','↳ '+s.changed));
+    li.appendChild(b); $('steps').appendChild(li);
+  });
+
+  const p=d.provenance||{};
+  $('foot').innerHTML='<span class="badge">cached</span> &nbsp;This page is a '+
+    'recorded run, so opening it spends no Qloo calls. The pair shown was '+
+    'selected from <b>'+(p.pairs_evaluated||'?')+'</b> audience-and-slate '+
+    'combinations by a rule registered before any of the data existed ('+
+    '<code>'+(p.sha256||'').slice(0,12)+'</code>); <b>'+(p.pairs_qualified||'?')+
+    '</b> qualified. Every candidate, and the reason each did or did not '+
+    'qualify, is published. &nbsp;<a href="/evidence">Evidence</a> · '+
+    '<a href="__REPO_URL__">Source</a>';
+}
+</script>

@@ -91,9 +91,11 @@ for i in range(5):
     w("| %d | %s | %s |" % (i + 1, g, l))
 w("")
 w("Shared: **%s**. The other four differ.\n" % (", ".join(H["shared_top5"]) or "none"))
-w("**%s of 5** of the grounded top five appear in both independent readings "
-  "of this audience, so the selection holds up under re-reading even though "
-  "the order within it does not.\n" % H["buyer"]["top5_hold"])
+w("**%s of 5** of the grounded top five survive when the audience is re-read "
+  "from a separate set of games, so the selection holds up even though the "
+  "order within it does not. The two halves are disjoint, not independent: "
+  "they share no entities, but both are read out of the same graph.\n"
+  % H["buyer"]["top5_hold"])
 
 w("### What drives each divergent title\n")
 w("Taken from Qloo's own `feature.explainability`, which returns how much "
