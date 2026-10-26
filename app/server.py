@@ -152,8 +152,17 @@ class Handler(BaseHTTPRequestHandler):
         # /healthz is intercepted by Google's frontend before it reaches the
         # container, so the health endpoint lives at /status.
         if route.path in ("/status", "/healthz"):
+            # Cache status matters as much as quota during judging: a cold
+            # judge must cost nothing, which is only true while every preset
+            # has a recorded run baked into the image.
+            cached = sorted(q.stem for q in (HERE / "cache").glob("*.json"))
+            want = [p["id"] for p in PRESETS] + ["pitch_example"]
             return self._send(200, json.dumps(
-                {"ok": True, "key_present": has_key(), **BUDGET.snapshot()}))
+                {"ok": True, "key_present": has_key(),
+                 "cached_runs": cached,
+                 "presets_all_cached": all(w in cached for w in want),
+                 "missing_from_cache": [w for w in want if w not in cached],
+                 **BUDGET.snapshot()}))
         if route.path == "/api/presets":
             return self._send(200, json.dumps(PRESETS))
         if route.path == "/api/run":
