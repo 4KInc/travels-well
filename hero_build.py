@@ -33,7 +33,10 @@ def main():
     trace = Trace()
 
     members = [{"name": m["name"], "type": TYPES[m["type"]]} for m in aud["members"]]
-    res = pitch.run(client, slate["titles"], members, trace=trace, with_llm=False)
+    # audience_label also selects the wording the trace uses, so the hero
+    # reads "audience" where the pitch desk reads "buyer".
+    res = pitch.run(client, slate["titles"], members, trace=trace,
+                    with_llm=False, audience_label=aud["label"])
 
     # Name the audience entities so explainability can be read by a person.
     sig = {}
@@ -84,7 +87,13 @@ def main():
     qloo_ranks = {r["title"]: (len(res["rows"]) - i) / len(res["rows"])
                   for i, r in enumerate(res["rows"])}
     taus, sets, orders = [], [], []
-    for _ in range(int(win["llm_runs"])):
+    # More repeats than the registered three. The registered count governs the
+    # modal top five used for SELECTION, which is already settled; this is a
+    # separate measurement of how much the correlation moves between runs, and
+    # three draws understate a spread. One earlier recording of this same
+    # prompt produced values the current three did not reach.
+    TAU_RUNS = 6
+    for _ in range(TAU_RUNS):
         out = llm_baseline.rank(ranked_names,
                                 [m["name"] for m in members],
                                 qloo_ranks,
@@ -107,6 +116,9 @@ def main():
         "max_abs_in_se": (round(max(abs(t) for t in taus) / null_se, 2)
                           if taus and null_se else None),
         "runs": len(taus),
+        "runs_note": ("more repeats than the registered three, which govern the "
+                      "modal top five used for selection; this measures how far "
+                      "the correlation moves between runs"),
         "min": round(min(taus), 3) if taus else None,
         "max": round(max(taus), 3) if taus else None,
         "values": taus,

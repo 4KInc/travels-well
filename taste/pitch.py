@@ -92,7 +92,7 @@ def _spread(scores):
 
 
 def profile(client, slate_ids, catalogue_ids, entity_type, trace=None,
-            tag="buyer", log=None):
+            tag="buyer", log=None, noun="buyer"):
     """Rank the slate for one taste profile, cross-checked by splitting the
     describing catalogue into halves.
 
@@ -114,7 +114,7 @@ def profile(client, slate_ids, catalogue_ids, entity_type, trace=None,
     if not whole:
         raise PitchError("Qloo returned no affinities for that combination")
     spread = _spread(whole)
-    step("probe", "score your slate against everything the buyer holds",
+    step("probe", "score your catalogue against everything this %s holds" % noun,
          "%d titles scored, affinity spread %.3f (floor %.2f)"
          % (len(whole), spread, FLAT_SPREAD))
 
@@ -131,7 +131,7 @@ def profile(client, slate_ids, catalogue_ids, entity_type, trace=None,
                  "catalogue was split and the more distinctive half used",
                  "spread %.3f -> %.3f (floor %.2f)"
                  % (spread, _spread(best), FLAT_SPREAD),
-                 "switched to the sharper half of the buyer's catalogue")
+                 "switched to the sharper half of what describes this %s" % noun)
             whole = best
         else:
             step("re-probe", "tried the halves separately; neither sharpened "
@@ -152,8 +152,8 @@ def profile(client, slate_ids, catalogue_ids, entity_type, trace=None,
              "the reading being ranked on is still flatter than the floor, so "
              "the order within the shortlist is reported as uncertain",
              "final spread %.3f, floor %.2f" % (final_spread, FLAT_SPREAD),
-             "ranking continues, but marked low-separation: this catalogue "
-             "barely distinguishes your titles from one another")
+             "ranking continues, but marked low-separation: what describes this "
+             "%s barely distinguishes your titles from one another" % noun)
 
     if len(catalogue_ids) < SPLIT_MIN:
         step("no cross-check",
@@ -244,6 +244,9 @@ def placements_for(llm_titles, rows, withheld_ids, by_id):
 def run(client, slate_titles, buyer_titles, home_titles=None,
         entity_type="urn:entity:movie", trace=None, with_llm=False,
         with_invariance=False, audience_label=None):
+    # The trace is read by whoever is on the page: "audience" on the hero,
+    # "buyer" on the pitch desk. Same pipeline, same steps, right word.
+    noun = "audience" if audience_label else "buyer"
     steps = []
     slate, slate_missing = resolve_titles(client, slate_titles, entity_type, trace)
     steps.append({"action": "resolve", "profile": "setup",
@@ -291,7 +294,7 @@ def run(client, slate_titles, buyer_titles, home_titles=None,
                             entity_type, trace, "buyer:absolute")
     buyer_ranks, withheld, buyer_agreement, buyer_flat, buyer_top5_hold = profile(
         client, slate_ids, [b["id"] for b in buyer], entity_type, trace, "buyer",
-        log=steps)
+        log=steps, noun=noun)
 
     home_ranks, home_agreement, home = None, None, []
     if home_titles:
@@ -299,7 +302,7 @@ def run(client, slate_titles, buyer_titles, home_titles=None,
         if len(home) >= MIN_BUYER:
             home_ranks, home_withheld, home_agreement, _, _ = profile(
                 client, slate_ids, [h["id"] for h in home], entity_type,
-                trace, "home", log=steps)
+                trace, "home", log=steps, noun=noun)
             withheld = list(set(withheld) | set(home_withheld))
 
     # FIT and SHIFT answer different questions and can disagree sharply. In
@@ -380,15 +383,16 @@ def run(client, slate_titles, buyer_titles, home_titles=None,
         mean = sum(affs) / len(affs)
         absolute = {"best": round(best, 3), "worst": round(worst, 3),
                     "mean": round(mean, 3), "span": round(best - worst, 3)}
-        steps.append({"action": "absolute check", "profile": "result",
-                      "reason": "rank position cannot say whether the slate as "
-                                "a whole suits this buyer, so the raw affinities "
-                                "are reported alongside it",
+        steps.append({"action": "raw affinity range", "profile": "result",
+                      "reason": "shown for transparency: rank position alone "
+                                "cannot say whether the catalogue as a whole "
+                                "suits this %s, and nothing here passes or "
+                                "fails a threshold" % noun,
                       "observed": "affinity %.3f to %.3f, mean %.3f"
                                   % (worst, best, mean)})
     steps.append({"action": "rank", "profile": "result",
-                  "reason": "order by fit, not by movement: a title that merely "
-                            "improves against home is not the same as one the buyer wants",
+                  "reason": "order by how well each title fits this %s, not by "
+                            "how far it moves against another reading" % noun,
                   "observed": "%d titles ranked, %d withheld, %d uncomparable"
                               % (len(rows), len(withheld), len(uncomparable))})
 

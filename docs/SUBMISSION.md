@@ -16,8 +16,8 @@ guessed differently.
 ## About the project
 
 **For an audience described by the games it loves, four of our five
-recommendations are titles a language model without Qloo would not have
-picked — and the model's four other picks rank 6th, 8th, 9th and 11th
+recommendations are titles a language model without Qloo did not choose in
+any of 6 runs — and the model's four other picks rank 6th, 8th, 9th and 11th
 of 11 for that audience.**
 We measured four ways Qloo's API behaves differently from how entrants assume
 it does, and built the agent to refuse when the evidence is weak.
@@ -39,8 +39,8 @@ films. Both columns rank the same twelve; only one can see Qloo.
 | | **The Raid: Redemption** | **The Raid: Redemption** |
 | | Cronos | Tetsuo: The Iron Man |
 
-One title in common. The model read *punishing* as transgressive content;
-the graph read it as what those players actually watch. Asked where the
+One title in common. The model's picks lean toward notoriously transgressive
+titles; the graph's lean toward what Qloo associates with those players. Asked where the
 model's four other picks belong for this audience, the grounded reading puts
 **Tetsuo: The Iron Man 6th, Ichi the Killer 8th, Martyrs 9th and REC
 11th of 11** — none of them in the top five.
@@ -88,14 +88,22 @@ asserted in a README. It runs the same agent with the graph removed.
 
 The honest result: a frontier model is a strong baseline. It shares three to
 four of the top five on most inputs, and its *set* of five is steady across
-repeats. What it cannot do is **decline** — it ranked every title confidently
-where this run withheld one and reported that only 5 of 5 picks survived
-re-reading. It also cannot tell you which titles rank the same for every
-audience.
+Offered the chance to decline, it takes it: asked the same question with
+withholding explicitly available and preferred over a guess, the model withheld
+**6/7/7 of 12** across three runs — considerably more than this run's one. It also
+withheld three of the five titles the graph ranks highest here.
 
-On the landing page's audience, **set overlap is 1 of 5**. Rank correlation is
-−0.24 across three runs, but with 11 titles the null standard error is 0.23, so
-that sits about one standard error from zero: read it as *no agreement*, not as
+Neither of us can be shown right; there is no ground truth. What differs is
+what the decision rests on. All five of our picks survive when the audience is re-read from a separate
+set of games (**5 of 5**); one title is withheld because the two readings
+placed it too far apart. This agent withholds on **two disjoint readings of
+the audience placing a title far apart** — a measurement it can show you.
+The model withholds on its own report of its confidence, with nothing behind
+it, and adding the option changed which titles it picked.
+
+On the landing page's audience, **set overlap is 1 of 5**. Rank correlation runs
+−0.27 to −0.24 across 6 runs, but with 11 titles the null standard error is
+0.23, so every value sits about one standard error from zero: read it as *no agreement*, not as
 measured opposition. The set overlap is the number that means something.
 
 ### What we measured about the API, before building on it

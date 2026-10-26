@@ -67,8 +67,8 @@ def build_html(hero, sweep):
         for i in range(5):
             shared = g[i] in l
             out.append(
-                "<tr><td class='n'>%d</td><td%s>%s</td><td>%s</td></tr>"
-                % (i + 1, " class='sh'" if shared else "", g[i],
+                "<tr><td%s>%s<span class='ord'>%d</span></td><td>%s</td></tr>"
+                % (" class='sh'" if shared else "", g[i], i + 1,
                    l[i] if i < len(l) else ""))
         return "\n".join(out)
 
@@ -125,6 +125,7 @@ def build_html(hero, sweep):
         aff_lo=hero["absolute"]["worst"], aff_hi=hero["absolute"]["best"],
         pairs=prov["pairs_evaluated"], qualified=prov["pairs_qualified"],
         sha=prov["sha256"][:16], prereg=prov["pre_registration"],
+        withhold_counts="6/7/7",
         pair_rows=rows_pairs(), qual_rows=rows_qual(),
         driver_rows=rows_drivers(), step_rows=rows_steps(),
         hero_img=img("1-hero-side-by-side.jpg"),
@@ -158,6 +159,8 @@ td {{ padding:1.8mm 3mm 1.8mm 0; border-bottom:1px solid #e6e6ec;
   vertical-align:top; }}
 td.n {{ font-variant-numeric:tabular-nums; white-space:nowrap; }}
 td.sh {{ color:#86868f; }}
+.ord {{ float:right; font-size:8pt; color:#8a8a93;
+  font-variant-numeric:tabular-nums; }}
 tr.win td {{ background:#fdf6e0; font-weight:600; }}
 .obs {{ font-size:8.5pt; color:#6b6b74; margin-top:.6mm; }}
 .did {{ font-size:8.5pt; color:#8a7320; margin-top:.6mm; }}
@@ -189,7 +192,7 @@ code {{ font:8.5pt "SF Mono",Menlo,monospace; background:#f2f2f6;
 
 <div class="page">
 <p class="kicker">Regenerated {today} from the live recorded run</p>
-<h1>Four of our five picks<br>are titles an AI without<br>Qloo would not choose.</h1>
+<h1>Four of our five picks<br>are titles an AI without Qloo<br>did not choose in any of 6 runs.</h1>
 <div class="rule"></div>
 <p class="lede">Describe an audience by what it already loves &mdash; games,
 television, music &mdash; and this ranks a catalogue for them, shows where a
@@ -225,12 +228,13 @@ already plays and watches.</p>
 <p>{offered} films offered, {ranked} ranked, {withheld_n} withheld
 ({withheld}).</p>
 <table>
-<thead><tr><th style="width:8%"></th><th style="width:46%">With the taste graph</th>
-<th>Without it</th></tr></thead>
+<thead><tr><th style="width:50%">With the taste graph &mdash; ranked</th>
+<th>Without it &mdash; a set, shown unordered</th></tr></thead>
 <tbody>{pair_rows}</tbody>
 </table>
-<p>One title in common: {shared}. The model read <i>punishing</i> as
-transgressive content; the graph read it as what those players actually watch.
+<p>One title in common: {shared}. The model's picks lean toward
+notoriously transgressive titles; the graph's lean toward what Qloo associates
+with those players.
 Asked where the model's own picks belong for this audience, the grounded
 reading puts {places_detail} &mdash; none in the top five.</p>
 
@@ -249,7 +253,7 @@ lead almost every row.</div>
 <h2>What the agent does without Qloo</h2>
 <div class="big">
 <div><div class="v">{differ} of 5</div><div class="k">titles differ</div></div>
-<div><div class="v">{tau}</div><div class="k">rank correlation, {tau_runs} runs</div></div>
+<div><div class="v">{tau}</div><div class="k">rank correlation across {tau_runs} runs</div></div>
 <div><div class="v">&plusmn;{null_se:.2f}</div><div class="k">null standard error at n={n_titles}</div></div>
 </div>
 <p>A frontier model is a strong baseline and we are not claiming otherwise. Its
@@ -257,9 +261,15 @@ lead almost every row.</div>
 reproducible, so we compare sets and never quote a place from it. Rank
 correlation sits about {se_from_zero} standard errors from zero: read it as
 <b>no agreement</b>, not as measured opposition.</p>
-<p>What the model cannot do is <b>decline</b>. It ranked every title
-confidently where this run withheld one, and it cannot report which titles rank
-the same for every audience.</p>
+<p>Offered the chance to decline, it takes it. Asked the same question with
+withholding explicitly available and preferred over a guess, the model withheld
+<b>{withhold_counts} of 12</b> across three runs &mdash; more than this run's
+one &mdash; including three of the five titles the graph ranks highest here.</p>
+<div class="note">Neither can be shown right; there is no ground truth. What
+differs is what the decision rests on. This agent withholds a title when
+<b>two disjoint readings of the audience place it far apart</b>, which it can
+show you. The model withholds on its own report of its confidence, and offering
+it the option changed which titles it picked.</div>
 </div>
 
 <div class="page">

@@ -1,7 +1,8 @@
 # The Taste Atlas
 
 **For an audience described by the games it loves, four of our five
-recommendations are titles a language model without Qloo would not have picked
+recommendations are titles a language model without Qloo did not choose in
+any of 6 runs
 — and the model's four other picks rank 6th, 8th, 9th and 11th of 11
 for that audience.**
 

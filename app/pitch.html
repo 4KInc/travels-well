@@ -393,10 +393,13 @@ function paneAblation(p,d){
     +'not claiming otherwise: across every buyer and slate tried, including obscure '
     +'titles, it shares three to four of the top five. Its set of five is steady '
     +'across repeats at temperature zero; the order it puts them in is not, so we '
-    +'compare sets rather than quoting a place from it. What it cannot do is '
-    +'decline — it ranked every title confidently, where this run withheld '
-    +((d.withheld||[]).length)+' and can report which titles rank the same for '
-    +'every buyer.'));
+    +'compare sets rather than quoting a place from it.'));
+  p.appendChild(el('p','note','It also declines when declining is offered. Asked the '
+    +'same question with withholding explicitly available, it withheld 6/7/7 of twelve '
+    +'on the recorded example \u2014 more than this agent did. What differs is what '
+    +'the decision rests on: this agent withholds a title when two disjoint readings '
+    +'of the audience place it far apart, which it can show you; the model withholds '
+    +'on its own report of its confidence.'));
 }
 
 function paneMethod(p,d){

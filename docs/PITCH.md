@@ -46,9 +46,9 @@ Open `/` — it is already answered, nothing to wait for.
 >
 > **One title in common out of five.**
 >
-> The model read "punishing" as brutal content — Martyrs, Ichi the Killer,
-> Tetsuo. The graph read it as what those players actually watch: Train to
-> Busan, The Host, Battle Royale.
+> > Its picks lean toward notoriously transgressive titles — Martyrs, Ichi the
+> Killer, Tetsuo. Ours lean toward what Qloo’s graph associates with those
+> players: Train to Busan, The Host, Battle Royale.
 >
 > And here is the part I would check if I were you. Ask our side where the
 > model's picks belong for this audience: **6th, 8th, 9th and 11th of 11.** Its
@@ -94,10 +94,16 @@ Scroll to the withheld row, then open `/slate` on the refusal preset.
 **"Isn't this just ChatGPT with extra steps?"**
 > We shipped the comparison rather than the claim. On this audience a frontier
 > model shares one title of five with us. It is a strong baseline — on most
-> inputs it gets three or four of five. What it cannot do is decline. It ranked
-> every title confidently where we withheld one and refused another preset
-> outright. The difference is not that it is worse at guessing; it is that it
-> cannot tell you when not to.
+> inputs it gets three or four of five, and if you offer it the chance to
+> decline it takes it — we tested that, and it withheld 6/7/7 of twelve, more than
+> we did.
+>
+> The difference is not that it cannot say no. It is what the no rests on. We
+> withhold a title when two disjoint readings of the audience place it far
+> apart — a measurement we can show you. It withholds on its own sense of its
+> confidence, and it withheld three of the five titles the graph ranks highest
+> here. Neither of us can be proved right. Only one of us can show the
+> working.
 
 **"Who pays, and how much?"**
 > Programmers at niche SVOD and FAST channels, distributors, international
