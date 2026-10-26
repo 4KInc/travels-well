@@ -356,28 +356,40 @@ function paneAblation(p,d){
     s.appendChild(el('b',null,v));st.appendChild(s)};
   if(typeof l.top5_overlap==='number'){
     put('top five',l.top5_overlap+' of 5 shared');
-    put('it would open with',(5-l.top5_overlap)+' different title'+(5-l.top5_overlap===1?'':'s'));
+    put('different titles',(5-l.top5_overlap)+' of 5');
   }
   if(l.agreement!=null) put('full-list agreement',l.agreement.toFixed(2));
   p.appendChild(st);
-  if(l.disagreements&&l.disagreements.length){
+  if(l.placements&&l.placements.length){
+    p.appendChild(el('p','note','The model picked these five. Shown unordered, '
+      +'because its set of five is steadier than the order it puts them in. '
+      +'Beside each is where this run ranked it \u2014 same pinned query, so it '
+      +'is the grounded reading\u2019s own answer about the model\u2019s picks.'));
     const t=el('table');
-    t.innerHTML='<thead><tr><th>Title</th><th class="n">Qloo</th><th class="n">LLM only</th></tr></thead>';
+    t.innerHTML='<thead><tr><th>The model\u2019s five</th>'
+      +'<th class="n">Ranked here</th></tr></thead>';
     const b=el('tbody');
-    l.disagreements.forEach(x=>{const tr=el('tr');
+    [...l.placements].sort((x,y)=>x.title.localeCompare(y.title)).forEach(x=>{
+      const tr=el('tr');
       tr.appendChild(el('td','ttl',x.title));
-      tr.appendChild(el('td','n num up','#'+x.qloo_place));
-      tr.appendChild(el('td','n num down','#'+x.llm_place));
+      let txt, cls='n num';
+      if(x.shared){txt='both chose it';cls='n'}
+      else if(x.withheld){txt='withheld';cls='n flag'}
+      else if(x.grounded_place){txt='#'+x.grounded_place+' of '+x.of_ranked;cls='n num down'}
+      else {txt='not ranked';cls='n'}
+      tr.appendChild(el('td',cls,txt));
       b.appendChild(tr)});
     t.appendChild(b); p.appendChild(t);
   }
   p.appendChild(el('h3','sec','What this does and does not show'));
   p.appendChild(el('p','note','A frontier model is a strong baseline here and we are '
     +'not claiming otherwise: across every buyer and slate tried, including obscure '
-    +'titles, it shares three to four of the top five, and it is perfectly repeatable '
-    +'at temperature zero. What it cannot do is decline — it ranked every title '
-    +'confidently, where this run withheld '+((d.withheld||[]).length)+' and can report '
-    +'which titles rank the same for every buyer.'));
+    +'titles, it shares three to four of the top five. Its set of five is steady '
+    +'across repeats at temperature zero; the order it puts them in is not, so we '
+    +'compare sets rather than quoting a place from it. What it cannot do is '
+    +'decline — it ranked every title confidently, where this run withheld '
+    +((d.withheld||[]).length)+' and can report which titles rank the same for '
+    +'every buyer.'));
 }
 
 function paneMethod(p,d){

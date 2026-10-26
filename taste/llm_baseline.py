@@ -134,7 +134,10 @@ def rank(slate_titles, buyer_titles, qloo_ranks=None, audience_label=None):
             q_top5 = set(sorted(shared, key=lambda x: -shared[x])[:5])
             l_top5 = set([t for t in order if t in shared][:5])
             out["top5_overlap"] = len(q_top5 & l_top5)
-            out["llm_would_open_with"] = [t for t in order if t in shared][:5]
+            # A set, not an ordering: the five titles are stable across
+            # repeats but their order is not, so naming a "#1" would report
+            # noise as a decision.
+            out["llm_top5"] = sorted([t for t in order if t in shared][:5])
             out["disagreements"] = [
                 {"title": t, "qloo_place": qp, "llm_place": lp}
                 for gap, t, qp, lp in gaps[:4] if gap >= max(2, n // 4)]

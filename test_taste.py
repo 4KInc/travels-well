@@ -130,5 +130,21 @@ check("no top-five hold is reported when the catalogue cannot be split",
       hold3 is None)
 
 
+print("llm placements")
+_rows = [{"title": "A"}, {"title": "B"}, {"title": "C"}, {"title": "D"},
+         {"title": "E"}, {"title": "F"}, {"title": "G"}]
+_by_id = {"e1": {"name": "W"}, "e2": {"name": "A"}}
+# W was withheld, so it never appears in rows and has no rank.
+_pl = _pitch.placements_for(["A", "F", "W", "ZZ"], _rows, ["e1"], _by_id)
+_got = {d["title"]: d for d in _pl}
+check("a shared top-five pick is marked shared, with no rank claimed",
+      _got["A"]["shared"] is True and "grounded_place" not in _got["A"])
+check("a pick outside the top five reports its place out of the ranked count",
+      _got["F"]["grounded_place"] == 6 and _got["F"]["of_ranked"] == 7)
+check("a WITHHELD pick reports withheld instead of a rank",
+      _got["W"]["withheld"] is True and _got["W"].get("grounded_place") is None)
+check("a pick the grounded reading never scored claims no place",
+      _got["ZZ"]["grounded_place"] is None and _got["ZZ"]["withheld"] is False)
+
 print("\n%d passed, %d failed" % (passed, failed))
 sys.exit(1 if failed else 0)

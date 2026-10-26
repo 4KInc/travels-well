@@ -52,6 +52,8 @@ h1 b{color:var(--bulb);font-weight:400}
   border:1px solid var(--bulb);color:var(--bulb);background:rgba(232,184,75,.07);
   font:400 13px/1.45 var(--sans);max-width:62ch}
 .chip b{font-weight:600}
+.offered{font:400 11px/1.5 var(--mono);letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink-3);margin:12px 0 0;text-align:center}
 
 /* ---------- the two fives ---------- */
 .fives{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,2.6vw,30px);
@@ -141,6 +143,7 @@ footer{margin:34px 0 0;border-top:1px solid var(--rule);padding-top:16px;
   <p class="sub" id="sub"></p>
   <div class="who" id="who"></div>
   <div style="text-align:center"><span class="chip" id="chip"></span></div>
+  <p class="offered" id="offered"></p>
 </header>
 
 <div class="fives">
@@ -151,7 +154,7 @@ footer{margin:34px 0 0;border-top:1px solid var(--rule);padding-top:16px;
   </div>
   <div class="col llm">
     <h2>Without it</h2>
-    <span class="tag" id="tagl">The same question to a language model that sees only the two title lists</span>
+    <span class="tag" id="tagl">The same question to a language model that sees only the two title lists. Shown unordered — see below.</span>
     <div id="coll"></div>
   </div>
 </div>
@@ -206,8 +209,17 @@ function draw(d){
   });
 
   const diff=d.llm_only_top5.length;
-  $('chip').innerHTML='Without the taste graph it would have opened with <b>'+
-    diff+' different title'+(diff===1?'':'s')+'</b> out of five.';
+  $('chip').innerHTML='Without the taste graph, <b>'+diff+' of the five</b> '+
+    'would be different titles.';
+
+  const offered=(d.slate&&d.slate.resolved)||d.ranked_total;
+  const nWith=(d.withheld||[]).length;
+  $('offered').textContent=offered+' films offered \u00b7 '+d.ranked_total+
+    ' ranked \u00b7 '+nWith+' withheld';
+  const same=Object.values(d.llm_top5_counts||{}).filter(n=>n===d.llm_repeats).length;
+  $('tagl').textContent='The same question to a language model that sees only '+
+    'the two title lists. Shown unordered: the '+same+' titles were the same in '+
+    'all '+d.llm_repeats+' runs, but their order varied.';
 
   const groundedTop5=d.rows.slice(0,5);
   const shared=new Set(d.shared_top5);
@@ -218,7 +230,7 @@ function draw(d){
     const p=el('div','pick '+(shared.has(r.title)?'shared':'only'));
     p.appendChild(art(r.title, r.image));
     const b=el('div','body');
-    const n=el('span','n','#'+(i+1)+' of '+d.ranked_total);
+    const n=el('span','n','#'+(i+1)+' of '+d.ranked_total+' ranked');
     const t=el('div','t'); t.appendChild(n);
     t.appendChild(document.createTextNode(r.title));
     b.appendChild(t);
@@ -242,7 +254,8 @@ function draw(d){
 
   // RIGHT: the model's five. The primary explanation of the divergence is
   // where each of its picks actually landed in the grounded reading.
-  d.llm_top5.forEach((title,i)=>{
+  const llmSet=[...d.llm_top5].sort((a,b)=>a.localeCompare(b));
+  llmSet.forEach((title,i)=>{
     const isShared=shared.has(title);
     const p=el('div','pick '+(isShared?'shared':'only'));
     p.appendChild(art(title, (d.art||{})[title]));
@@ -255,7 +268,7 @@ function draw(d){
       const w=el('div','why');
       if(r&&r.withheld) w.innerHTML='For this audience this title was <b>withheld</b> — the two halves disagreed about it.';
       else if(r&&r.grounded_place) w.innerHTML='For this audience it ranks <b>#'+
-        r.grounded_place+' of '+r.of+'</b>.';
+        r.grounded_place+' of '+r.of+'</b> here.';
       else w.textContent='Not ranked for this audience.';
       b.appendChild(w);
     }

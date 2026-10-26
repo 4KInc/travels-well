@@ -217,6 +217,30 @@ def profile(client, slate_ids, catalogue_ids, entity_type, trace=None,
     return rank_percentiles(whole), withheld, agreement, flat_warning[0], top5_hold
 
 
+def placements_for(llm_titles, rows, withheld_ids, by_id):
+    """Where each of the model's picks landed in the grounded reading.
+
+    This is the plainest account of a disagreement: both columns come from the
+    same pinned query, so a title the model chose and the graph ranked ninth is
+    simply that. A title the graph withheld has no rank to report -- saying it
+    ranked last would invent a verdict the agent explicitly declined to give.
+    """
+    place = {r["title"]: i + 1 for i, r in enumerate(rows)}
+    withheld_names = {by_id[e]["name"] for e in withheld_ids if e in by_id}
+    grounded_top5 = {r["title"] for r in rows[:5]}
+    out = []
+    for title in llm_titles:
+        if title in grounded_top5:
+            out.append({"title": title, "shared": True})
+        elif title in withheld_names:
+            out.append({"title": title, "shared": False, "withheld": True})
+        else:
+            out.append({"title": title, "shared": False, "withheld": False,
+                        "grounded_place": place.get(title),
+                        "of_ranked": len(rows)})
+    return out
+
+
 def run(client, slate_titles, buyer_titles, home_titles=None,
         entity_type="urn:entity:movie", trace=None, with_llm=False,
         with_invariance=False, audience_label=None):
@@ -314,6 +338,8 @@ def run(client, slate_titles, buyer_titles, home_titles=None,
             {by_id[e]["name"]: v for e, v in buyer_ranks.items() if e in by_id},
             audience_label=audience_label)
         if llm_block and llm_block.get("available"):
+            llm_block["placements"] = placements_for(
+                llm_block.get("llm_top5") or [], rows, withheld, by_id)
             steps.append({"action": "ablate", "profile": "result",
                           "reason": "ask the same question of a model with no "
                                     "access to the taste graph, so the difference "

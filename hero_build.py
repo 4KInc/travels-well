@@ -75,13 +75,13 @@ def main():
         if nm and named:
             drivers[nm] = named[:3]
 
-    llm_top5 = win["llm_top5_stable"]
+    llm_top5 = sorted(win["llm_top5_stable"])   # a set, not an order
     grounded_top5 = [r["title"] for r in res["rows"][:5]]
 
     # The plainest explanation of the divergence is not a driver score, it is
     # where the model's picks actually landed. Both columns come from the same
     # pinned query, so "#9 of 11" is the grounded reading's own answer about a
-    # title the model opened with.
+    # title the model also chose.
     place_of = {r["title"]: i + 1 for i, r in enumerate(res["rows"])}
     total = len(res["rows"])
     withheld_names = set(res["withheld"])
