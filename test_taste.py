@@ -70,5 +70,65 @@ except UnsupportedClaim:
 t.abstention("abstain_market_coverage", "Mumbai too thin to rank")
 check("abstention is recorded, not dropped", t.summary()["abstentions"] == 1)
 
+
+print("pitch separation flag")
+from taste import pitch as _pitch
+
+
+class _FakeQloo:
+    """Returns a chosen affinity spread per signal set, so the flatness
+    branches can be driven exactly."""
+
+    def __init__(self, by_signal):
+        self.by_signal = by_signal
+        self.calls = 0
+
+    def insights(self, params, allow_error=False):
+        self.calls += 1
+        sig = params["signal.interests.entities"]
+        lo, hi = self.by_signal[sig]
+        ids = params["filter.results.entities"].split(",")
+        n = len(ids)
+        step = (hi - lo) / (n - 1) if n > 1 else 0
+        return 200, {"results": {"entities": [
+            {"entity_id": e, "name": e, "query": {"affinity": lo + i * step}}
+            for i, e in enumerate(ids)]}}
+
+
+SLATE = ["m%d" % i for i in range(12)]
+CAT = ["c%d" % i for i in range(8)]
+WHOLE = ",".join(CAT)
+HALF_A = ",".join(CAT[0::2])
+HALF_B = ",".join(CAT[1::2])
+CONTIG_A, CONTIG_B = ",".join(CAT[:4]), ",".join(CAT[4:])
+
+# The case that was mislabelled: the re-probe improves the spread, but the
+# result is still nowhere near the floor.
+fake = _FakeQloo({WHOLE: (0.80, 0.876),        # spread 0.076
+                  HALF_A: (0.80, 0.882),       # spread 0.082 -- better, still flat
+                  HALF_B: (0.80, 0.850),
+                  CONTIG_A: (0.80, 0.860), CONTIG_B: (0.80, 0.855)})
+_, _, _, flat, hold = _pitch.profile(fake, SLATE, CAT, "urn:entity:movie")
+check("re-probe improves but stays below the floor -> still flagged", flat is True)
+check("top-five hold is reported as a count out of five",
+      isinstance(hold, int) and 0 <= hold <= 5)
+
+# A genuinely separated reading must not be flagged.
+fake2 = _FakeQloo({WHOLE: (0.20, 0.90),        # spread 0.70, above the floor
+                   HALF_A: (0.20, 0.90), HALF_B: (0.20, 0.90),
+                   CONTIG_A: (0.20, 0.90), CONTIG_B: (0.20, 0.90)})
+_, _, _, flat2, _ = _pitch.profile(fake2, SLATE, CAT, "urn:entity:movie")
+check("a reading above the floor is not flagged", flat2 is False)
+
+# Too small to split: the flag must still fire on a flat reading rather than
+# defaulting to False because no cross-check ran.
+SMALL = ["c0", "c1", "c2", "c3"]
+fake3 = _FakeQloo({",".join(SMALL): (0.80, 0.86)})
+_, _, _, flat3, hold3 = _pitch.profile(fake3, SLATE, SMALL, "urn:entity:movie")
+check("flat reading too small to cross-check is still flagged", flat3 is True)
+check("no top-five hold is reported when the catalogue cannot be split",
+      hold3 is None)
+
+
 print("\n%d passed, %d failed" % (passed, failed))
 sys.exit(1 if failed else 0)

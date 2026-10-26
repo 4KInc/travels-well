@@ -102,11 +102,13 @@ Described by: Dark Souls, Elden Ring, Bloodborne, Castlevania, Sekiro: Shadows D
 
 Shared: **The Raid: Redemption**. The other four differ.
 
-### Why each divergent title is there
+**5 of 5** of the grounded top five appear in both independent readings of this audience, so the selection holds up under re-reading even though the order within it does not.
 
-Taken from Qloo's own `feature.explainability`, which returns how much each of the audience's entities contributed. Nothing here is written by hand.
+### What drives each divergent title
 
-| title | strongest drivers |
+Taken from Qloo's own `feature.explainability`, which returns how much each of the audience's entities contributed. Nothing here is written by hand. These say which parts of the audience pull hardest toward a title; they are not evidence that the titles are sharply separated from one another, and the scores below show they are not.
+
+| title | driven most by |
 |---|---|
 | Train to Busan | Bloodborne (0.159), Nioh (0.158), Sekiro: Shadows Die Twice (0.151) |
 | The Host | Hollow Knight (0.178), Nioh (0.153), Bloodborne (0.147) |
@@ -116,6 +118,7 @@ Taken from Qloo's own `feature.explainability`, which returns how much each of t
 ## What this does not show
 
 - **Not that the model is wrong.** There is no ground truth for what a programmer would license. This is divergence plus the evidence behind one side of it, not a score.
+- **Every qualifying pair fell below the separation floor.** The 0.35 floor was in the code from 17 October, nine days before this sweep was registered. Measured on the reading each pair is actually ranked on, all four qualifiers sit under it: soulslike x genre-cult 0.152, indie-art-games x world-prestige 0.140, horror-games x modern-world 0.092, indie-art-games x modern-world 0.076. We label that on the page rather than hide it, and the floor was not recalibrated afterwards to make any pair look better.
 - **The separation is weak.** This pair is flagged low-separation: the affinity span across the whole slate is 0.152 (0.713 to 0.865), under the 0.35 floor, so the order within the shortlist should be read as a group rather than a strict ranking. It is labelled that way on the page.
 - **The drivers barely discriminate.** The contribution scores sit between 0.136 and 0.206 and the same two or three games lead for almost every title, so they explain the audience's pull toward this kind of cinema better than they explain one title over another.
 - **The model's top five was stable; its full ordering was not.** All five of its titles appeared in all 3 repeats, but only 1 of 3 runs produced an identical ordering of the whole slate at temperature 0.

@@ -91,12 +91,17 @@ for i in range(5):
     w("| %d | %s | %s |" % (i + 1, g, l))
 w("")
 w("Shared: **%s**. The other four differ.\n" % (", ".join(H["shared_top5"]) or "none"))
+w("**%s of 5** of the grounded top five appear in both independent readings "
+  "of this audience, so the selection holds up under re-reading even though "
+  "the order within it does not.\n" % H["buyer"]["top5_hold"])
 
-w("### Why each divergent title is there\n")
+w("### What drives each divergent title\n")
 w("Taken from Qloo's own `feature.explainability`, which returns how much "
   "each of the audience's entities contributed. Nothing here is written by "
-  "hand.\n")
-w("| title | strongest drivers |")
+  "hand. These say which parts of the audience pull hardest toward a title; "
+  "they are not evidence that the titles are sharply separated from one "
+  "another, and the scores below show they are not.\n")
+w("| title | driven most by |")
 w("|---|---|")
 for t in H["grounded_only_top5"]:
     ds = H["drivers"].get(t, [])
@@ -107,6 +112,15 @@ w("## What this does not show\n")
 w("- **Not that the model is wrong.** There is no ground truth for what a "
   "programmer would license. This is divergence plus the evidence behind one "
   "side of it, not a score.")
+w("- **Every qualifying pair fell below the separation floor.** The 0.35 "
+  "floor was in the code from 17 October, nine days before this sweep was "
+  "registered. Measured on the reading each pair is actually ranked on, all "
+  "four qualifiers sit under it: %s. We label that on the page rather than "
+  "hide it, and the floor was not recalibrated afterwards to make any pair "
+  "look better."
+  % ", ".join("%s x %s %.3f" % (r["audience"], r["slate"], r["absolute"]["span"])
+              for r in sorted([x for x in S["results"] if x["qualified"]],
+                              key=lambda x: -x["absolute"]["span"])))
 w("- **The separation is weak.** This pair is flagged low-separation: the "
   "affinity span across the whole slate is %.3f (%.3f to %.3f), under the "
   "%.2f floor, so the order within the shortlist should be read as a group "

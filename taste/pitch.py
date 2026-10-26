@@ -128,23 +128,38 @@ def profile(client, slate_ids, catalogue_ids, entity_type, trace=None,
             step("re-probe",
                  "the first reading was too flat to separate anything, so the "
                  "catalogue was split and the more distinctive half used",
-                 "spread %.3f -> %.3f" % (spread, _spread(best)),
+                 "spread %.3f -> %.3f (floor %.2f)"
+                 % (spread, _spread(best), FLAT_SPREAD),
                  "switched to the sharper half of the buyer's catalogue")
             whole = best
         else:
             step("re-probe", "tried the halves separately; neither sharpened "
                  "the reading, so the original stands",
                  "spread stayed near %.3f" % spread,
-                 "ranking continues, but marked low-separation: this buyer's "
-                 "catalogue barely distinguishes your titles from one another")
-            flat_warning[0] = True
+                 "the original reading stands")
+
+    # The flag is a property of the reading we are about to rank on, not of
+    # whether the re-probe helped. An earlier version cleared it on ANY
+    # improvement: a catalogue that moved 0.076 -> 0.082 against a 0.35 floor
+    # came out unflagged and read as well separated, while a flatter-looking
+    # 0.152 was flagged. That inverted the label on the four pairs it was
+    # measured against.
+    final_spread = _spread(whole)
+    flat_warning[0] = final_spread < FLAT_SPREAD
+    if flat_warning[0]:
+        step("separation check",
+             "the reading being ranked on is still flatter than the floor, so "
+             "the order within the shortlist is reported as uncertain",
+             "final spread %.3f, floor %.2f" % (final_spread, FLAT_SPREAD),
+             "ranking continues, but marked low-separation: this catalogue "
+             "barely distinguishes your titles from one another")
 
     if len(catalogue_ids) < SPLIT_MIN:
         step("no cross-check",
              "a catalogue under %d titles cannot be halved into two readings "
              "that can disagree" % SPLIT_MIN,
              "%d titles supplied" % len(catalogue_ids))
-        return rank_percentiles(whole), [], None, flat_warning[0]
+        return rank_percentiles(whole), [], None, flat_warning[0], None
 
     def split_eval(a, b, label):
         ra = _score(client, slate_ids, a, entity_type, trace, tag + ":" + label + " A")
@@ -156,7 +171,7 @@ def profile(client, slate_ids, catalogue_ids, entity_type, trace=None,
 
     first = split_eval(catalogue_ids[0::2], catalogue_ids[1::2], "alternating")
     if first is None:
-        return rank_percentiles(whole), [], None, flat_warning[0]
+        return rank_percentiles(whole), [], None, flat_warning[0], None
     pa, pb, agreement = first
     step("cross-check", "split the catalogue in two and read each half, so a "
          "title the halves disagree about can be withheld",
@@ -186,7 +201,17 @@ def profile(client, slate_ids, catalogue_ids, entity_type, trace=None,
         step("withhold", "the two halves placed these titles far apart, so no "
              "verdict is offered on them", "%d of %d titles withheld"
              % (len(withheld), len(shared)))
-    return rank_percentiles(whole), withheld, agreement, flat_warning[0]
+    # How many of the top five survive an independent re-reading. Rank
+    # correlation over the whole slate can look healthy while the five titles
+    # actually shown churn, and the five are what someone acts on.
+    top5_a = [e for e in sorted(pa, key=lambda x: -pa[x])[:5]]
+    top5_b = [e for e in sorted(pb, key=lambda x: -pb[x])[:5]]
+    top5_hold = len(set(top5_a) & set(top5_b))
+    step("top-five check",
+         "rank correlation can look healthy while the five titles actually "
+         "shown change, and the five are what someone acts on",
+         "%d of 5 top titles appear in both independent readings" % top5_hold)
+    return rank_percentiles(whole), withheld, agreement, flat_warning[0], top5_hold
 
 
 def run(client, slate_titles, buyer_titles, home_titles=None,
@@ -237,7 +262,7 @@ def run(client, slate_titles, buyer_titles, home_titles=None,
                       "observed": "removed " + ", ".join(overlap)})
     buyer_affinity = _score(client, slate_ids, [b["id"] for b in buyer],
                             entity_type, trace, "buyer:absolute")
-    buyer_ranks, withheld, buyer_agreement, buyer_flat = profile(
+    buyer_ranks, withheld, buyer_agreement, buyer_flat, buyer_top5_hold = profile(
         client, slate_ids, [b["id"] for b in buyer], entity_type, trace, "buyer",
         log=steps)
 
@@ -245,7 +270,7 @@ def run(client, slate_titles, buyer_titles, home_titles=None,
     if home_titles:
         home = home_pre
         if len(home) >= MIN_BUYER:
-            home_ranks, home_withheld, home_agreement, _ = profile(
+            home_ranks, home_withheld, home_agreement, _, _ = profile(
                 client, slate_ids, [h["id"] for h in home], entity_type,
                 trace, "home", log=steps)
             withheld = list(set(withheld) | set(home_withheld))
@@ -370,7 +395,8 @@ def run(client, slate_titles, buyer_titles, home_titles=None,
         "buyer": {"resolved": [b["name"] for b in buyer],
                   "missing": buyer_missing,
                   "halves_agree": (round(buyer_agreement, 3)
-                                   if buyer_agreement is not None else None)},
+                                   if buyer_agreement is not None else None),
+                  "top5_hold": buyer_top5_hold},
         "home": {"resolved": [h["name"] for h in home],
                  "halves_agree": (round(home_agreement, 3)
                                   if home_agreement is not None else None)},
