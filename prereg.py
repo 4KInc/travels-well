@@ -201,10 +201,24 @@ def write_hero():
     out.parent.mkdir(exist_ok=True)
     if out.exists():
         return digest
+    prior = sorted(q for q in (HERE / "out").glob("prereg_amended_hero_*.json")
+                   if q != out)
     out.write_text(json.dumps({
         "amended_at": datetime.datetime.now().isoformat(timespec="seconds"),
         "scope": "hero-preset sweep only; does not supersede the original "
                  "pre-registration in prereg.json",
+        "supersedes": [q.name for q in prior] or None,
+        "amendment_reason": (
+            "The candidate audiences were enlarged from 3-5 entities to 6-8 "
+            "after a single smoke-test pair showed that taste/pitch.py cannot "
+            "cross-check a describing catalogue smaller than SPLIT_MIN=6: an "
+            "audience of four returns no split-half agreement at all, so the "
+            "registered quality gate could never have been satisfied by any "
+            "pair. No selection criterion, threshold, tie-break or model "
+            "setting was changed. One grounded result (anime-jrpg x "
+            "world-prestige) had been observed at the time of this amendment; "
+            "it is reported in docs/HERO_SWEEP.md with every other candidate."
+        ) if prior else None,
         "sha256": digest,
         "candidates": candidates,
         "decision_rules": HERO_RULES,

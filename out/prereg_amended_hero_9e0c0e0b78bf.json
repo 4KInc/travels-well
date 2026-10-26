@@ -1,0 +1,551 @@
+{
+  "amended_at": "2026-10-26T00:25:33",
+  "scope": "hero-preset sweep only; does not supersede the original pre-registration in prereg.json",
+  "supersedes": [
+    "prereg_amended_hero_91e62980a126.json"
+  ],
+  "amendment_reason": "The candidate audiences were enlarged from 3-5 entities to 6-8 after a single smoke-test pair showed that taste/pitch.py cannot cross-check a describing catalogue smaller than SPLIT_MIN=6: an audience of four returns no split-half agreement at all, so the registered quality gate could never have been satisfied by any pair. No selection criterion, threshold, tie-break or model setting was changed. One grounded result (anime-jrpg x world-prestige) had been observed at the time of this amendment; it is reported in docs/HERO_SWEEP.md with every other candidate.",
+  "sha256": "9e0c0e0b78bff416c9d355945ae09bdef08959a05b6a90bcdb251e846ef97d3b",
+  "candidates": {
+    "note": "Candidate pool for the hero-preset sweep. Fixed BEFORE any sweep data was collected and hashed into the pre-registration amendment. Audiences are described only from the three domains our own measurement found discriminate film taste sharply -- television (0.06), video games (0.08) and music (0.11) -- never brands, books, podcasts or places, which do not. Music is allowed only as a minority of an audience's entities. Each audience carries at least 6 entities because taste/pitch.py cannot cross-check a describing catalogue smaller than SPLIT_MIN=6 -- an audience of 4 returns no split-half agreement at all, so the quality gate could never be satisfied.",
+    "entity_types": {
+      "game": "urn:entity:videogame",
+      "tv": "urn:entity:tv_show",
+      "music": "urn:entity:artist"
+    },
+    "audiences": [
+      {
+        "id": "strategy-sim",
+        "label": "Viewers who love strategy and simulation games",
+        "members": [
+          {
+            "name": "Sid Meier's Civilization VI",
+            "type": "game"
+          },
+          {
+            "name": "Factorio",
+            "type": "game"
+          },
+          {
+            "name": "Stellaris",
+            "type": "game"
+          },
+          {
+            "name": "The Expanse",
+            "type": "tv"
+          },
+          {
+            "name": "Crusader Kings III",
+            "type": "game"
+          },
+          {
+            "name": "XCOM 2",
+            "type": "game"
+          },
+          {
+            "name": "Foundation",
+            "type": "tv"
+          }
+        ]
+      },
+      {
+        "id": "prestige-drama",
+        "label": "Viewers who love prestige television drama",
+        "members": [
+          {
+            "name": "Succession",
+            "type": "tv"
+          },
+          {
+            "name": "Mad Men",
+            "type": "tv"
+          },
+          {
+            "name": "The Crown",
+            "type": "tv"
+          },
+          {
+            "name": "Better Call Saul",
+            "type": "tv"
+          },
+          {
+            "name": "The Sopranos",
+            "type": "tv"
+          },
+          {
+            "name": "Breaking Bad",
+            "type": "tv"
+          },
+          {
+            "name": "Six Feet Under",
+            "type": "tv"
+          }
+        ]
+      },
+      {
+        "id": "anime-jrpg",
+        "label": "Viewers who love anime and Japanese role-playing games",
+        "members": [
+          {
+            "name": "Final Fantasy VII",
+            "type": "game"
+          },
+          {
+            "name": "Persona 5",
+            "type": "game"
+          },
+          {
+            "name": "Attack on Titan",
+            "type": "tv"
+          },
+          {
+            "name": "Cowboy Bebop",
+            "type": "tv"
+          },
+          {
+            "name": "Chrono Trigger",
+            "type": "game"
+          },
+          {
+            "name": "Neon Genesis Evangelion",
+            "type": "tv"
+          },
+          {
+            "name": "Fullmetal Alchemist: Brotherhood",
+            "type": "tv"
+          },
+          {
+            "name": "Xenoblade Chronicles",
+            "type": "game"
+          }
+        ]
+      },
+      {
+        "id": "horror-games",
+        "label": "Viewers who love survival horror",
+        "members": [
+          {
+            "name": "Resident Evil",
+            "type": "game"
+          },
+          {
+            "name": "Silent Hill",
+            "type": "game"
+          },
+          {
+            "name": "Dead Space",
+            "type": "game"
+          },
+          {
+            "name": "The Haunting of Hill House",
+            "type": "tv"
+          },
+          {
+            "name": "Amnesia: The Dark Descent",
+            "type": "game"
+          },
+          {
+            "name": "Outlast",
+            "type": "game"
+          },
+          {
+            "name": "American Horror Story",
+            "type": "tv"
+          }
+        ]
+      },
+      {
+        "id": "cozy-games",
+        "label": "Viewers who love cozy games and gentle television",
+        "members": [
+          {
+            "name": "Animal Crossing: New Horizons",
+            "type": "game"
+          },
+          {
+            "name": "Stardew Valley",
+            "type": "game"
+          },
+          {
+            "name": "The Great British Bake Off",
+            "type": "tv"
+          },
+          {
+            "name": "Ted Lasso",
+            "type": "tv"
+          },
+          {
+            "name": "Spiritfarer",
+            "type": "game"
+          },
+          {
+            "name": "Unpacking",
+            "type": "game"
+          },
+          {
+            "name": "Queer Eye",
+            "type": "tv"
+          }
+        ]
+      },
+      {
+        "id": "soulslike",
+        "label": "Viewers who love punishing action role-playing games",
+        "members": [
+          {
+            "name": "Dark Souls",
+            "type": "game"
+          },
+          {
+            "name": "Elden Ring",
+            "type": "game"
+          },
+          {
+            "name": "Bloodborne",
+            "type": "game"
+          },
+          {
+            "name": "Castlevania",
+            "type": "tv"
+          },
+          {
+            "name": "Sekiro: Shadows Die Twice",
+            "type": "game"
+          },
+          {
+            "name": "Nioh",
+            "type": "game"
+          },
+          {
+            "name": "Hollow Knight",
+            "type": "game"
+          }
+        ]
+      },
+      {
+        "id": "open-world",
+        "label": "Viewers who love open-world adventure",
+        "members": [
+          {
+            "name": "The Legend of Zelda: Breath of the Wild",
+            "type": "game"
+          },
+          {
+            "name": "Red Dead Redemption 2",
+            "type": "game"
+          },
+          {
+            "name": "The Witcher",
+            "type": "tv"
+          },
+          {
+            "name": "Horizon Zero Dawn",
+            "type": "game"
+          },
+          {
+            "name": "The Elder Scrolls V: Skyrim",
+            "type": "game"
+          },
+          {
+            "name": "Ghost of Tsushima",
+            "type": "game"
+          },
+          {
+            "name": "Westworld",
+            "type": "tv"
+          }
+        ]
+      },
+      {
+        "id": "sitcom-comfort",
+        "label": "Viewers who love workplace comedy",
+        "members": [
+          {
+            "name": "The Office",
+            "type": "tv"
+          },
+          {
+            "name": "Parks and Recreation",
+            "type": "tv"
+          },
+          {
+            "name": "Brooklyn Nine-Nine",
+            "type": "tv"
+          },
+          {
+            "name": "Community",
+            "type": "tv"
+          },
+          {
+            "name": "30 Rock",
+            "type": "tv"
+          },
+          {
+            "name": "Arrested Development",
+            "type": "tv"
+          },
+          {
+            "name": "Superstore",
+            "type": "tv"
+          }
+        ]
+      },
+      {
+        "id": "hard-scifi",
+        "label": "Viewers who love hard science fiction",
+        "members": [
+          {
+            "name": "Mass Effect",
+            "type": "game"
+          },
+          {
+            "name": "Star Trek: The Next Generation",
+            "type": "tv"
+          },
+          {
+            "name": "Black Mirror",
+            "type": "tv"
+          },
+          {
+            "name": "Severance",
+            "type": "tv"
+          },
+          {
+            "name": "Deus Ex",
+            "type": "game"
+          },
+          {
+            "name": "Battlestar Galactica",
+            "type": "tv"
+          },
+          {
+            "name": "The Expanse",
+            "type": "tv"
+          },
+          {
+            "name": "Portal 2",
+            "type": "game"
+          }
+        ]
+      },
+      {
+        "id": "indie-art-games",
+        "label": "Viewers who love art-house games",
+        "members": [
+          {
+            "name": "Journey",
+            "type": "game"
+          },
+          {
+            "name": "Inside",
+            "type": "game"
+          },
+          {
+            "name": "Disco Elysium",
+            "type": "game"
+          },
+          {
+            "name": "Twin Peaks",
+            "type": "tv"
+          },
+          {
+            "name": "Outer Wilds",
+            "type": "game"
+          },
+          {
+            "name": "Gris",
+            "type": "game"
+          },
+          {
+            "name": "Kentucky Route Zero",
+            "type": "game"
+          },
+          {
+            "name": "The Leftovers",
+            "type": "tv"
+          }
+        ]
+      },
+      {
+        "id": "street-crime",
+        "label": "Viewers who love street-crime storytelling",
+        "members": [
+          {
+            "name": "Grand Theft Auto V",
+            "type": "game"
+          },
+          {
+            "name": "Snowfall",
+            "type": "tv"
+          },
+          {
+            "name": "The Wire",
+            "type": "tv"
+          },
+          {
+            "name": "Kendrick Lamar",
+            "type": "music"
+          },
+          {
+            "name": "The Shield",
+            "type": "tv"
+          },
+          {
+            "name": "Power",
+            "type": "tv"
+          },
+          {
+            "name": "Nas",
+            "type": "music"
+          }
+        ]
+      },
+      {
+        "id": "fighting-arcade",
+        "label": "Viewers who love fighting games and martial-arts action",
+        "members": [
+          {
+            "name": "Street Fighter II",
+            "type": "game"
+          },
+          {
+            "name": "Tekken",
+            "type": "game"
+          },
+          {
+            "name": "Cobra Kai",
+            "type": "tv"
+          },
+          {
+            "name": "Mortal Kombat",
+            "type": "game"
+          },
+          {
+            "name": "Soulcalibur",
+            "type": "game"
+          },
+          {
+            "name": "Guilty Gear",
+            "type": "game"
+          },
+          {
+            "name": "Into the Badlands",
+            "type": "tv"
+          },
+          {
+            "name": "Warrior",
+            "type": "tv"
+          }
+        ]
+      }
+    ],
+    "slates": [
+      {
+        "id": "world-prestige",
+        "label": "International prestige",
+        "titles": [
+          "Parasite",
+          "City of God",
+          "La Haine",
+          "Amelie",
+          "Oldboy",
+          "Pan's Labyrinth",
+          "Run Lola Run",
+          "Y Tu Mama Tambien",
+          "The Lives of Others",
+          "A Separation",
+          "Drive My Car",
+          "Shoplifters"
+        ]
+      },
+      {
+        "id": "genre-cult",
+        "label": "Genre and cult",
+        "titles": [
+          "Train to Busan",
+          "The Raid",
+          "Let the Right One In",
+          "Battle Royale",
+          "Hard Boiled",
+          "Audition",
+          "The Host",
+          "[REC]",
+          "Cronos",
+          "Ichi the Killer",
+          "Martyrs",
+          "Tetsuo: The Iron Man"
+        ]
+      },
+      {
+        "id": "broad-mix",
+        "label": "Mainstream and arthouse mixed",
+        "titles": [
+          "Inception",
+          "The Dark Knight",
+          "Spirited Away",
+          "Your Name",
+          "RRR",
+          "3 Idiots",
+          "Roma",
+          "Crouching Tiger, Hidden Dragon",
+          "Das Boot",
+          "Good Bye Lenin!",
+          "Elite Squad",
+          "Sholay"
+        ]
+      },
+      {
+        "id": "modern-world",
+        "label": "Modern international",
+        "titles": [
+          "Burning",
+          "The Handmaiden",
+          "Portrait of a Lady on Fire",
+          "Capernaum",
+          "Cold War",
+          "The Square",
+          "Force Majeure",
+          "Toni Erdmann",
+          "Mustang",
+          "Atlantics",
+          "Monos",
+          "The Worst Person in the World"
+        ]
+      }
+    ]
+  },
+  "decision_rules": {
+    "purpose": "Select one hero audience x slate pair for the landing page, where the grounded shortlist and an LLM with no taste graph differ materially, without cherry-picking.",
+    "candidate_generation": {
+      "source": "fixtures/hero_candidates.json, fixed before any sweep data",
+      "audiences": "12 candidates, each described by 3-5 entities drawn only from television, video games and music -- the three domains measured to discriminate film taste (0.06, 0.08, 0.11). Music is a minority of any audience.",
+      "slates": "4 candidate slates of 12 films each",
+      "pairs": "every audience x slate pair is evaluated; none skipped"
+    },
+    "llm_baseline": {
+      "provider": "google",
+      "model": "gemini-2.5-flash",
+      "temperature": 0.0,
+      "repeats": 3,
+      "aggregate": "modal top five across repeats; a title counts toward top-5 overlap only if it appears in the model's top five in at least 2 of 3 repeats",
+      "prompt_mode": "audience mode: LIST A names what the audience already loves, LIST B is the catalogue to rank. The model sees the same describing entities Qloo does.",
+      "run_when": "only for pairs that already pass the grounded quality gates below, since the comparison cannot rescue a pair that fails them"
+    },
+    "selection_criteria_all_must_hold": {
+      "top5_overlap_max": 2,
+      "buyer_halves_agree_min": 0.5,
+      "withheld_max": 3,
+      "no_abort_or_abstain": true,
+      "every_divergent_grounded_top5_title_has_evidence": "shared Qloo tags and/or driving audience entities, with the supporting call recorded through taste/evidence.py"
+    },
+    "tie_break_in_order": [
+      "largest divergence (fewest shared titles in the top five)",
+      "highest buyer split-half agreement",
+      "fewest withheld titles",
+      "audience id, alphabetically, so the result is deterministic"
+    ],
+    "if_nothing_qualifies": "report the closest candidates and their metrics and propose a further amendment; do not loosen these criteria silently",
+    "reporting": "every candidate evaluated is listed in docs/HERO_SWEEP.md with its metrics, qualifying or not"
+  },
+  "warning": "Registered before the sweep ran. If any criterion here is changed after seeing sweep results, the change must be disclosed wherever the divergence number is quoted."
+}
