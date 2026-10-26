@@ -51,7 +51,7 @@ gcloud run deploy "$SERVICE" \
   --cpu 1 \
   --concurrency 40 \
   --max-instances 3 \
-  --min-instances "${MIN_INSTANCES:-0}" \
+  --min-instances "${MIN_INSTANCES:-1}" \
   --timeout 120 \
   --set-env-vars "QLOO_API_KEY=${QLOO_API_KEY},QLOO_BASE=${QLOO_BASE:-https://hackathon.api.qloo.com}"
 

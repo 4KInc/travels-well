@@ -25,6 +25,26 @@ QUOTA_FLOOR = 1500         # stop live calls entirely below this many remaining
 PITCH_PER_IP_PER_HOUR = 5  # a custom pitch costs ~40 calls; the URL is public
 
 
+def client_key(forwarded_for, socket_addr):
+    """Which visitor a request counts against.
+
+    On Cloud Run the Google frontend sets X-Forwarded-For as
+    "<client>, <proxy>...", so the first entry is the client. The socket
+    address is only ever the frontend, which would put every visitor in one
+    bucket, so it is a local-development fallback and nothing else.
+
+    A client can send its own X-Forwarded-For and Cloud Run appends to it,
+    which means this first entry is not trustworthy against someone who wants
+    to evade the per-IP cap. That is accepted deliberately: the per-IP cap is
+    there to stop one honest visitor draining the month by accident, and
+    LIVE_CALLS_GLOBAL_PER_HOUR is the backstop that a forged header cannot get
+    past. The expensive failure is a drained quota, and the global cap bounds
+    it regardless.
+    """
+    first = (forwarded_for or "").split(",")[0].strip()
+    return first or socket_addr or "unknown"
+
+
 class Budget:
     def __init__(self):
         self._lock = threading.Lock()

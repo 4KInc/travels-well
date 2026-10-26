@@ -212,6 +212,7 @@ const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;
 const $=id=>document.getElementById(id);
 
 fetch('/api/hero').then(r=>r.json()).then(d=>{
+  if(d && d.error){ heroMissing(d.error); return; }
   const t=d.llm_tau||{}, overlap=5-(d.llm_only_top5||[]).length;
 
   const big=(v,k)=>{const w=el('div');w.appendChild(el('div','v',v));
@@ -269,4 +270,8 @@ fetch('/api/hero').then(r=>r.json()).then(d=>{
     'image and stay out of the public repository. '+
     '<a href="__REPO_URL__">Source</a>';
 }).catch(e=>{$('big').textContent='Could not load the recorded run: '+e;});
+
+function heroMissing(why){
+  $('big').textContent=why+' \u2014 This is a fresh checkout. Recorded runs are not committed \u2014 the hackathon\u2019s data-publishing rule for raw Qloo responses is unresolved, so they are built locally. With a Qloo key in .env, run: python3 warm_cache.py && python3 hero_build.py';
+}
 </script>

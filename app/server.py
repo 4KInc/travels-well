@@ -31,7 +31,8 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 sys.path.insert(0, str(ROOT))
 
-from app.budget import Budget, message_for as BUDGET_MESSAGES  # noqa: E402
+from app.budget import (Budget, client_key,  # noqa: E402
+                        message_for as BUDGET_MESSAGES)
 from qloo_client import load_dotenv  # noqa: E402
 
 # In the container the key arrives as an env var; locally it lives in .env.
@@ -146,8 +147,8 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(payload)
 
     def client_ip(self):
-        fwd = self.headers.get("X-Forwarded-For", "")
-        return fwd.split(",")[0].strip() if fwd else self.client_address[0]
+        return client_key(self.headers.get("X-Forwarded-For"),
+                          self.client_address[0] if self.client_address else None)
 
     def do_GET(self):
         route = urlparse(self.path)

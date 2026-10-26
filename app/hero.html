@@ -52,10 +52,12 @@ h1 b{color:var(--bulb);font-weight:400}
   border:1px solid var(--bulb);color:var(--bulb);background:rgba(232,184,75,.07);
   font:400 13px/1.45 var(--sans);max-width:62ch}
 .chip b{font-weight:600}
+.chip:empty{display:none}
 .offered{font:400 11px/1.5 var(--mono);letter-spacing:.07em;text-transform:uppercase;
   color:var(--ink-3);margin:12px 0 0;text-align:center}
 
 /* ---------- the two fives ---------- */
+.fives[hidden]{display:none}
 .fives{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,2.6vw,30px);
   margin:26px 0 0}
 @media (max-width:700px){.fives{grid-template-columns:1fr;gap:26px}}
@@ -186,8 +188,24 @@ const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;
   if(x!==undefined)e.textContent=x;return e};
 const $=id=>document.getElementById(id);
 
-fetch('/api/hero').then(r=>r.json()).then(draw).catch(e=>{
-  $('sub').textContent='Could not load the recorded run: '+e;});
+fetch('/api/hero').then(r=>r.json()).then(d=>{
+  // A missing recording is an expected state in a fresh checkout, not a
+  // crash. Say which command fixes it rather than leaking a TypeError.
+  if(d && d.error){ missing(d.error); return; }
+  draw(d);
+}).catch(e=>missing(String(e)));
+
+function missing(why){
+  $('sub').textContent=why;
+  const p=document.createElement('p');
+  p.className='note';
+  p.style.cssText='margin-top:14px;text-align:center';
+  p.innerHTML='This is a fresh checkout. Recorded runs are not committed \u2014 the hackathon\u2019s data-publishing rule for raw Qloo responses is unresolved, so they are built locally. With a Qloo key in .env, run: python3 warm_cache.py && python3 hero_build.py'.replace(/python3[^<]*/,
+    '<code style="font:400 12.5px var(--mono);color:var(--bulb)">$&</code>');
+  document.querySelector('header').appendChild(p);
+  document.querySelector('.fives').hidden=true;
+  document.getElementById('offered').textContent='';
+}
 
 function art(title, image){
   const a=el('div','art');

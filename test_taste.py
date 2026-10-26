@@ -166,5 +166,25 @@ check("every refusal has a message that mentions the cached examples",
       all("recorded example" in _b.message_for(r)
           for r in ("quota_floor", "pitch_per_ip_cap", "per_ip_hourly_cap")))
 
+print("visitor identity behind a proxy")
+_ck = _b.client_key
+check("the first X-Forwarded-For entry identifies the visitor",
+      _ck("203.0.113.7, 169.254.1.1", "169.254.1.1") == "203.0.113.7")
+check("the socket address is used only when there is no header",
+      _ck(None, "127.0.0.1") == "127.0.0.1" and _ck("", "127.0.0.1") == "127.0.0.1")
+check("surrounding whitespace does not create a separate bucket",
+      _ck("  198.51.100.4 , 10.0.0.1 ", "10.0.0.1") == "198.51.100.4")
+
+# The failure this guards against: every visitor arriving through one proxy
+# sharing a single bucket, so the first five exhaust the cap for everyone.
+_prox = _b.Budget()
+_a, _z = "203.0.113.7, 169.254.1.1", "198.51.100.4, 169.254.1.1"
+for _ in range(_b.PITCH_PER_IP_PER_HOUR):
+    _prox.record_pitch(_ck(_a, "169.254.1.1"))
+check("one visitor behind the proxy is capped",
+      _prox.allow_pitch(_ck(_a, "169.254.1.1"))[1] == "pitch_per_ip_cap")
+check("a DIFFERENT visitor behind the SAME proxy gets its own bucket",
+      _prox.allow_pitch(_ck(_z, "169.254.1.1"))[0] is True)
+
 print("\n%d passed, %d failed" % (passed, failed))
 sys.exit(1 if failed else 0)

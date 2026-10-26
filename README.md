@@ -73,15 +73,40 @@ cp .env.example .env          # add QLOO_API_KEY
 python3 app/server.py         # http://localhost:8080
 ```
 
-Stdlib only: no dependencies, no build step. Also:
+Stdlib only: no dependencies, no build step.
+
+### What a fresh checkout is missing
+
+**Recorded runs are not committed.** The hackathon's rule on publishing raw
+Qloo responses is unresolved — one entrant reports organisers disallow it,
+another commits them — so this repository takes the conservative reading and
+keeps them out. `app/cache/` is gitignored; the recordings reach the deployed
+image through the build context instead.
+
+So a fresh checkout has no recorded runs, and the landing page says so rather
+than failing. With a key in `.env`, build them:
+
+```bash
+python3 warm_cache.py       # the four slate presets and the pitch example
+python3 hero_build.py       # the landing page's recorded run
+```
+
+`hero_build.py` reads whichever pair the registered sweep selected, so it
+cannot drift from `docs/HERO_SWEEP.md`. To redo the selection itself —
+roughly 250 Qloo calls — run `python3 hero_sweep.py` first.
+
+Without a key **and** without recordings the server still starts, every page
+still answers, and `/healthz` reports `presets_all_cached: false` with the
+missing names. That path has its own test.
+
+### Everything else
 
 ```bash
 python3 run_agent.py --home "Mumbai · Bollywood playback"   # agent in the terminal
 python3 atlas_build.py      # discover audiences: cluster + bootstrap
 python3 atlas_view.py       # lay them out by MDS, write the map
 python3 name_clusters.py    # let each audience name itself from its tags
-python3 warm_cache.py       # record presets so the demo survives the quota
-python3 test_taste.py && python3 test_loop.py   # 27 tests
+python3 test_taste.py && python3 test_loop.py && python3 test_startup.py
 ```
 
 ## How it is built
