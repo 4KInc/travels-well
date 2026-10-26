@@ -19,3 +19,7 @@ out/*
 # the unresolved data-publishing rule applies to them too.
 app/cache/*.json
 out/traces/
+
+# dossier build artifacts (regenerate with build_dossier.py)
+taste-atlas-dossier.html
+taste-atlas-dossier.pdf
