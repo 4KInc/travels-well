@@ -137,10 +137,14 @@ measures <em>divergence</em>, never correctness.</p>
 <div class="callout" id="tauNote"></div>
 
 <h3>Why the set, and not the rank correlation</h3>
-<p>Rank correlation is computed from the model's full ordering, and that
-ordering is not stable. Its <em>set</em> of five is. So the set overlap is the
-headline number and the correlation is shown as a range across runs — a single
-value would describe the unstable quantity and look more precise than it is.</p>
+<p>Two reasons. First, rank correlation at this <em>n</em> has a wide null
+distribution — the standard error is nearly as large as the value — so a single
+tau looks far more precise than it is. Second, it is computed from the model's
+full ordering, and that ordering is not reliably reproducible between
+recordings. The set of five has been identical in every run we have recorded.
+So the set is the primary measure, and the correlation is reported as a range
+with its error.</p>
+<p id="stability"></p>
 <table id="runs"></table>
 
 <h2>What the validation shows, and what it assumes</h2>
@@ -213,21 +217,23 @@ fetch('/api/hero').then(r=>r.json()).then(d=>{
   const big=(v,k)=>{const w=el('div');w.appendChild(el('div','v',v));
     w.appendChild(el('div','k',k));$('big').appendChild(w)};
   big(overlap+' of 5','top-five titles shared');
-  big((t.min!=null? t.min.toFixed(2)+' to '+t.max.toFixed(2) : '—'),
-      'rank correlation, range over '+(t.runs||0)+' runs');
+  big((t.min==null? '—' : (t.min===t.max? t.min.toFixed(2)
+        : t.min.toFixed(2)+' to '+t.max.toFixed(2))),
+      'rank correlation — no positive agreement');
   big(d.buyer&&d.buyer.top5_hold!=null? d.buyer.top5_hold+' of 5':'—',
       'grounded picks that hold on re-reading');
 
-  $('tauNote').innerHTML='<b>The set is stable; the order is not.</b> Across '+
-    (t.runs||0)+' runs at temperature zero the model returned '+
-    (t.set_identical_across_runs? 'the <b>same five titles every time</b>':
-     'a varying set of five')+', while its full ordering was '+
-    (t.orders_identical_across_runs? 'also identical':'<b>not identical</b>')+
-    '. Rank correlation is computed from that ordering, which is why it is '+
-    'reported here as a range rather than a single number.'+
-    (t.min!=null && t.max!=null && t.max<0 ?
-      ' Both ends are negative: for this audience the model’s ordering runs '+
-      'contrary to the grounded one, rather than merely differing from it.':'');
+  const rng=(t.min===t.max? t.min.toFixed(2)
+             : t.min.toFixed(2)+' to '+t.max.toFixed(2));
+  $('tauNote').innerHTML='<b>No positive agreement \u2014 and not a measured '+
+    'opposition either.</b> Rank correlation is '+rng+' across '+(t.runs||0)+
+    ' runs. With '+t.n_titles+' titles the null standard error is about '+
+    t.null_se.toFixed(2)+', so every value sits about '+t.max_abs_in_se+
+    ' standard errors from zero, inside the noise. Read it as the absence of '+
+    'agreement between the model\u2019s ordering and the grounded one, not as '+
+    'evidence that one runs against the other. That is why the <b>set '+
+    'overlap</b> above is the measure to read, and the correlation is shown '+
+    'with its error rather than as a finding.';
 
   const tb=$('runs');
   tb.innerHTML='<thead><tr><th>Run</th><th class="num">Rank correlation</th>'+
@@ -242,6 +248,14 @@ fetch('/api/hero').then(r=>r.json()).then(d=>{
     body.appendChild(tr);
   });
   tb.appendChild(body);
+
+  $('stability').innerHTML='This recording: '+
+    (t.orders_identical_across_runs? 'all '+t.runs+' orderings identical'
+      : 'the orderings differed between runs')+
+    '. The selection sweep’s recording of the same prompt: '+
+    d.llm_full_order_identical+' of '+d.llm_repeats+' identical. The same five '+
+    'titles came back in both. We report the ordering as unreliable rather '+
+    'than as stable or unstable, because we have observed it both ways.';
 
   const p=d.provenance||{};
   $('prov').innerHTML='The pair on the landing page was selected from <b>'+

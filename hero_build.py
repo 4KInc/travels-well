@@ -96,7 +96,16 @@ def main():
             taus.append(out["agreement"])
         if out.get("llm_top5"):
             sets.append(tuple(sorted(out["llm_top5"])))
+    # Kendall tau has a wide null distribution at this n. Without the standard
+    # error beside it, a tau of -0.27 reads as a finding when it is one
+    # standard error from zero.
+    from stats import tau_null_se
+    null_se = tau_null_se(len(res["rows"]))
     tau_block = {
+        "n_titles": len(res["rows"]),
+        "null_se": round(null_se, 4) if null_se else None,
+        "max_abs_in_se": (round(max(abs(t) for t in taus) / null_se, 2)
+                          if taus and null_se else None),
         "runs": len(taus),
         "min": round(min(taus), 3) if taus else None,
         "max": round(max(taus), 3) if taus else None,
@@ -106,7 +115,10 @@ def main():
                                         if orders else None,
         "note": ("Reported as a range, not a single number: the set of five the "
                  "model picks is steady across runs while its full ordering is "
-                 "not, and rank correlation is computed from the ordering."),
+                 "not, and rank correlation is computed from the ordering. "
+                 "Every value here sits inside one and a bit standard errors "
+                 "of zero, so the reading is an absence of positive agreement "
+                 "rather than a measured opposition."),
     }
 
     llm_top5 = sorted(win["llm_top5_stable"])   # a set, not an order

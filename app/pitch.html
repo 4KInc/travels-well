@@ -352,10 +352,12 @@ function paneAblation(p,d){
   p.appendChild(el('p','note','The same question put to a language model that sees '
     +'only the two title lists — no Qloo, no affinities.'));
   p.appendChild(el('p','note','Top-five overlap is the measure to read. Full-list '
-    +'agreement is computed from the model\u2019s ordering, and that ordering is '
-    +'not stable between runs, so the single value below is one draw rather than '
-    +'a property of the model. The recorded example on the '
-    +'<a href="/evidence">evidence page</a> reports it as a range.'));
+    +'agreement is a rank correlation over a dozen titles, where the null '
+    +'standard error is around 0.2 \u2014 nearly as large as most values it takes '
+    +'\u2014 and it is computed from the model\u2019s ordering, which is not '
+    +'reliably reproducible between runs. Read a small value as no agreement '
+    +'rather than as a measured disagreement. The '
+    +'<a href="/evidence">evidence page</a> reports it as a range with its error.'));
   const st=el('div','stats');
   const put=(k,v)=>{const s=el('span');s.appendChild(document.createTextNode(k+' '));
     s.appendChild(el('b',null,v));st.appendChild(s)};
