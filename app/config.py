@@ -30,9 +30,9 @@ CUSTOMER_QUOTE_ATTRIBUTION = os.environ.get("CUSTOMER_QUOTE_ATTRIBUTION", "").st
 
 
 def title(view_key):
-    """Browser title for a view, e.g. 'Taste Atlas — Audience Map'."""
+    """Browser title for a view, e.g. 'Taste Atlas · Audience Map'."""
     name = VIEW_NAMES.get(view_key)
-    return "%s — %s" % (PRODUCT_NAME, name) if name else PRODUCT_NAME
+    return "%s \u00b7 %s" % (PRODUCT_NAME, name) if name else PRODUCT_NAME
 
 
 def render(html):

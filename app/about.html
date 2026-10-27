@@ -1,6 +1,6 @@
 <!doctype html><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>__PRODUCT_NAME__ — About</title>
+<title>__PRODUCT_NAME__ · About</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -79,9 +79,9 @@ a specific audience, and almost no taste data to decide with. The usual
 substitutes are genre tags, which describe the film rather than the viewer, and
 a language model, which defaults to what is famous. Fame is a reasonable guess
 and a poor answer: it is the same guess for every audience.</p>
-<p>This puts the decision on an audience's measured affinities instead, and —
-the part that matters — lets the agent decline when the evidence will not carry
-a decision.</p>
+<p>This puts the decision on an audience's measured affinities instead. The
+part that matters: it lets the agent decline when the evidence will not carry a
+decision.</p>
 
 <h2>Who it is for</h2>
 <ul>
@@ -96,16 +96,16 @@ licensed. That list is the input; no new data collection is required.</li>
 
 <h2>Why now</h2>
 <p>Channels are proliferating faster than the research budgets that used to
-support them, and the fallback — asking a general-purpose model — produces
+support them, and the fallback of asking a general-purpose model produces
 confident answers with nothing underneath them. An agent making a cultural call
 needs something to ground it in, and needs to know when it is not grounded.</p>
 
 <h2>Why Qloo specifically</h2>
 <p>The thing no language model holds is the <b>cross-domain</b> signal: that an
 audience's games and television predict its films. We measured how strongly each
-domain carries that signal — television 0.06, video games 0.08, music 0.11
-discriminate sharply; brands, books, podcasts and places barely or not at all —
-and built only on the three that work. Without the graph there is nothing to
+domain carries that signal. Television 0.06, video games 0.08 and music 0.11
+discriminate sharply; brands, books, podcasts and places barely or not at all.
+We built only on the three that work. Without the graph there is nothing to
 resolve titles against, no signatures to cluster, and ranking collapses to
 whatever the model remembers being famous.</p>
 <p><a href="/">The landing page</a> is that comparison run on a real audience,
@@ -115,7 +115,7 @@ and <a href="/evidence">the evidence page</a> is every measurement behind it.</p
   <span class="label">Hypothesis, not a price list</span>
   <p>We have not sold this. The shape we would test first is a per-seat tier for
   a programming or acquisitions team, with a catalogue-sized tier above it for
-  groups running several channels — priced against the cost of one wrong
+  groups running several channels, priced against the cost of one wrong
   licensing decision rather than per query, since the whole point is that the
   tool sometimes answers "not enough evidence".</p>
   <p>Any number here would be invented, so there isn't one.</p>
@@ -128,7 +128,7 @@ playlist, and live-event booking, are the same question with a different
 catalogue. Anchor quality varies by domain and we have only measured it for
 film, so each would need its own measurement rather than an assumption.</li>
 <li><b>Sponsorship and brand fit</b>, where the question is which property suits
-an audience — though our own measurement puts brands among the weak signals, so
+an audience. Our own measurement puts brands among the weak signals, so
 that one starts as a negative result to overturn.</li>
 <li><b>Catalogue feeds.</b> Today an audience is described by typing titles.
 Reading an existing acquisitions list directly turns a demo into something used

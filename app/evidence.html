@@ -1,6 +1,6 @@
 <!doctype html><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>__PRODUCT_NAME__ — Evidence</title>
+<title>__PRODUCT_NAME__ · Evidence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -85,10 +85,10 @@ the assumption that limits it. Thresholds were registered and hashed before any
 data was collected; where one moved afterwards, the amendment says so.</p>
 
 <h2>What we measured about the API</h2>
-<p>Every parameter was differential-tested — assert the response <em>changes</em>
-when the parameter is removed — because this API silently ignores what it does
-not understand, which makes an untested parameter indistinguishable from a
-working one.</p>
+<p>Every parameter was differential-tested. That means asserting the response
+<em>changes</em> when the parameter is removed, because this API silently
+ignores what it does not understand, which makes an untested parameter
+indistinguishable from a working one.</p>
 <table>
 <thead><tr><th style="width:38%">Finding</th><th>What it means</th></tr></thead>
 <tbody>
@@ -97,7 +97,7 @@ working one.</p>
     Mumbai and Berlin: affinities come back identical to four decimals. It
     <em>is</em> honoured for places. Any entry that pins a set and varies
     location is reading a parameter the API never applied.
-    <span class="repro">reproduce: <code>python3 run_all.py</code> — tests F0 and F</span></td></tr>
+    <span class="repro">reproduce: <code>python3 run_all.py</code>, tests F0 and F</span></td></tr>
 <tr><td><b><code>affinity</code> and <code>popularity</code> sit side by side</b></td>
     <td>They are different numbers in the same response. Popularity is identical
     in every market, so a client that reads it makes every audience look alike.
@@ -105,9 +105,9 @@ working one.</p>
     <span class="repro">reproduce: <code>python3 probe_api.py</code></span></td></tr>
 <tr><td><b>Affinity is not normalised per candidate set</b></td>
     <td>The same entity scored inside two different pinned sets, with the same
-    signal, returns the same value. It varies with the signal, not the set — so
+    signal, returns the same value. It varies with the signal, not the set, so
     rank positions from one pinned query are comparable by construction.
-    <span class="repro">reproduce: <code>python3 run_all.py</code> — tests B
+    <span class="repro">reproduce: <code>python3 run_all.py</code>, tests B
     (normalisation) and C (<code>filter.results.entities</code>)</span></td></tr>
 <tr><td><b>Cross-domain signal strength varies enormously</b></td>
     <td>Television (0.06), video games (0.08) and music (0.11) discriminate film
@@ -123,7 +123,7 @@ working one.</p>
     <td>A larger value returns a 400 that reads downstream as "no data" unless
     the status is checked. Ours is. Test D covers the wider rule that invalid
     parameters are ignored without complaint.
-    <span class="repro">reproduce: <code>python3 probe_api.py</code>; <code>run_all.py</code> — test D</span></td></tr>
+    <span class="repro">reproduce: <code>python3 probe_api.py</code>; <code>run_all.py</code>, test D</span></td></tr>
 </tbody>
 </table>
 
@@ -138,7 +138,7 @@ measures <em>divergence</em>, never correctness.</p>
 
 <h3>Why the set, and not the rank correlation</h3>
 <p>Two reasons. First, rank correlation at this <em>n</em> has a wide null
-distribution — the standard error is nearly as large as the value — so a single
+distribution. The standard error is nearly as large as the value, so a single
 tau looks far more precise than it is. Second, it is computed from the model's
 full ordering, and that ordering is not reliably reproducible between
 recordings. The set of five has been identical in every run we have recorded.
@@ -162,7 +162,7 @@ with its error.</p>
     <span class="repro">p = 0.0059</span></td>
     <td>This is the result with weight: the effect belongs to the audience, not
     to the three names we picked. But both readings come from the same graph, so
-    a second anchor set is a <b>disjoint</b> check, not an independent one — the
+    a second anchor set is a <b>disjoint</b> check, not an independent one: the
     halves share no entities, and that is all.</td></tr>
 <tr><td><b>67%</b> of cluster pairings survive bootstrap resampling</td>
     <td>Measured at the 0.75 linkage threshold. Looser grouping produced one
@@ -191,7 +191,7 @@ criterion, threshold, tie-break or model setting changed.</p>
 <h2>Honest limits</h2>
 <ul>
 <li>Qloo knows brands, not products. This works for films, artists, places,
-books, shows, podcasts and games — not arbitrary retail SKUs.</li>
+books, shows, podcasts and games, but not arbitrary retail SKUs.</li>
 <li>15 of the 18 map audiences have too few members to split into halves that
 can disagree, and are drawn dashed rather than implying a check that did not
 happen.</li>
@@ -218,10 +218,10 @@ fetch('/api/hero').then(r=>r.json()).then(d=>{
   const big=(v,k)=>{const w=el('div');w.appendChild(el('div','v',v));
     w.appendChild(el('div','k',k));$('big').appendChild(w)};
   big(overlap+' of 5','top-five titles shared');
-  big((t.min==null? '—' : (t.min===t.max? t.min.toFixed(2)
+  big((t.min==null? 'n/a' : (t.min===t.max? t.min.toFixed(2)
         : t.min.toFixed(2)+' to '+t.max.toFixed(2))),
-      'rank correlation — no positive agreement');
-  big(d.buyer&&d.buyer.top5_hold!=null? d.buyer.top5_hold+' of 5':'—',
+      'rank correlation: no positive agreement');
+  big(d.buyer&&d.buyer.top5_hold!=null? d.buyer.top5_hold+' of 5':'n/a',
       'grounded picks that hold on re-reading');
 
   const rng=(t.min===t.max? t.min.toFixed(2)
@@ -245,7 +245,7 @@ fetch('/api/hero').then(r=>r.json()).then(d=>{
     tr.appendChild(el('td',null,'run '+(i+1)));
     tr.appendChild(el('td','num',v.toFixed(3)));
     tr.appendChild(el('td',null,i===0&&t.set_identical_across_runs
-      ? 'same five in every run' : (t.set_identical_across_runs?'— same —':'varied')));
+      ? 'same five in every run' : (t.set_identical_across_runs?'same':'varied')));
     body.appendChild(tr);
   });
   tb.appendChild(body);

@@ -296,13 +296,13 @@ function paneShortlist(p,d){
     if(r.invariant) td1.appendChild(el('div','flag','ranks the same for every buyer'));
     tr.appendChild(td1);
     tr.appendChild(el('td','n num',r.place||''));
-    tr.appendChild(el('td','n num',r.affinity!=null?r.affinity.toFixed(3):'—'));
+    tr.appendChild(el('td','n num',r.affinity!=null?r.affinity.toFixed(3):'n/a'));
     const td4=el('td','bar-cell'); td4.style.paddingLeft='16px';
     const mini=el('div','mini'), f=el('i');
     f.style.left='0'; f.style.width=Math.round((r.fit||0)*100)+'%';
     mini.appendChild(f); td4.appendChild(mini); tr.appendChild(td4);
     const td5=el('td','n num '+(r.shift>=0?'up':'down'));
-    td5.textContent=typeof r.shift==='number'?fmt(r.shift):'—';
+    td5.textContent=typeof r.shift==='number'?fmt(r.shift):'n/a';
     tr.appendChild(td5);
     b.appendChild(tr);
   });
@@ -350,7 +350,7 @@ function paneAblation(p,d){
   const l=d.llm;
   if(!l||!l.available){ p.appendChild(el('p','empty',(l&&l.note)||'No comparison available.')); return; }
   p.appendChild(el('p','note','The same question put to a language model that sees '
-    +'only the two title lists — no Qloo, no affinities.'));
+    +'only the two title lists: no Qloo, no affinities.'));
   p.appendChild(el('p','note','Top-five overlap is the measure to read. Full-list '
     +'agreement is a rank correlation over a dozen titles, where the null '
     +'standard error is around 0.2 \u2014 nearly as large as most values it takes '
@@ -405,8 +405,8 @@ function paneAblation(p,d){
 function paneMethod(p,d){
   const add=(h,t)=>{p.appendChild(el('h3','sec',h));p.appendChild(el('p','note',t))};
   add('Measured on the hackathon endpoint, not read from the docs',
-    'filter.location.query is silently ignored for movies — affinities come back '
-    +'identical to four decimals across five cities — though it is honoured for '
+    'filter.location.query is silently ignored for movies. Affinities come back '
+    +'identical to four decimals across five cities, though it is honoured for '
     +'places. Affinity is not normalised per candidate set; it varies with the signal. '
     +'query.affinity is the taste score and popularity sits beside it, identical in '
     +'every market. take is capped at 50. Cross-domain signal varies enormously: TV '
@@ -418,7 +418,7 @@ function paneMethod(p,d){
     +'shown beside it. Vs home is that place minus its place with your home audience.');
   add('Validation, including where it fails',
     '11 of 11 regionally-skewed films rank highest with their own home audience '
-    +'(p = 0.0005) — a validity check rather than a finding, since we chose which '
+    +'(p = 0.0005): a validity check rather than a finding, since we chose which '
     +'films count as regional. 10 of 11 survive replacing every anchor artist '
     +'(p = 0.0059), which is the result with weight. Cluster membership survives '
     +'bootstrap resampling for 67% of pairings. An external backtest against Wikipedia '
@@ -426,7 +426,7 @@ function paneMethod(p,d){
     +'not in the other three markets.');
   add('What is not claimed',
     'The map’s eighteen audiences are clusters of cultural anchors grouped by '
-    +'modelled film affinity — communities within Qloo’s graph, not observed '
+    +'modelled film affinity: communities within Qloo’s graph, not observed '
     +'groups of people. Fifteen have too few members to cross-check and are drawn dashed. '
     +'The two readings of any audience share no anchors but come from the same graph, so '
     +'their agreement is a consistency check, not independent corroboration.');

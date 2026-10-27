@@ -156,7 +156,7 @@ footer{margin:34px 0 0;border-top:1px solid var(--rule);padding-top:16px;
   </div>
   <div class="col llm">
     <h2>Without it</h2>
-    <span class="tag" id="tagl">The same question to a language model that sees only the two title lists. Shown unordered — see below.</span>
+    <span class="tag" id="tagl">The same question to a language model that sees only the two title lists. Shown unordered; see below.</span>
     <div id="coll"></div>
   </div>
 </div>
@@ -164,7 +164,7 @@ footer{margin:34px 0 0;border-top:1px solid var(--rule);padding-top:16px;
 <p class="note" id="caveat"></p>
 
 <div class="withheld" id="withheld" hidden>
-  <p class="slug">Withheld — no verdict offered</p>
+  <p class="slug">Withheld: no verdict offered</p>
   <div class="items" id="withitems"></div>
   <p class="note" style="text-align:left;margin:10px 0 0;max-width:78ch" id="withwhy"></p>
 </div>
@@ -268,7 +268,7 @@ function draw(d){
       const inner=el('div','inner');
       inner.appendChild(el('div',null,'driven most by '+
         ds.map(x=>x.name+' ('+x.score.toFixed(3)+')').join(', ')));
-      inner.appendChild(el('div',null,'affinity '+(r.affinity!=null?r.affinity.toFixed(3):'—')+
+      inner.appendChild(el('div',null,'affinity '+(r.affinity!=null?r.affinity.toFixed(3):'n/a')+
         ' · from feature.explainability on the same pinned query'));
       det.appendChild(inner); b.appendChild(det);
     }
@@ -289,7 +289,7 @@ function draw(d){
     else{
       const r=rankOf[title];
       const w=el('div','why');
-      if(r&&r.withheld) w.innerHTML='For this audience this title was <b>withheld</b> — the two halves disagreed about it.';
+      if(r&&r.withheld) w.innerHTML='For this audience this title was <b>withheld</b>: the two halves disagreed about it.';
       else if(r&&r.grounded_place) w.innerHTML='For this audience it ranks <b>#'+
         r.grounded_place+' of '+r.of+'</b> here.';
       else w.textContent='Not ranked for this audience.';
@@ -309,7 +309,7 @@ function draw(d){
     line='Close call: the graph points somewhere different from the language '+
          'model, but margins are thin.';
   $('caveat').innerHTML=line+' This is divergence with the evidence behind it, '+
-    'not proof the model is wrong — there is no ground truth for what a '+
+    'not proof the model is wrong. There is no ground truth for what a '+
     'programmer would license. <a href="/evidence">How this pair was chosen</a>.';
 
   if((d.withheld||[]).length){
@@ -324,7 +324,7 @@ function draw(d){
   (d.steps||[]).forEach(s=>{
     const li=el('li'), b=el('div');
     b.appendChild(el('div','act',(s.action||'').replace(/_/g,' ')+
-      (s.reason?' — '+s.reason:'')));
+      (s.reason?': '+s.reason:'')));
     if(s.observed) b.appendChild(el('div','obs',s.observed));
     if(s.changed) b.appendChild(el('div','did','↳ '+s.changed));
     li.appendChild(b); $('steps').appendChild(li);
