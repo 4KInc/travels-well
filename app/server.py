@@ -190,21 +190,22 @@ class Handler(BaseHTTPRequestHandler):
                     {"error": "atlas not built", "how": "run atlas_view.py"}))
             return self._send(200, path.read_text())
         if route.path in ("/slate", "/index.html", "/travels"):
-            page = page_html().replace("__PRESETS__", json.dumps(PRESETS))
+            page = _cfg.render(page_html(), "slate").replace(
+                "__PRESETS__", json.dumps(PRESETS))
             return self._send(200, page, "text/html; charset=utf-8")
         # The front door is the decision, with its answer already on screen.
         # The map explains why the answer differs and is one click away.
         if route.path in ("/", "/hero"):
-            return self._send(200, _cfg.render((HERE / "hero.html").read_text()),
+            return self._send(200, _cfg.render((HERE / "hero.html").read_text(), "hero"),
                               "text/html; charset=utf-8")
         if route.path in ("/pitch", "/pitch.html"):
-            return self._send(200, _cfg.render((HERE / "pitch.html").read_text()),
+            return self._send(200, _cfg.render((HERE / "pitch.html").read_text(), "pitch"),
                               "text/html; charset=utf-8")
         if route.path in ("/about", "/about.html"):
-            return self._send(200, _cfg.render((HERE / "about.html").read_text()),
+            return self._send(200, _cfg.render((HERE / "about.html").read_text(), "about"),
                               "text/html; charset=utf-8")
         if route.path in ("/evidence", "/evidence.html"):
-            return self._send(200, _cfg.render((HERE / "evidence.html").read_text()),
+            return self._send(200, _cfg.render((HERE / "evidence.html").read_text(), "evidence"),
                               "text/html; charset=utf-8")
         if route.path == "/api/hero":
             path = HERE / "cache" / "hero.json"
@@ -213,7 +214,8 @@ class Handler(BaseHTTPRequestHandler):
                     {"error": "The recorded hero run is missing from this build."}))
             return self._send(200, path.read_text())
         if route.path in ("/atlas", "/atlas.html", "/map"):
-            return self._send(200, (HERE / "atlas.html").read_text(),
+            return self._send(200, _cfg.render((HERE / "atlas.html").read_text(),
+                                               "atlas"),
                               "text/html; charset=utf-8")
         return self._send(404, json.dumps({"error": "not found"}))
 

@@ -96,6 +96,29 @@ def main():
         check("and says why they are not in the repository",
               "data-publishing" in page or "not committed" in page)
 
+        # The nav lived in six files and drifted: when / became the hero,
+        # three pages still pointed "Pitch desk" at / and had no link to the
+        # landing page, the evidence or the about page at all.
+        import re as _re
+        print("navigation")
+        navs = {}
+        for path in ("/", "/pitch", "/atlas", "/slate", "/evidence", "/about"):
+            _, page = get(base + path)
+            m = _re.search(r'<nav class="topnav">.*?</nav>', page, _re.S)
+            navs[path] = m.group(0) if m else ""
+            check("%s has a nav" % path, bool(m))
+        links = {p: _re.findall(r'<a href="([^"]*)"', n) for p, n in navs.items()}
+        first = links["/"]
+        check("every page offers the same destinations, in the same order",
+              all(v == first for v in links.values()))
+        for want in ("/", "/pitch", "/atlas", "/slate", "/evidence", "/about"):
+            check("the nav reaches %s" % want, want in first)
+        for path in navs:
+            cur = _re.findall(r'<a href="([^"]*)" aria-current="page"', navs[path])
+            check("%s marks itself as the current page" % path, cur == [path])
+        check("no template placeholder survives rendering",
+              not any(("__NAV__" in n or "__VIEW_" in n) for n in navs.values()))
+
         out = proc.stdout
         proc.terminate()
         proc.wait(timeout=10)
