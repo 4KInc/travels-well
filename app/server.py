@@ -207,6 +207,12 @@ class Handler(BaseHTTPRequestHandler):
         if route.path in ("/evidence", "/evidence.html"):
             return self._send(200, _cfg.render((HERE / "evidence.html").read_text(), "evidence"),
                               "text/html; charset=utf-8")
+        if route.path == "/api/findings":
+            path = HERE / "cache" / "findings.json"
+            if not path.exists():
+                return self._send(503, json.dumps(
+                    {"error": "The recorded harness run is missing from this build."}))
+            return self._send(200, path.read_text())
         if route.path == "/api/hero":
             path = HERE / "cache" / "hero.json"
             if not path.exists():

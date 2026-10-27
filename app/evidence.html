@@ -67,6 +67,38 @@ code{font:400 12px var(--mono);color:var(--bulb);background:var(--seat);
   color:var(--ink-3)}
 ul{max-width:76ch;padding-left:18px;color:var(--ink-2)}
 li{margin-bottom:7px}
+
+/* An evidence page should look like output, not like prose about output. */
+.sheet{border:1px solid var(--rule);border-radius:3px;margin:14px 0 0;
+  background:linear-gradient(180deg,rgba(255,255,255,.012),transparent)}
+.sheet .row{display:grid;grid-template-columns:52px 1fr 150px;gap:14px;
+  padding:13px 15px;border-top:1px solid var(--rule);align-items:start}
+.sheet .row:first-child{border-top:0}
+.sheet .tid{font:400 11px/1.6 var(--mono);color:var(--ink-3);letter-spacing:.1em}
+.sheet .q{font-size:14px;color:var(--ink);line-height:1.4}
+.sheet .claim{font-size:12.5px;color:var(--ink-2);margin-top:3px;line-height:1.5}
+.sheet .claim b{color:var(--ink);font-weight:500}
+.verdict{justify-self:end;text-align:right}
+.vb{display:inline-block;font:500 10px/1 var(--mono);letter-spacing:.09em;
+  text-transform:uppercase;padding:5px 7px;border-radius:2px;border:1px solid currentColor;
+  white-space:nowrap}
+.vb.good{color:#5fbf8f} .vb.soft{color:var(--bulb)} .vb.open{color:var(--ink-3)}
+.sheet .how{font:400 10.5px/1.6 var(--mono);color:#55524c;margin-top:6px}
+.sheet .note{font-size:12px;color:var(--ink-3);margin:6px 0 0;line-height:1.55;
+  border-left:1px solid var(--rule);padding-left:10px}
+.matrix{width:100%;border-collapse:collapse;margin:10px 0 2px;
+  font:400 11.5px/1 var(--mono)}
+.matrix th{font-size:9.5px;letter-spacing:.1em;padding:0 8px 7px 0;
+  color:var(--ink-3);border-bottom:1px solid var(--rule);text-transform:uppercase}
+.matrix td{padding:6px 8px 6px 0;border-bottom:1px solid rgba(38,38,46,.6);
+  color:var(--ink-2)}
+.matrix td.p{color:var(--ink)}
+.yes{color:#5fbf8f} .no{color:var(--ink-3)} .dead{color:var(--neg)}
+.legend{font-size:11.5px;color:var(--ink-3);margin:8px 0 0;line-height:1.6}
+@media (max-width:680px){
+  .sheet .row{grid-template-columns:1fr;gap:6px}
+  .verdict{justify-self:start;text-align:left}
+}
 footer{margin:40px 0 0;border-top:1px solid var(--rule);padding-top:16px;
   color:var(--ink-3);font-size:12.5px}
 </style>
@@ -81,47 +113,22 @@ the assumption that limits it. Thresholds were registered and hashed before any
 data was collected; where one moved afterwards, the amendment says so.</p>
 
 <h2>What we measured about the API</h2>
-<p>Every parameter was differential-tested. That means asserting the response
-<em>changes</em> when the parameter is removed, because this API silently
-ignores what it does not understand, which makes an untested parameter
-indistinguishable from a working one.</p>
-<table>
-<thead><tr><th style="width:38%">Finding</th><th>What it means</th></tr></thead>
-<tbody>
-<tr><td><b><code>filter.location.query</code> is ignored for movies</b></td>
-    <td>Pin a candidate set and vary the city across New York, São Paulo, Tokyo,
-    Mumbai and Berlin: affinities come back identical to four decimals. It
-    <em>is</em> honoured for places. Any entry that pins a set and varies
-    location is reading a parameter the API never applied.
-    <span class="repro">reproduce: <code>python3 run_all.py</code>, tests F0 and F</span></td></tr>
-<tr><td><b><code>affinity</code> and <code>popularity</code> sit side by side</b></td>
-    <td>They are different numbers in the same response. Popularity is identical
-    in every market, so a client that reads it makes every audience look alike.
-    Ranking here uses <code>query.affinity</code> with no fallback.
-    <span class="repro">reproduce: <code>python3 probe_api.py</code></span></td></tr>
-<tr><td><b>Affinity is not normalised per candidate set</b></td>
-    <td>The same entity scored inside two different pinned sets, with the same
-    signal, returns the same value. It varies with the signal, not the set, so
-    rank positions from one pinned query are comparable by construction.
-    <span class="repro">reproduce: <code>python3 run_all.py</code>, tests B
-    (normalisation) and C (<code>filter.results.entities</code>)</span></td></tr>
-<tr><td><b>Cross-domain signal strength varies enormously</b></td>
-    <td>Television (0.06), video games (0.08) and music (0.11) discriminate film
-    taste sharply. Brands (0.39), books (0.70), podcasts (0.72) and places
-    (0.67–0.98) barely or not at all. Audiences here are built only from the
-    three that work.
-    <span class="repro">reproduce: <code>python3 probe_api.py</code></span></td></tr>
-<tr><td><b>Neighbourhood granularity does not exist for film</b></td>
-    <td>Bronx against Manhattan returns the same film affinities. The idea that
-    a taste graph can route a slate by postcode was tested and abandoned.
-    <span class="repro">reproduce: <code>python3 probe_location.py</code></span></td></tr>
-<tr><td><b><code>take</code> is capped at 50</b></td>
-    <td>A larger value returns a 400 that reads downstream as "no data" unless
-    the status is checked. Ours is. Test D covers the wider rule that invalid
-    parameters are ignored without complaint.
-    <span class="repro">reproduce: <code>python3 probe_api.py</code>; <code>run_all.py</code>, test D</span></td></tr>
-</tbody>
-</table>
+<p class="lede" style="font-size:14.5px">Six differential tests. Each one asks
+whether the response <em>changes</em> when a parameter is removed, because this
+API answers 200 to parameters it does not understand. Two of the six did not
+resolve; they are here with that verdict rather than left out.</p>
+<div class="sheet" id="sheet"></div>
+<p class="legend" id="legend"></p>
+
+<h3>The location matrix</h3>
+<p>The finding the product is built on, and the one most worth checking. Two
+spellings, two modes, measured the same way.</p>
+<table class="matrix" id="matrix"></table>
+<p class="legend">A row that changes nothing in either column is a parameter
+the API accepted and did not apply. <code>signal.location</code> and
+<code>filter.location</code> return no results at all: those spellings are not
+real. <b>The product uses none of them</b>: it describes an audience by the
+entities it already loves, which is what the rest of this page measures.</p>
 
 <h2>What the agent does without Qloo</h2>
 <p>The same question, put to a language model that sees only the two title
@@ -206,6 +213,57 @@ There is no ground truth here.</li>
 const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;
   if(x!==undefined)e.textContent=x;return e};
 const $=id=>document.getElementById(id);
+
+// The harness's own verdicts, rendered rather than described.
+const VCLASS = {HONOURED:'good', DETERMINISTIC:'good',
+                LOCATION_WORKS_WITH_PINNED_ENTITIES:'soft',
+                ABSENT:'open', UNKNOWN:'open', INCONCLUSIVE:'open'};
+fetch('/api/findings').then(r=>r.json()).then(f=>{
+  const sheet=$('sheet');
+  f.tests.forEach(t=>{
+    const row=el('div','row');
+    row.appendChild(el('div','tid','TEST '+t.id));
+    const mid=el('div');
+    mid.appendChild(el('div','q',t.name));
+    const c=el('div','claim');
+    c.innerHTML='what we take from it: <b>'+t.claim+'</b>';
+    mid.appendChild(c);
+    if(t.detail){
+      mid.appendChild(el('div','how',
+        Object.entries(t.detail).map(([k,v])=>k.replace(/_/g,' ')+' '+v).join('  \u00b7  ')));
+    }
+    mid.appendChild(el('div','how','reproduce: '+t.how));
+    if(t.note) mid.appendChild(el('div','note',t.note));
+    row.appendChild(mid);
+    const v=el('div','verdict');
+    const b=el('span','vb '+(VCLASS[t.verdict]||'open'),
+               (t.verdict||'UNKNOWN').replace(/_/g,' '));
+    v.appendChild(b); row.appendChild(v);
+    sheet.appendChild(row);
+  });
+  const counts=Object.entries(f.verdict_counts)
+    .map(([k,n])=>n+' '+k.toLowerCase().replace(/_/g,' ')).join(', ');
+  $('legend').textContent='Measured '+f.measured_at+' against '+f.endpoint+'. '+counts+'.';
+
+  // the location matrix, exactly as recorded
+  const mx=$('matrix');
+  mx.innerHTML='<thead><tr><th>parameter</th><th>candidate set</th>'+
+    '<th>results</th><th>order moved</th><th>affinities moved</th></tr></thead>';
+  const tb=el('tbody');
+  const f0=f.tests.find(t=>t.id==='F0');
+  Object.entries(f0.matrix).forEach(([param,modes])=>{
+    Object.entries(modes).forEach(([mode,r])=>{
+      const tr=el('tr'); const dead=r.results_a===0;
+      tr.appendChild(el('td','p',param));
+      tr.appendChild(el('td',null,mode));
+      tr.appendChild(el('td',dead?'dead':null, dead? 'none' : r.results_a+'/'+r.results_b));
+      tr.appendChild(el('td',r.ordering_changed?'yes':'no', dead?'\u2013':(r.ordering_changed?'yes':'no')));
+      tr.appendChild(el('td',r.affinities_changed?'yes':'no', dead?'\u2013':(r.affinities_changed?'yes':'no')));
+      tb.appendChild(tr);
+    });
+  });
+  mx.appendChild(tb);
+}).catch(e=>{$('legend').textContent='Could not load the recorded harness run: '+e;});
 
 fetch('/api/hero').then(r=>r.json()).then(d=>{
   if(d && d.error){ heroMissing(d.error); return; }

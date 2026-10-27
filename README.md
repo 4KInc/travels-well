@@ -33,10 +33,14 @@ name `travels-well`; the product is the Taste Atlas.
 
 ## The finding
 
-**Location does not move film affinity in Qloo's model.** Pin a catalogue and
-vary `filter.location.query` across New York, Sao Paulo, Tokyo, Mumbai and
-Berlin and the scores come back identical to four decimals. What *does* move
-film taste is what an audience listens to and watches.
+**Neither location parameter gives a usable way to route a slate by city.**
+Pin a catalogue and vary `filter.location.query` across New York, Sao Paulo,
+Tokyo, Mumbai and Berlin and the scores come back identical to four decimals:
+the filter is ignored for film. `signal.location.query` does change the
+answer, but it returns so little of the catalogue (84% absent in every market)
+that nothing can be compared across cities. What *does* move film taste is
+what an audience listens to and watches. The full matrix is on
+[/evidence](https://travels-well-722527905604.us-central1.run.app/evidence).
 
 So city is the wrong unit, and the API itself shows it. Two sets of musicians
 both from New York, anchored on different scenes, rank the same catalogue at

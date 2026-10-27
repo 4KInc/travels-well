@@ -216,8 +216,10 @@ audience is &mdash; a city, a country, a genre. We tested that against the API
 before building on it. Pin a catalogue and vary
 <code>filter.location.query</code> across New York, S&atilde;o Paulo, Tokyo,
 Mumbai and Berlin: the affinities come back <b>identical to four decimal
-places</b>. Location does not move film taste in Qloo's model at all. It is
-honoured for places; for film it does nothing.</p>
+places</b>. The filter is ignored for film, though it is honoured for places.
+The location <i>signal</i> does change the answer, but returns so little of the
+catalogue that nothing can be compared across cities. Neither gives a usable
+way to route a slate by city.</p>
 <p>So the agent stops assuming who an audience is and describes it by what it
 already plays and watches.</p>
 </div>

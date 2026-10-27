@@ -27,8 +27,10 @@ Do not say "AI-powered". Say what she is holding and what she has to decide.
 > audience lives predicts what it watches. Pin a catalogue in Qloo and vary the
 > city across New York, São Paulo, Tokyo, Mumbai and Berlin.
 >
-> The affinities come back **identical to four decimal places**. Location does
-> not move film taste in Qloo's model at all.
+> The affinities come back **identical to four decimal places**. The location
+> filter is ignored for film. The location *signal* does change the answer, but
+> it returns so little of the catalogue that there is nothing left to compare.
+> Either way you cannot route a slate by city.
 >
 > That killed the product we were going to build, on day one. What does move it
 > is what an audience already plays and watches.

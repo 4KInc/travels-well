@@ -130,9 +130,12 @@ __NAV__
 <header>
   <h1>The Taste <span>Atlas</span></h1>
   <p class="tagline">City is the wrong unit, and the API says so</p>
-  <p class="lede">We measured something first: in Qloo's model, <b>location does
-  not move film taste at all</b>. Affinities come back identical across five
-  cities. What does move it is <b>what an audience listens to and watches</b>. So
+  <p class="lede">We measured something first. The location <b>filter</b> is
+  ignored for film: pin a catalogue, vary <code>filter.location.query</code>
+  across five cities, and the affinities are identical. The location
+  <b>signal</b> does change the answer, but it drops 84% of the catalogue, so
+  neither gives a usable way to route a slate by city. What does move film
+  taste is <b>what an audience listens to and watches</b>. So
   these groups are not places. Each is a set of artists, shows and games whose
   film-affinity signatures correlate, found by clustering the graph, and distance
   on this map is taste distance.</p>
