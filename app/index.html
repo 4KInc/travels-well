@@ -159,6 +159,12 @@ footer a{color:var(--ink-2)}
 .topnav .mark{font:400 19px/1 var(--display);letter-spacing:.06em;
   text-transform:uppercase;color:var(--ink);margin-right:4px}
 .topnav .mark b{color:var(--bulb);font-weight:400}
+/* The wordmark is a link, so it must not pick up the small mono styling
+   the other nav links use, and it needs its own hover cue. */
+a.mark{text-decoration:none;border-bottom:0!important;padding:0!important}
+a.mark:hover{color:var(--ink)}
+a.mark:hover b{filter:brightness(1.18)}
+a.mark:focus-visible{outline:2px solid var(--bulb);outline-offset:3px}
 .topnav a{font:400 11px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;
   color:var(--ink-3);text-decoration:none;padding:6px 2px;border-bottom:1px solid transparent}
 .topnav a:hover{color:var(--ink)}

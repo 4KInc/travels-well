@@ -53,8 +53,10 @@ def nav_html(current=None):
         mark = ' aria-current="page"' if key == current else ""
         return '    <a href="%s"%s>%s</a>' % (href, mark, VIEW_NAMES[key])
 
+    # The wordmark goes home, which is what everyone tries first.
     parts = ['<nav class="topnav">',
-             '    <span class="mark">Taste <b>Atlas</b></span>']
+             '    <a href="/" class="mark" aria-label="%s, home">'
+             'Taste <b>Atlas</b></a>' % PRODUCT_NAME]
     parts += [link(k, h) for k, h in NAV_MAIN]
     parts.append('    <span class="spacer"></span>')
     parts += [link(k, h) for k, h in NAV_END]

@@ -116,6 +116,14 @@ def main():
         for path in navs:
             cur = _re.findall(r'<a href="([^"]*)" aria-current="page"', navs[path])
             check("%s marks itself as the current page" % path, cur == [path])
+        # The wordmark was a <span> for weeks. Everyone clicks it.
+        for path, nav in navs.items():
+            mark = _re.search(r'<a href="(/)" class="mark"', nav)
+            check("%s wordmark is a link home" % path, bool(mark))
+        check("the wordmark is not styled as an ordinary nav link",
+              all("a.mark{text-decoration:none" in get(base + p)[1]
+                  for p in ("/", "/atlas")))
+
         check("no template placeholder survives rendering",
               not any(("__NAV__" in n or "__VIEW_" in n) for n in navs.values()))
 
