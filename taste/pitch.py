@@ -252,7 +252,7 @@ def run(client, slate_titles, buyer_titles, home_titles=None,
     steps.append({"action": "resolve", "profile": "setup",
                   "reason": "bind every title to a real entity before measuring "
                             "anything. An unresolvable name is reported, never guessed",
-                  "observed": "%d of %d slate titles resolved%s"
+                  "observed": "%d of %d titles resolved%s"
                               % (len(slate), len([t for t in slate_titles if t.strip()]),
                                  (", missing: " + ", ".join(slate_missing)) if slate_missing else "")})
     if len(slate) < MIN_SLATE:
@@ -384,10 +384,10 @@ def run(client, slate_titles, buyer_titles, home_titles=None,
         absolute = {"best": round(best, 3), "worst": round(worst, 3),
                     "mean": round(mean, 3), "span": round(best - worst, 3)}
         steps.append({"action": "raw affinity range", "profile": "result",
-                      "reason": "shown for transparency: rank position alone "
-                                "cannot say whether the catalogue as a whole "
-                                "suits this %s, and nothing here passes or "
-                                "fails a threshold" % noun,
+                      "reason": "shown for transparency. Rank position alone cannot "
+                                "say whether the catalogue as a whole suits "
+                                "this %s, and nothing here passes or fails a "
+                                "threshold" % noun,
                       "observed": "affinity %.3f to %.3f, mean %.3f"
                                   % (worst, best, mean)})
     steps.append({"action": "rank", "profile": "result",
