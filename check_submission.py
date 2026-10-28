@@ -1,5 +1,10 @@
 """Does the submission text still match what the site says?
 
+Runs only when docs/SUBMISSION.md is present. It is deliberately not in the
+repository -- the Devpost answers are working material, kept local -- so on a
+fresh clone this reports that and exits 0 rather than failing a check nobody
+can run.
+
 The numbers in docs/SUBMISSION.md and the numbers on /evidence come from the
 same recorded run, so they can drift apart only by someone editing the prose.
 This asserts they have not, and that phrasing we retired has not come back.
@@ -14,7 +19,12 @@ import re
 import sys
 
 HERE = pathlib.Path(__file__).parent
-RAW = (HERE / "docs" / "SUBMISSION.md").read_text()
+_doc = HERE / "docs" / "SUBMISSION.md"
+if not _doc.exists():
+    print("docs/SUBMISSION.md is not present (kept local, not committed).")
+    print("Nothing to check. This is expected in a fresh clone.")
+    raise SystemExit(0)
+RAW = _doc.read_text()
 # Normalise typography before comparing numbers: the prose uses a real minus
 # sign and real dashes, which should not count as a mismatch against a value
 # formatted with an ASCII hyphen.

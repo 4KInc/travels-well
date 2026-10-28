@@ -23,3 +23,7 @@ out/traces/
 # dossier build artifacts (regenerate with build_dossier.py)
 taste-atlas-dossier.html
 taste-atlas-dossier.pdf
+
+# macOS junk
+.DS_Store
+**/.DS_Store

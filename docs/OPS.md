@@ -122,7 +122,7 @@ gcloud iam service-accounts keys delete KEY_ID \
 rm .deploy-key.json
 ```
 
-This is a human step on purpose and is listed in `docs/HUMAN_TODO.md`. Nothing
+This is a human step on purpose, tracked in the maintainer's local notes. Nothing
 in this repository revokes it automatically.
 
 ## After 16 November
