@@ -117,7 +117,7 @@ def main():
                           if taus and null_se else None),
         "runs": len(taus),
         "runs_note": ("more repeats than the registered three, which govern the "
-                      "modal top five used for selection; this measures how far "
+                      "modal top five used for selection. This measures how far "
                       "the correlation moves between runs"),
         "min": round(min(taus), 3) if taus else None,
         "max": round(max(taus), 3) if taus else None,

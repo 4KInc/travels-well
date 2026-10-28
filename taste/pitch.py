@@ -134,7 +134,7 @@ def profile(client, slate_ids, catalogue_ids, entity_type, trace=None,
                  "switched to the sharper half of what describes this %s" % noun)
             whole = best
         else:
-            step("re-probe", "tried the halves separately; neither sharpened "
+            step("re-probe", "tried the halves separately. Neither sharpened "
                  "the reading, so the original stands",
                  "spread stayed near %.3f" % spread,
                  "the original reading stands")
@@ -251,7 +251,7 @@ def run(client, slate_titles, buyer_titles, home_titles=None,
     slate, slate_missing = resolve_titles(client, slate_titles, entity_type, trace)
     steps.append({"action": "resolve", "profile": "setup",
                   "reason": "bind every title to a real entity before measuring "
-                            "anything; an unresolvable name is reported, never guessed",
+                            "anything. An unresolvable name is reported, never guessed",
                   "observed": "%d of %d slate titles resolved%s"
                               % (len(slate), len([t for t in slate_titles if t.strip()]),
                                  (", missing: " + ", ".join(slate_missing)) if slate_missing else "")})

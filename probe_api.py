@@ -151,7 +151,7 @@ def test_d_silent_ignore(client, entity_type, seed_entity_id):
         "positive_control_changed_results": filtered_ids != base_ids,
         "verdict": ("CONFIRMED_SILENT_IGNORE" if bogus_ids == base_ids
                     and filtered_ids != base_ids else "INCONCLUSIVE"),
-        "note": ("Validate every parameter per filter.type before sending; a 200 "
+        "note": ("Validate every parameter per filter.type before sending. A 200 "
                  "response is not evidence the parameter was applied."),
     }
 

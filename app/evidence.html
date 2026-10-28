@@ -110,13 +110,13 @@ __NAV__
 <h1>Evidence</h1>
 <p class="lede">Everything the product claims, with the measurement behind it and
 the assumption that limits it. Thresholds were registered and hashed before any
-data was collected; where one moved afterwards, the amendment says so.</p>
+data was collected. Where one moved afterwards, the amendment says so.</p>
 
 <h2>What we measured about the API</h2>
 <p class="lede" style="font-size:14.5px">Six differential tests. Each one asks
 whether the response <em>changes</em> when a parameter is removed, because this
 API answers 200 to parameters it does not understand. Two of the six did not
-resolve; they are here with that verdict rather than left out.</p>
+resolve, and are here with that verdict rather than left out.</p>
 <div class="sheet" id="sheet"></div>
 <p class="legend" id="legend"></p>
 
@@ -173,7 +173,7 @@ with its error.</p>
     too small to split at all and are labelled single-reading.</td></tr>
 <tr><td><b>2 of 5</b> markets agree with an external backtest</td>
     <td>Wikipedia pageview ranks, collected <em>before</em> any Qloo call.
-    Mumbai (tau 0.39) and Berlin (0.20) agree; the other three do not. Reported
+    Mumbai (tau 0.39) and Berlin (0.20) agree. The other three do not. Reported
     either way. Pageviews measure attention, not licensing demand.</td></tr>
 <tr><td><b>Every hero-sweep qualifier</b> fell below the separation floor</td>
     <td>The 0.35 floor was in the code from 17 October, nine days before the
@@ -187,7 +187,7 @@ with its error.</p>
 <p id="prov"></p>
 <p>Every candidate evaluated, with the reason each did or did not qualify, is
 published in <a href="https://github.com/4KInc/travels-well/blob/main/docs/HERO_SWEEP.md">HERO_SWEEP.md</a>.
-The rule was hashed before the data existed; the amendment that enlarged the
+The rule was hashed before the data existed. The amendment that enlarged the
 candidate audiences records what had been seen at the time and states that no
 criterion, threshold, tie-break or model setting changed.</p>
 
@@ -280,7 +280,7 @@ fetch('/api/hero').then(r=>r.json()).then(d=>{
 
   const rng=(t.min===t.max? t.min.toFixed(2)
              : t.min.toFixed(2)+' to '+t.max.toFixed(2));
-  $('tauNote').innerHTML='<b>No positive agreement \u2014 and not a measured '+
+  $('tauNote').innerHTML='<b>No positive agreement, and not a measured '+
     'opposition either.</b> Rank correlation is '+rng+' across '+(t.runs||0)+
     ' runs. With '+t.n_titles+' titles the null standard error is about '+
     t.null_se.toFixed(2)+', so every value sits about '+t.max_abs_in_se+
@@ -326,6 +326,9 @@ fetch('/api/hero').then(r=>r.json()).then(d=>{
 }).catch(e=>{$('big').textContent='Could not load the recorded run: '+e;});
 
 function heroMissing(why){
-  $('big').textContent=why+' \u2014 This is a fresh checkout. Recorded runs are not committed \u2014 the hackathon\u2019s data-publishing rule for raw Qloo responses is unresolved, so they are built locally. With a Qloo key in .env, run: python3 warm_cache.py && python3 hero_build.py';
+  $('big').textContent = why + ' This is a fresh checkout. Recorded runs are '
+    + 'not committed, because the hackathon rule on publishing raw Qloo '
+    + 'responses is unresolved, so they are built locally. With a Qloo key in '
+    + '.env, run: python3 warm_cache.py && python3 hero_build.py';
 }
 </script>

@@ -102,7 +102,7 @@ class Agent:
         verdict, message = check_input(resolved, goal.catalog)
         self._step("resolve",
                    "bind every catalog name to a real entity before measuring "
-                   "anything; an unresolvable name is reported, never guessed",
+                   "anything. An unresolvable name is reported, never guessed",
                    {"resolved": len(resolved), "missing": missing[:6]})
         if verdict != Verdict.ANSWER:
             if self.trace:
@@ -189,7 +189,7 @@ class Agent:
             if cov_verdict != Verdict.ANSWER:
                 self.abstentions[market] = cov_message
                 self._step("abstain",
-                           "coverage too thin to rank honestly; reporting the "
+                           "coverage too thin to rank honestly, so it reports the "
                            "gap instead of a weak ordering",
                            {"market": market, "ranked": len(scores),
                             "catalog": len(goal.catalog)},

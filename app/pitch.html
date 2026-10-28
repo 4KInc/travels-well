@@ -276,7 +276,7 @@ function paneShortlist(p,d){
   }
   // One line here; the full definition lives in the Method tab.
   p.appendChild(el('p','note','Place is a rank among the titles you offered, not '
-    +'a score \u2014 the raw affinity beside it is the absolute reading.'));
+    +'a score. The raw affinity beside it is the absolute reading.'));
   const t=el('table');
   t.innerHTML='<thead><tr><th style="width:40px"></th><th>Title</th>'
     +'<th class="n" style="width:72px">Place</th>'
@@ -351,8 +351,8 @@ function paneAblation(p,d){
     +'only the two title lists: no Qloo, no affinities.'));
   p.appendChild(el('p','note','Top-five overlap is the measure to read. Full-list '
     +'agreement is a rank correlation over a dozen titles, where the null '
-    +'standard error is around 0.2 \u2014 nearly as large as most values it takes '
-    +'\u2014 and it is computed from the model\u2019s ordering, which is not '
+    +'standard error is around 0.2, nearly as large as most values it takes, '
+    +'and it is computed from the model\u2019s ordering, which is not '
     +'reliably reproducible between runs. Read a small value as no agreement '
     +'rather than as a measured disagreement. The '
     +'<a href="/evidence">evidence page</a> reports it as a range with its error.'));
@@ -368,7 +368,7 @@ function paneAblation(p,d){
   if(l.placements&&l.placements.length){
     p.appendChild(el('p','note','The model picked these five. Shown unordered, '
       +'because its set of five is steadier than the order it puts them in. '
-      +'Beside each is where this run ranked it \u2014 same pinned query, so it '
+      +'Beside each is where this run ranked it, from the same pinned query, so it '
       +'is the grounded reading\u2019s own answer about the model\u2019s picks.'));
     const t=el('table');
     t.innerHTML='<thead><tr><th>The model\u2019s five</th>'
@@ -390,13 +390,13 @@ function paneAblation(p,d){
   p.appendChild(el('p','note','A frontier model is a strong baseline here and we are '
     +'not claiming otherwise: across every buyer and slate tried, including obscure '
     +'titles, it shares three to four of the top five. Its set of five is steady '
-    +'across repeats at temperature zero; the order it puts them in is not, so we '
+    +'across repeats at temperature zero. The order it puts them in is not, so we '
     +'compare sets rather than quoting a place from it.'));
   p.appendChild(el('p','note','It also declines when declining is offered. Asked the '
     +'same question with withholding explicitly available, it withheld 6/7/7 of twelve '
-    +'on the recorded example \u2014 more than this agent did. What differs is what '
+    +'on the recorded example, more than this agent did. What differs is what '
     +'the decision rests on: this agent withholds a title when two disjoint readings '
-    +'of the audience place it far apart, which it can show you; the model withholds '
+    +'of the audience place it far apart, which it can show you. The model withholds '
     +'on its own report of its confidence.'));
 }
 
@@ -405,10 +405,11 @@ function paneMethod(p,d){
   add('Measured on the hackathon endpoint, not read from the docs',
     'filter.location.query is silently ignored for movies. Affinities come back '
     +'identical to four decimals across five cities, though it is honoured for '
-    +'places. Affinity is not normalised per candidate set; it varies with the signal. '
+    +'places. Whether affinity is normalised per candidate set came back UNKNOWN in '
+    +'the harness, and nothing here relies on it. '
     +'query.affinity is the taste score and popularity sits beside it, identical in '
     +'every market. take is capped at 50. Cross-domain signal varies enormously: TV '
-    +'0.06, games 0.08, music 0.11 discriminate film taste; books, podcasts and places '
+    +'0.06, games 0.08, music 0.11 discriminate film taste. Books, podcasts and places '
     +'barely or not at all.');
   add('What the numbers here mean',
     'Place is a rank among the titles you offered, not a score: first place reads first '

@@ -168,7 +168,7 @@ __NAV__
   These are discovered taste communities <em>within Qloo's graph</em>:
   clusters of cultural anchors grouped by modelled film affinity, not observed
   groups of people. Three of the eighteen have enough members to cross-check
-  against themselves; the rest are single readings.</p>
+  against themselves. The rest are single readings.</p>
 <p class="hint">Drag to move &middot; scroll to zoom &middot; drag a node to rearrange &middot; click to see what it watches</p>
 
 <div class="panel" id="panel"></div>
@@ -176,7 +176,7 @@ __NAV__
 <footer>
   Built from <span id="prov"></span>. Clusters are joined by average linkage at
   correlation 0.75, the tightness measured to survive resampling of the film
-  set; looser grouping produced one large cluster that dissolved under the same
+  set. Looser grouping produced one large cluster that dissolved under the same
   test. These are communities of film affinity as Qloo models it, not groups of
   people, and anchors that joined no cluster are left off the map rather than
   forced into one. The map is precomputed, so opening it spends no Qloo calls.
@@ -354,7 +354,7 @@ function draw(d){
   const sel=document.getElementById('home');
   NODES.forEach(n=>{
     const o=document.createElement('option');
-    o.value=n.id; o.textContent=(n.name? n.name+'  \u2014  ' : '')+n.label;
+    o.value=n.id; o.textContent=(n.name? n.name+'  \u00b7  ' : '')+n.label;
     sel.appendChild(o);
   });
   sel.addEventListener('change',()=>{

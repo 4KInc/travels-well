@@ -22,7 +22,7 @@ R = json.loads((HERE / "out" / "results.json").read_text())["qloo"]
 # claim is ours; the verdict and the numbers are the harness's.
 TESTS = [
     {"id": "F0", "name": "Which location parameter actually bites",
-     "claim": "filter.location.query is ignored for movies; signal.location.query is not",
+     "claim": "filter.location.query is ignored for movies, signal.location.query is not",
      "verdict": R["F0_location_param"].get("verdict"),
      "how": "python3 run_all.py",
      "matrix": R["F0_location_param"]["per_param"]},
@@ -52,12 +52,12 @@ TESTS = [
      "detail": {"nonsense_param_ignored": R["D_silent_ignore"].get("nonsense_param_ignored"),
                 "positive_control_moved": R["D_silent_ignore"].get("positive_control_changed_results")}},
     {"id": "E", "name": "Does the insights response carry explainability",
-     "claim": "absent on this query shape; present when asked for per-entity contributions",
+     "claim": "absent on this query shape, present when asked for per-entity contributions",
      "verdict": R["E_explainability"].get("verdict"),
      "how": "python3 run_all.py",
      "note": ("Returned nothing on the harness's query shape. feature.explainability "
               "does return per-entity contributions on the shape the hero uses, which "
-              "is how the landing page names its drivers; the two disagree and the "
+              "is how the landing page names its drivers. The two disagree and the "
               "harness verdict is reported as it stands.")},
 ]
 
