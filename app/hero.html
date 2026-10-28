@@ -330,11 +330,11 @@ function draw(d){
   const p=d.provenance||{};
   $('foot').innerHTML='<span class="badge">cached</span> &nbsp;This page is a '+
     'recorded run, so opening it spends no Qloo calls. The pair shown was '+
-    'selected from <b>'+(p.pairs_evaluated||'?')+'</b> audience-and-slate '+
-    'combinations by a rule registered before any of the data existed ('+
-    '<code>'+(p.sha256||'').slice(0,12)+'</code>); <b>'+(p.pairs_qualified||'?')+
-    '</b> qualified. Every candidate, and the reason each did or did not '+
-    'qualify, is published. &nbsp;<a href="/evidence">Evidence</a> · '+
-    '<a href="__REPO_URL__">Source</a>';
+    'selected from <b>'+(p.pairs_evaluated||'?')+'</b> audience-and-catalogue '+
+    'combinations by a rule whose fingerprint was recorded before any of the '+
+    'data existed (sha256 <code>'+(p.sha256||'').slice(0,12)+'</code>). <b>'+
+    (p.pairs_qualified||'?')+'</b> qualified. Every candidate, and the reason '+
+    'each did or did not qualify, is published. '+
+    '&nbsp;<a href="/evidence">Evidence</a> · <a href="__REPO_URL__">Source</a>';
 }
 </script>

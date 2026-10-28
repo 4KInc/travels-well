@@ -314,9 +314,10 @@ fetch('/api/hero').then(r=>r.json()).then(d=>{
 
   const p=d.provenance||{};
   $('prov').innerHTML='The pair on the landing page was selected from <b>'+
-    p.pairs_evaluated+'</b> audience-and-slate combinations, of which <b>'+
-    p.pairs_qualified+'</b> met every registered criterion. Pre-registration '+
-    '<code>'+(p.sha256||'').slice(0,16)+'</code> in <code>'+
+    p.pairs_evaluated+'</b> audience-and-catalogue combinations, of which <b>'+
+    p.pairs_qualified+'</b> met every registered criterion. The rule was fixed '+
+    'and hashed first, so it could not be tuned to the result: sha256 '+
+    '<code>'+(p.sha256||'').slice(0,16)+'</code>, recorded in <code>'+
     (p.pre_registration||'')+'</code>.';
   $('foot').innerHTML='Thresholds and amendments are committed in '+
     '<code>out/</code>. Raw Qloo responses are not: the data-publishing rule '+
