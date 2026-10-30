@@ -24,8 +24,8 @@ python3 app/server.py    # http://localhost:8080
 python3 test_taste.py && python3 test_loop.py && python3 test_startup.py
 ```
 
-Stdlib only: no dependencies, no build step. A fresh checkout has no recorded
-runs — see [What a fresh checkout is missing](#what-a-fresh-checkout-is-missing).
+Stdlib only: no dependencies, no build step, 90 tests. A fresh checkout has no
+recorded runs — see [What a fresh checkout is missing](#what-a-fresh-checkout-is-missing).
 
 Built for the Qloo Agentic Hackathon. The repository and URL keep the earlier
 name `travels-well`; the product is the Taste Atlas.
@@ -53,13 +53,16 @@ groups that come out are smaller and stranger than marketing segments --
 Racionais MC's with Snowfall and The Sopranos; Ben Klock with Fela Kuti,
 Journey and Breath of the Wild.
 
-## Three surfaces
+## The surfaces
 
 | Page | What it does | Cost |
 |---|---|---|
-| `/` **The Atlas** | 18 audiences clustered from 73 anchors over 65 films, laid out by MDS so distance is taste distance. Each names itself from its members' Qloo tags. | precomputed, no API calls |
-| `/pitch` **Pitch Desk** | Your slate, and a buyer described by what they have already licensed. Ranks your titles for them against your home audience. | ~32 calls |
-| `/slate` **Travels Well** | The same engine on a fixed catalogue, including a preset the agent refuses. | ~10 calls |
+| `/` **The question** | The worked comparison: twelve films ranked twice for one audience, once with the taste graph and once by a language model that cannot see it. | recorded run, no API calls |
+| `/pitch` **Pitch desk** | Your slate, and a buyer described by what they have already licensed. Ranks your titles for them against your home audience. | ~32 calls |
+| `/atlas` **Audience Map** | 18 audiences clustered from 73 anchors over 65 films, laid out by MDS so distance is taste distance. Each names itself from its members' Qloo tags. | precomputed, no API calls |
+| `/slate` **Slate view** | The same engine on a fixed catalogue, including a preset the agent refuses outright. | ~10 calls, falls back to its recorded run |
+| `/evidence` | Every measurement behind the claims, each with the assumption that limits it. | recorded |
+| `/about` | Who it is for, and the pricing hypothesis labelled as a hypothesis. | none |
 
 ## Evidence
 
@@ -72,12 +75,40 @@ Full record, including the negative results, in **[FINDINGS.md](FINDINGS.md)**.
 
 ## What we measured about the API
 
-`filter.location.query` is **silently ignored for movies** (honoured for
-places). `affinity` and `popularity` sit side by side and confusing them makes
-every audience look identical. Affinity is **not** normalised per candidate
-set. Cross-domain signal strength varies enormously: TV 0.06, games 0.08,
-music 0.11, brands 0.39, books 0.70, podcasts 0.72, places none. `take` caps
-at 50.
+Six differential tests, with their thresholds registered and hashed before any
+data was collected. Each asserts the response *changes* when a parameter is
+removed, because this API answers 200 and silently ignores what it does not
+understand, which makes an untested parameter indistinguishable from a working
+one.
+
+- `filter.location.query` is **silently ignored for movies**, and honoured for
+  places. `signal.location.query` does move the answer, but returns too little
+  of the catalogue to compare across cities.
+- `affinity` and `popularity` sit side by side, and confusing them makes every
+  audience look identical.
+- Affinity is **not** normalised per candidate set: the same entity scored
+  inside two different candidate sets comes back identical to the last decimal,
+  so cross-call comparison is defensible.
+- Invalid parameters are **confirmed silently ignored**. A 200 is not evidence
+  a parameter was applied.
+- `feature.explainability` returns per-entity contributions on both the open
+  and the pinned query shape.
+- Cross-domain signal strength varies enormously: TV 0.06, games 0.08 and
+  music 0.11 discriminate sharply, while brands 0.39, books 0.70, podcasts
+  0.72 and places 0.67-0.98 barely or not at all.
+- `take` caps at 50. A larger value returns a 400 that reads downstream as
+  "no data".
+
+Three of these six first returned non-verdicts, and each turned out to be a
+fault in the test rather than in the API: one scored its target against itself,
+one used a positive control that may have been ignored too, and one searched a
+truncated window of the response that the field it wanted had fallen outside
+of. The instruments were repaired and every test re-run once. No threshold,
+criterion or fixture moved, and
+[`out/prereg_amended_harness_cea05cf756ee.json`](out/prereg_amended_harness_cea05cf756ee.json)
+records each fault alongside what that test read before the fix. The
+explainability one is the cautionary tale: it read ABSENT for days while the
+landing page was reading that exact field successfully on every load.
 
 ## Where it refuses
 
@@ -122,8 +153,9 @@ cannot drift from `docs/HERO_SWEEP.md`. To redo the selection itself —
 roughly 250 Qloo calls — run `python3 hero_sweep.py` first.
 
 Without a key **and** without recordings the server still starts, every page
-still answers, and `/healthz` reports `presets_all_cached: false` with the
-missing names. That path has its own test.
+still answers, and `/status` reports `presets_all_cached: false` with the
+missing names. That path has its own test. (`/status`, not `/healthz`: Google's
+front end intercepts the latter, so it 404s in production.)
 
 ### Everything else
 
