@@ -63,18 +63,29 @@ def test_a_endpoints(client, seed_entity_id, entity_type):
     return out
 
 
-def test_b_normalisation(client, entity_type, target_id, set_one, set_two):
+def test_b_normalisation(client, entity_type, target_id, set_one, set_two,
+                         signal_id):
     """B: is affinity comparable across calls?
 
     The same target entity is scored twice, inside two different candidate
     sets. If its affinity moves, Qloo normalises per query and every
     ratio-of-scores design (my original lift maths) is invalid.
+
+    AMENDED 2026-10-30. The signal was previously candidates[0], which is the
+    target itself. Qloo drops the signal entity from its own results, so the
+    target went missing and the test returned UNKNOWN without ever answering
+    its question. The signal is now a fixed entity outside both candidate
+    sets, so the only thing varying between the two calls is the set.
     """
+    if signal_id in (target_id,) or signal_id in set_one or signal_id in set_two:
+        return {"verdict": "UNKNOWN",
+                "note": "signal entity must sit outside the target and both sets"}
+
     def score_in(candidates):
         params = {
             "filter.type": entity_type,
             "filter.results.entities": ",".join(candidates),
-            "signal.interests.entities": candidates[0],
+            "signal.interests.entities": signal_id,
             "take": len(candidates),
         }
         _, body = client.insights(params)
@@ -124,12 +135,19 @@ def test_c_results_entities(client, entity_type, candidate_ids):
     }
 
 
-def test_d_silent_ignore(client, entity_type, seed_entity_id):
+def test_d_silent_ignore(client, entity_type, seed_entity_id, control_market):
     """D: confirm invalid parameters are swallowed, and that a valid one bites.
 
     Both halves matter. The negative control proves the API ignores nonsense;
     the positive control proves this harness can detect a parameter that works,
     so an 'ignored' verdict is not just our own blindness.
+
+    AMENDED 2026-10-30. The positive control was filter.popularity.min, and it
+    never moved the results, which left the test INCONCLUSIVE. That control
+    was circular: the finding under test is that this API swallows parameters
+    it does not support, so a control that may itself be swallowed cannot
+    establish that the harness would notice a working one. It is now
+    signal.location.query, which F0 measured reordering an open query.
     """
     base_params = {"filter.type": entity_type,
                    "signal.interests.entities": seed_entity_id, "take": 20}
@@ -141,13 +159,14 @@ def test_d_silent_ignore(client, entity_type, seed_entity_id):
     _, bogus = client.insights(nonsense)
     bogus_ids = [id_of(i) for i in entities_of(bogus)]
 
-    popular = dict(base_params)
-    popular["filter.popularity.min"] = 0.95
-    _, filtered = client.insights(popular, allow_error=True)
+    control = dict(base_params)
+    control["signal.location.query"] = control_market
+    _, filtered = client.insights(control, allow_error=True)
     filtered_ids = [id_of(i) for i in entities_of(filtered)]
 
     return {
         "nonsense_param_ignored": bogus_ids == base_ids,
+        "positive_control": "signal.location.query=%s" % control_market,
         "positive_control_changed_results": filtered_ids != base_ids,
         "verdict": ("CONFIRMED_SILENT_IGNORE" if bogus_ids == base_ids
                     and filtered_ids != base_ids else "INCONCLUSIVE"),
@@ -156,22 +175,53 @@ def test_d_silent_ignore(client, entity_type, seed_entity_id):
     }
 
 
-def test_e_explainability(client, entity_type, seed_entity_id):
-    """E: does feature.explainability return the drivers behind each result?"""
-    params = {"filter.type": entity_type, "signal.interests.entities": seed_entity_id,
-              "feature.explainability": "true", "take": 5}
-    _, body = client.insights(params, allow_error=True)
-    items = entities_of(body)
-    found = False
-    sample = None
-    for item in items:
-        blob = json.dumps(item)[:4000]
-        if "explain" in blob.lower():
-            found = True
-            sample = blob[:300]
-            break
-    return {"verdict": "WORKS" if found else "ABSENT", "sample": sample,
-            "results": len(items)}
+def test_e_explainability(client, entity_type, seed_entity_id, pinned_ids=None):
+    """E: does feature.explainability return drivers, and on which query shape?
+
+    AMENDED 2026-10-30. This asked only on an OPEN query, got nothing back and
+    reported ABSENT, while the landing page asks on a PINNED query and does get
+    per-entity contributions, which is where it gets its driver names. One
+    shape was being reported as the whole answer. Both are measured now and
+    the verdict names the shape, because the difference is the finding.
+    """
+    def ask(extra):
+        params = {"filter.type": entity_type,
+                  "signal.interests.entities": seed_entity_id,
+                  "feature.explainability": "true", "take": 5}
+        params.update(extra)
+        _, body = client.insights(params, allow_error=True)
+        items = entities_of(body)
+        for item in items:
+            # Read the documented field, the same one hero_build.py reads.
+            # This previously searched for the substring "explain" inside
+            # json.dumps(item)[:4000], and a film entity carries enough
+            # metadata to push query.explainability past that truncation, so
+            # the test could report ABSENT while the product was reading the
+            # field successfully on the same response.
+            ex = ((item.get("query") or {}).get("explainability") or {})
+            if ex:
+                return True, json.dumps(ex)[:300], len(items)
+        return False, None, len(items)
+
+    open_found, open_sample, open_n = ask({})
+    pinned_found, pinned_sample, pinned_n = False, None, 0
+    if pinned_ids:
+        pinned_found, pinned_sample, pinned_n = ask(
+            {"filter.results.entities": ",".join(pinned_ids),
+             "take": len(pinned_ids)})
+
+    if open_found and pinned_found:
+        verdict = "WORKS_ON_BOTH_SHAPES"
+    elif pinned_found:
+        verdict = "WORKS_ON_PINNED_ONLY"
+    elif open_found:
+        verdict = "WORKS_ON_OPEN_ONLY"
+    else:
+        verdict = "ABSENT"
+    return {"verdict": verdict,
+            "open_query": {"explainability": open_found, "results": open_n},
+            "pinned_query": {"explainability": pinned_found, "results": pinned_n},
+            "sample": pinned_sample or open_sample}
 
 
 def test_f0_location_param(client, entity_type, seed_entity_id, market_a, market_b,

@@ -15,7 +15,8 @@ carry a decision.
 &nbsp;·&nbsp; **[Evidence](https://travels-well-722527905604.us-central1.run.app/evidence)**
 &nbsp;·&nbsp; MIT
 
-![The landing page: the same twelve films ranked with and without Qloo's taste graph](docs/gallery/1-hero-side-by-side.jpg)
+The landing page is that comparison run on a real audience. It is a recorded
+run, so opening it spends no Qloo calls.
 
 ```bash
 cp .env.example .env     # add QLOO_API_KEY

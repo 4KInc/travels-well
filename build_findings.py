@@ -40,25 +40,37 @@ TESTS = [
      "detail": {"first": R["A2_determinism"].get("results_first"),
                 "second": R["A2_determinism"].get("results_second")}},
     {"id": "B", "name": "Is affinity normalised per candidate set",
-     "claim": "we do not know, and the product does not rely on it",
+     "claim": "the same entity scores identically inside two different candidate sets",
      "verdict": R["B_normalisation"].get("verdict"),
      "how": "python3 run_all.py",
      "note": R["B_normalisation"].get("note")},
     {"id": "D", "name": "Are invalid parameters silently ignored",
-     "claim": "a 200 is not evidence a parameter was applied",
+     "claim": "yes, and a 200 is not evidence a parameter was applied",
      "verdict": R["D_silent_ignore"].get("verdict"),
      "how": "python3 run_all.py",
      "note": R["D_silent_ignore"].get("note"),
      "detail": {"nonsense_param_ignored": R["D_silent_ignore"].get("nonsense_param_ignored"),
+                "positive_control": R["D_silent_ignore"].get("positive_control"),
                 "positive_control_moved": R["D_silent_ignore"].get("positive_control_changed_results")}},
     {"id": "E", "name": "Does the insights response carry explainability",
-     "claim": "absent on this query shape, present when asked for per-entity contributions",
+     "claim": "returned on both the open and the pinned query shape",
      "verdict": R["E_explainability"].get("verdict"),
      "how": "python3 run_all.py",
-     "note": ("Returned nothing on the harness's query shape. feature.explainability "
-              "does return per-entity contributions on the shape the hero uses, which "
-              "is how the landing page names its drivers. The two disagree and the "
-              "harness verdict is reported as it stands.")},
+     "note": ("Read as ABSENT until 2026-10-30, which was a fault in this test "
+              "rather than in the API. It searched for the substring 'explain' in "
+              "the first 4000 characters of each result, and a film entity carries "
+              "enough metadata to push query.explainability past that cut. It now "
+              "reads the documented field, the same one the landing page reads to "
+              "name its drivers."),
+     # Flat scalars only: the page joins detail values into one line, so a
+     # nested dict renders as [object Object].
+     "detail": {
+         "open query": "%s (%s results)" % (
+             (R["E_explainability"].get("open_query") or {}).get("explainability"),
+             (R["E_explainability"].get("open_query") or {}).get("results")),
+         "pinned query": "%s (%s results)" % (
+             (R["E_explainability"].get("pinned_query") or {}).get("explainability"),
+             (R["E_explainability"].get("pinned_query") or {}).get("results"))}},
 ]
 
 out = {

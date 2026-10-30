@@ -87,7 +87,7 @@ def run_qloo(client, catalog_spec, stage="full"):
     banner("TEST B  -- is affinity comparable across calls")
     try:
         results["B_normalisation"] = probe_api.test_b_normalisation(
-            client, entity_type, ids[0], ids[1:5], ids[5:9])
+            client, entity_type, ids[0], ids[1:5], ids[5:9], ids[9])
         print("  verdict:", results["B_normalisation"]["verdict"])
         print("  ", results["B_normalisation"].get("implication", ""))
     except QlooError as exc:
@@ -97,7 +97,7 @@ def run_qloo(client, catalog_spec, stage="full"):
     banner("TEST D  -- are invalid parameters silently ignored")
     try:
         results["D_silent_ignore"] = probe_api.test_d_silent_ignore(
-            client, entity_type, seed)
+            client, entity_type, seed, catalog_spec["markets"][2])
         print("  verdict:", results["D_silent_ignore"]["verdict"])
     except QlooError as exc:
         results["D_silent_ignore"] = {"verdict": "ERROR", "error": str(exc)[:300]}
@@ -105,7 +105,7 @@ def run_qloo(client, catalog_spec, stage="full"):
     banner("TEST E  -- explainability")
     try:
         results["E_explainability"] = probe_api.test_e_explainability(
-            client, entity_type, seed)
+            client, entity_type, seed, pinned_ids=ids[:10])
         print("  verdict:", results["E_explainability"]["verdict"])
     except QlooError as exc:
         results["E_explainability"] = {"verdict": "ERROR", "error": str(exc)[:300]}

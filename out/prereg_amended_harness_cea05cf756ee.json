@@ -1,0 +1,36 @@
+{
+  "kind": "harness_instrument_amendment",
+  "amended_at": "2026-10-30T01:06:50",
+  "why": "Three of the six API tests returned non-verdicts. On inspection each was a fault in the test instrument, not an unanswerable question. No threshold, criterion or fixture was changed, and no result was re-read after seeing an outcome: only the measuring apparatus was repaired, then every test was re-run once.",
+  "verdicts_before": {
+    "B_normalisation": "UNKNOWN",
+    "D_silent_ignore": "INCONCLUSIVE",
+    "E_explainability": "ABSENT"
+  },
+  "verdicts_after": {
+    "B_normalisation": "GLOBALLY_COMPARABLE",
+    "D_silent_ignore": "CONFIRMED_SILENT_IGNORE",
+    "E_explainability": "WORKS_ON_BOTH_SHAPES"
+  },
+  "changes": [
+    {
+      "test": "B",
+      "file": "probe_api.py::test_b_normalisation",
+      "fault": "signal.interests.entities was set to candidates[0], which is the target itself. Qloo omits the signal entity from its own results, so the target went missing from a response and the test returned UNKNOWN without answering its question.",
+      "fix": "The signal is now a fixed entity outside the target and both candidate sets, so the only thing varying between the two calls is the candidate set, which is what the test is about."
+    },
+    {
+      "test": "D",
+      "file": "probe_api.py::test_d_silent_ignore",
+      "fault": "The positive control was filter.popularity.min, which never moved the results. That control is circular: the finding under test is that this API swallows parameters it does not support, so a control that may itself be swallowed cannot show that the harness would notice a working parameter.",
+      "fix": "The control is now signal.location.query, which test F0 independently measured reordering an open query."
+    },
+    {
+      "test": "E",
+      "file": "probe_api.py::test_e_explainability",
+      "fault": "The test searched for the substring 'explain' in the first 4000 characters of each result. A film entity carries enough metadata to push query.explainability past that cut, so the test reported ABSENT while the product was reading the field successfully from the same response shape.",
+      "fix": "It now reads item['query']['explainability'] directly, the same field hero_build.py reads, and asks on both the open and the pinned query shape rather than only the open one."
+    }
+  ],
+  "sha256": "cea05cf756eebeb2d641e6eb8326703ff3ed5fbf4a60f6ef068cc06dbff3e24b"
+}

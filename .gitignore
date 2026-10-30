@@ -27,3 +27,8 @@ taste-atlas-dossier.pdf
 # macOS junk
 .DS_Store
 **/.DS_Store
+
+# Screenshots and video are rebuilt from the live site by make_gallery.py,
+# make_thumbnail.py and make_video.py. They are large binaries and Devpost
+# takes a URL, so they stay out of the repo.
+docs/gallery/
