@@ -2,14 +2,13 @@
 
 **For an audience described by the games it loves, four of our five
 recommendations are titles a language model without Qloo did not choose in
-any of 6 runs
-— and the model's four other picks rank 6th, 8th, 9th and 11th of 11
+any of 6 runs. The model's four other picks rank 6th, 8th, 9th and 11th of 11
 for that audience.**
 
-Describe an audience by what it already loves — games, television, music — and
-this ranks a catalogue for them, shows where an AI without the taste graph
-would have guessed differently, and refuses when the evidence is too thin to
-carry a decision.
+Describe an audience by what it already loves, its games, television and
+music, and this ranks a catalogue for them, shows where an AI without the
+taste graph would have guessed differently, and refuses when the evidence is
+too thin to carry a decision.
 
 **Live:** https://travels-well-722527905604.us-central1.run.app
 &nbsp;·&nbsp; **[Evidence](https://travels-well-722527905604.us-central1.run.app/evidence)**
@@ -25,7 +24,7 @@ python3 test_taste.py && python3 test_loop.py && python3 test_startup.py
 ```
 
 Stdlib only: no dependencies, no build step, 90 tests. A fresh checkout has no
-recorded runs — see [What a fresh checkout is missing](#what-a-fresh-checkout-is-missing).
+recorded runs. See [What a fresh checkout is missing](#what-a-fresh-checkout-is-missing).
 
 Built for the Qloo Agentic Hackathon. The repository and URL keep the earlier
 name `travels-well`; the product is the Taste Atlas.
@@ -45,12 +44,12 @@ what an audience listens to and watches. The full matrix is on
 
 So city is the wrong unit, and the API itself shows it. Two sets of musicians
 both from New York, anchored on different scenes, rank the same catalogue at
-0.26 -- while one of them agrees with a Berlin set at 0.78. Geography never
-entered the computation; scene did.
+0.26, while one of them agrees with a Berlin set at 0.78. Geography never
+entered the computation. Scene did.
 
 The agent therefore stops assuming who an audience is and discovers it instead. The
-groups that come out are smaller and stranger than marketing segments --
-Racionais MC's with Snowfall and The Sopranos; Ben Klock with Fela Kuti,
+groups that come out are smaller and stranger than marketing segments.
+Racionais MC's with Snowfall and The Sopranos. Ben Klock with Fela Kuti,
 Journey and Breath of the Wild.
 
 ## The surfaces
@@ -117,10 +116,10 @@ Refusing well is most of the product.
 - A market whose two readings disagree about a title **withholds that title**.
 - A market too thinly covered to rank **abstains**, naming the gap.
 - A **home market whose own two readings disagree cannot be a baseline**. New
-  York's agree at 0.13 — three audiences under one city's name — so the agent
-  aborts and says why, rather than measuring everything against an unstable
-  reference. Mumbai's agree at 0.97 and work fine. One preset demonstrates the
-  refusal deliberately.
+  York's agree at 0.13, because it is three audiences under one city's name,
+  so the agent aborts and says why, rather than measuring everything against
+  an unstable reference. Mumbai's agree at 0.97 and work fine. One preset
+  demonstrates the refusal deliberately.
 - A claim with no supporting API call **raises rather than rendering**.
 
 ## Run it
@@ -135,10 +134,10 @@ Stdlib only: no dependencies, no build step.
 ### What a fresh checkout is missing
 
 **Recorded runs are not committed.** The hackathon's rule on publishing raw
-Qloo responses is unresolved — one entrant reports organisers disallow it,
-another commits them — so this repository takes the conservative reading and
-keeps them out. `app/cache/` is gitignored; the recordings reach the deployed
-image through the build context instead.
+Qloo responses is unresolved. One entrant reports organisers disallow it,
+another commits them, so this repository takes the conservative reading and
+keeps them out. `app/cache/` is gitignored, and the recordings reach the
+deployed image through the build context instead.
 
 So a fresh checkout has no recorded runs, and the landing page says so rather
 than failing. With a key in `.env`, build them:
@@ -149,8 +148,8 @@ python3 hero_build.py       # the landing page's recorded run
 ```
 
 `hero_build.py` reads whichever pair the registered sweep selected, so it
-cannot drift from `docs/HERO_SWEEP.md`. To redo the selection itself —
-roughly 250 Qloo calls — run `python3 hero_sweep.py` first.
+cannot drift from `docs/HERO_SWEEP.md`. To redo the selection itself, which is
+roughly 250 Qloo calls, run `python3 hero_sweep.py` first.
 
 Without a key **and** without recordings the server still starts, every page
 still answers, and `/status` reports `presets_all_cached: false` with the
